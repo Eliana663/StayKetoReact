@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FoodCard from '../components/FoodCard';
+import FoodCard from './FoodCard/FoodCard';
 
 export default function FoodSearch() {
   const [searchItem, setSearchItem] = useState('');

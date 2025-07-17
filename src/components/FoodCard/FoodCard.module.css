@@ -1,0 +1,82 @@
+.card {
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+  border-radius: 0.25rem;
+  background-color: white;
+}
+
+.card:hover {
+  background-color: #f0f8ff; 
+  box-shadow: 0 0 15px 3px rgba(7, 101, 64, 0.445);
+}
+
+.imgContainer {
+  text-align: center;
+}
+
+.image {
+  max-height: 120px;
+  object-fit: cover;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.cardBody {
+  padding: 1rem;
+}
+
+.title {
+  margin-bottom: 0.25rem;
+}
+
+.textMuted {
+  margin-bottom: 0.5rem;
+  color: #6c757d;
+}
+
+.ketoLabel {
+  font-weight: bold;
+}
+
+.nutrientsRow {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.inputContainer {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+}
+
+.inputNumber {
+  width: 100px;
+}
+
+.buttonContainer {
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.75em;
+  border-radius: 9999px; /* hace el óvalo */
+  font-weight: 600;
+  font-size: 0.85em;
+  color: white;
+  user-select: none;
+  box-sizing: border-box;
+  opacity: 1;
+}
+
+.keto {
+  background-color: #28a745 !important; /* verde sólido */
+}
+
+.no-keto {
+  background-color: #dc3545 !important; /* rojo sólido */
+}
