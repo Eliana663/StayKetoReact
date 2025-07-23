@@ -1,5 +1,6 @@
 import React from 'react';
 import FoodSearch from './components/FoodSearch';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {
   return (
