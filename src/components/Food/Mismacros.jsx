@@ -38,7 +38,7 @@ export default function Mismacros({ proteins = 0, fat = 0, carbs = 0, calories =
       {
         name: 'Macros',
         type: 'pie',
-        radius: ['40%', '70%'],
+        radius: ['70%'],
         center: ['50%', '60%'],
         avoidLabelOverlap: false,
         label: {

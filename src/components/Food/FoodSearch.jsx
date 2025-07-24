@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Mismacros';
+import TopNavBar from '@/components/TopNavbar';
 
 export default function FoodSearch() {
   const [searchItem, setSearchItem] = useState('');
@@ -14,12 +15,10 @@ export default function FoodSearch() {
     try {
       setLoading(true);
       setError(null);
-
       const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`);
       if (!response.ok) throw new Error('Error al obtener los alimentos');
 
       const data = await response.json();
-
       if (!data || data.length === 0) {
         setFoodItems([]);
         setError('No se encontraron alimentos con ese término');
@@ -52,19 +51,19 @@ export default function FoodSearch() {
     setSelectedItems(prev => [...prev, newItem]);
   };
 
+  const handleRemoveItem = (index) => {
+    setSelectedItems(prev => prev.filter((_, i) => i !== index));
+  };
+
   const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
   const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
   const totalCarbs = selectedItems.reduce((sum, f) => sum + f.carbohydrates, 0);
   const totalCalories = selectedItems.reduce((sum, f) => sum + f.calories, 0);
 
-  // Renderizado condicional: si showMacros es true, solo mostramos el gráfico y botón para volver
   if (showMacros) {
-   return (
+    return (
       <div className="container my-4">
-        <button
-          className="btn btn-secondary mb-3"
-          onClick={() => setShowMacros(false)}
-        >
+        <button className="btn btn-secondary mb-3" onClick={() => setShowMacros(false)}>
           Volver a búsqueda
         </button>
         <Mismacros
@@ -77,8 +76,12 @@ export default function FoodSearch() {
     );
   }
 
-  // Si showMacros es false, mostramos el buscador, lista, resumen y botón para ver macros
   return (
+
+     <div>
+      <TopNavBar />
+      
+
     <div className="container my-4">
       <h2>Buscar alimento</h2>
 
@@ -93,10 +96,7 @@ export default function FoodSearch() {
         <button className="btn btn-success" onClick={() => fetchFoodByName(searchItem)}>Buscar</button>
       </div>
 
-      <button
-        className="btn btn-primary mb-3"
-        onClick={() => setShowMacros(true)}
-      >
+      <button className="btn btn-success" onClick={() => setShowMacros(true)}>
         Ver mis macros
       </button>
 
@@ -118,7 +118,13 @@ export default function FoodSearch() {
 
           <div className="d-flex flex-wrap gap-3 mb-4">
             {selectedItems.map((item, idx) => (
-              <div key={idx} className="border rounded p-2" style={{ minWidth: 120 }}>
+              <div key={idx} className="position-relative border rounded p-2" style={{ minWidth: 120 }}>
+                <button
+                  onClick={() => handleRemoveItem(idx)}
+                  className="btn-close position-absolute top-0 end-0 m-1"
+                  aria-label="Eliminar"
+                  style={{ fontSize: '0.7rem' }}
+                />
                 <strong>{item.name}</strong><br />
                 <span>{item.calories.toFixed(0)} kcal</span>
               </div>
@@ -142,7 +148,6 @@ export default function FoodSearch() {
         </div>
       )}
     </div>
-    
-
+    </div>
   );
 }
