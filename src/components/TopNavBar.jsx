@@ -1,10 +1,11 @@
 import React from 'react';
 import avocadoImg from '@/assets/avocado.png';
+import { Link } from 'react-router-dom';
 
 
 export default function TopNavbar() {
   return (
-    <nav className="navbar navbar-expand-lg bg-success border-bottom mb-4">
+    <nav className="navbar navbar-expand-lg bg-success border-bottom mb-1">
       <div className="container-fluid">
         {/* Logo + texto */}
         <a className="navbar-brand d-flex align-items-center fw-bold text-white fs-3" href="#">
@@ -64,10 +65,14 @@ export default function TopNavbar() {
                 style={{ minWidth: '220px' }}
               >
                 <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
+                  <Link
+                    className="dropdown-item py-3 d-flex align-items-center gap-3 text-success"
+                    to="/profile"
+                  >
                     <span style={{ fontSize: '1.5rem' }}>👤</span> Mi cuenta
-                  </a>
+                  </Link>
                 </li>
+                
                 <li>
                   <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
                     <span style={{ fontSize: '1.5rem' }}>⚙️</span> Configuración

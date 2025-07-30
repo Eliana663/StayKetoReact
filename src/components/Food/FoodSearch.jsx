@@ -79,10 +79,9 @@ export default function FoodSearch() {
   return (
 
      <div>
-      <TopNavBar />
-      
+         
 
-    <div className="container my-4">
+    <div className="container my-1">
       <h2>Buscar alimento</h2>
 
       <div className="input-group mb-3">
@@ -96,8 +95,11 @@ export default function FoodSearch() {
         <button className="btn btn-success" onClick={() => fetchFoodByName(searchItem)}>Buscar</button>
       </div>
 
-      <button className="btn btn-success" onClick={() => setShowMacros(true)}>
-        Ver mis macros
+      <button
+          className="btn btn-success mt-3 mb-3"
+          onClick={() => setShowMacros(true)}
+        >
+          Ver mis macros
       </button>
 
       {loading && <p>Cargando...</p>}

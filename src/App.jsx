@@ -1,14 +1,21 @@
-import React from 'react';
-import FoodSearch from './components/FoodSearch';
-
-
+import { Routes, Route } from 'react-router-dom';
+import FoodSearch from './components/Food/FoodSearch';
+import ProfilePage from './components/ProfilePage';
+import TopNavbar from './components/TopNavBar';
+import AvocadoBackground from './components/AvocadoBackground';
 
 function App() {
   return (
-    <div>
-      <h1>Mi app Keto</h1>
-      <FoodSearch />
-    </div>
+    <>
+    <TopNavbar />
+    <AvocadoBackground>
+      
+      <Routes>
+        <Route path="/" element={<FoodSearch />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+    </AvocadoBackground>
+    </>
   );
 }
 
