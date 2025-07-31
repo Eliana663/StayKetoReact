@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+const userId = 1; // o pasa como prop si quieres
 
 const defaultHabits = [
   { id: 1, name: "Ejercicio", done: false },
@@ -7,20 +10,30 @@ const defaultHabits = [
   { id: 4, name: "Ayuno", done: false },
 ];
 
-export default function PersonalPanel({ user }) {
+export default function PersonalPanel() {
+  const [user, setUser] = useState(null);
   const [habits, setHabits] = useState(defaultHabits);
   const [newHabit, setNewHabit] = useState("");
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cuando cambia el usuario, actualizamos los hábitos
+  const motivationalMessage =
+    "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+
   useEffect(() => {
-    if (user && Array.isArray(user.habits) && user.habits.length > 0) {
-      setHabits(user.habits);
-    } else {
-      setHabits(defaultHabits);
-    }
-  }, [user]);
+    setLoading(true);
+    axios
+      .get(`http://localhost:8081/api/users/${userId}`)
+      .then((res) => {
+        setUser(res.data);
+        if (res.data.habits && res.data.habits.length > 0) {
+          setHabits(res.data.habits);
+        }
+      })
+      .catch(() => setError("Error al cargar datos del usuario"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const toggleHabit = (id) => {
     setHabits((prev) =>
@@ -42,16 +55,12 @@ export default function PersonalPanel({ user }) {
   const saveHabits = () => {
     if (!user) return;
     setSaving(true);
-    // Guardamos hábitos en backend, aquí usa tu endpoint real
-    fetch(`http://localhost:8081/api/users/${user.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...user, habits }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error guardando hábitos");
-        alert("Hábitos guardados correctamente");
+    axios
+      .put(`http://localhost:8081/api/users/${userId}`, {
+        ...user,
+        habits,
       })
+      .then(() => alert("Hábitos guardados correctamente"))
       .catch(() => alert("Error al guardar hábitos"))
       .finally(() => setSaving(false));
   };
@@ -64,38 +73,14 @@ export default function PersonalPanel({ user }) {
     alert("Función para revisar si estás en cetosis (a implementar)");
   };
 
-  if (!user) return <p>Cargando datos del usuario...</p>;
+  if (loading) return <p>Cargando datos...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto", marginTop: 20 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>
-          Bienvenido{user.name ? `, ${user.name}` : ""} 👋
-        </h2>
-        {user.profilePhoto && (
-          <img
-            src={user.profilePhoto}
-            alt="Foto de perfil"
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "2px solid #28a745",
-            }}
-          />
-        )}
-      </div>
-
+    <div style={{ maxWidth: 600, margin: "auto" }}>
+      <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
       <p style={{ fontStyle: "italic", color: "#2a9d8f" }}>
-        Sigue adelante, ¡estás haciendo un gran trabajo! 💪
+        {motivationalMessage}
       </p>
 
       <h4>Mis hábitos</h4>
@@ -135,14 +120,7 @@ export default function PersonalPanel({ user }) {
         </button>
       </div>
 
-      <div
-        style={{
-          marginTop: "1rem",
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
         <button
           onClick={saveHabits}
           disabled={saving}

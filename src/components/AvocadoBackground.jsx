@@ -17,9 +17,9 @@ export default function FondoConAguacate({ children }) {
         <div
             style={{
             backgroundColor: 'white',
-            margin: '20px auto',
+            margin: '1px auto',
             padding: '20px',
-            maxWidth: '520px',  
+            maxWidth: '700px',  
             borderRadius: '12px',
             boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
             width: '100%',    

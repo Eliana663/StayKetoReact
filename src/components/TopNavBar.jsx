@@ -41,9 +41,6 @@ export default function TopNavbar() {
               <a className="nav-link text-white" href="#">Recetas Keto</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Blog</a>
-            </li>
-            <li className="nav-item">
               <a className="nav-link text-white" href="#">Iniciar Sesión</a>
             </li>
           </ul>
@@ -72,21 +69,31 @@ export default function TopNavbar() {
                     <span style={{ fontSize: '1.5rem' }}>👤</span> Mi cuenta
                   </Link>
                 </li>
-                
-                <li>
+                 <li>
                   <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
                     <span style={{ fontSize: '1.5rem' }}>⚙️</span> Configuración
                   </a>
                 </li>
+                <li>
+                  <Link
+                  className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 
+                  to="/personalPanel">
+                    <span style={{ fontSize: '1.5rem' }}>📋</span> Panel Personal / Registro de Hábitos
+                  </Link>
+                </li>
+               
+
                 <li>
                   <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
                     <span style={{ fontSize: '1.5rem' }}>🧮</span> Calculadora Keto
                   </a>
                 </li>
                 <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
+                  <Link
+                  className="dropdown-item py-3 d-flex align-items-center gap-3 text-success"
+                  to="/foodDiary">
                     <span style={{ fontSize: '1.5rem' }}>🗒️</span> Diario de Alimentos
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
