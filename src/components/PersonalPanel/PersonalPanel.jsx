@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import HabitRing from '@/components/PersonalPanel/HabitRing';
+import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular'; // IMPORTA tu segundo componente
 
-const userId = 1; // o pasa como prop si quieres
+const userId = 1;
 
 const defaultHabits = [
   { id: 1, name: "Ejercicio", done: false },
@@ -17,9 +19,10 @@ export default function PersonalPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [registroMensual, setRegistroMensual] = useState([]);
+  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
 
-  const motivationalMessage =
-    "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+  const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
   useEffect(() => {
     setLoading(true);
@@ -29,6 +32,9 @@ export default function PersonalPanel() {
         setUser(res.data);
         if (res.data.habits && res.data.habits.length > 0) {
           setHabits(res.data.habits);
+        }
+        if (res.data.registroMensual) {
+          setRegistroMensual(res.data.registroMensual);
         }
       })
       .catch(() => setError("Error al cargar datos del usuario"))
@@ -41,6 +47,25 @@ export default function PersonalPanel() {
         habit.id === id ? { ...habit, done: !habit.done } : habit
       )
     );
+
+    const today = new Date().getDate();
+
+    setRegistroMensual((prev) => {
+      const registroDia = prev.find((r) => r.dia === today);
+
+      if (registroDia) {
+        const habitExists = registroDia.habitosCumplidos.includes(id);
+        const nuevosHabitos = habitExists
+          ? registroDia.habitosCumplidos.filter((hid) => hid !== id)
+          : [...registroDia.habitosCumplidos, id];
+
+        return prev.map((r) =>
+          r.dia === today ? { ...r, habitosCumplidos: nuevosHabitos } : r
+        );
+      } else {
+        return [...prev, { dia: today, habitosCumplidos: [id] }];
+      }
+    });
   };
 
   const addHabit = () => {
@@ -59,19 +84,15 @@ export default function PersonalPanel() {
       .put(`http://localhost:8081/api/users/${userId}`, {
         ...user,
         habits,
+        registroMensual, // Guarda también el registro mensual si quieres
       })
       .then(() => alert("Hábitos guardados correctamente"))
       .catch(() => alert("Error al guardar hábitos"))
       .finally(() => setSaving(false));
   };
 
-  const handleRegisterWeight = () => {
-    alert("Función para registrar peso hoy (a implementar)");
-  };
-
-  const handleCheckKetosis = () => {
-    alert("Función para revisar si estás en cetosis (a implementar)");
-  };
+  const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
+  const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
 
   if (loading) return <p>Cargando datos...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -79,32 +100,36 @@ export default function PersonalPanel() {
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
       <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
-      <p style={{ fontStyle: "italic", color: "#2a9d8f" }}>
+      <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>
         {motivationalMessage}
       </p>
 
-      <h4>Mis hábitos</h4>
+      <h4 style={{ margin: "40px 10px" }}>Mis hábitos cumplidos hoy:</h4>
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {habits.map(({ id, name, done }) => (
-          <button
-            key={id}
-            onClick={() => toggleHabit(id)}
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: "50%",
-              border: done ? "3px solid #28a745" : "3px solid #ccc",
-              backgroundColor: done ? "#28a745" : "transparent",
-              color: done ? "white" : "black",
-              cursor: "pointer",
-              fontWeight: "bold",
-              userSelect: "none",
-            }}
-            title={name}
-          >
-            {name}
-          </button>
-        ))}
+        {habits.map((habit, index) => {
+          const { id, name, done } = habit;
+          const baseColor = colors[index % colors.length];
+          return (
+            <button
+              key={id}
+              onClick={() => toggleHabit(id)}
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: "50%",
+                border: done ? `3px solid ${baseColor}` : "3px solid #ccc",
+                backgroundColor: done ? baseColor : "transparent",
+                color: done ? "white" : "black",
+                cursor: "pointer",
+                fontWeight: "bold",
+                userSelect: "none",
+              }}
+              title={name}
+            >
+              {name}
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ marginTop: "1rem" }}>
@@ -120,7 +145,14 @@ export default function PersonalPanel() {
         </button>
       </div>
 
-      <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <div
+        style={{
+          marginTop: "1rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
         <button
           onClick={saveHabits}
           disabled={saving}
@@ -169,6 +201,12 @@ export default function PersonalPanel() {
         >
           Revisar si estoy en cetosis
         </button>
+      </div>
+
+      {/* Aquí los dos componentes, uno debajo del otro */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "40px 0", gap: "3rem" }}>
+        <HabitRing habits={habits} registroMensual={registroMensual} />
+        <HabitTrackerCircular habits={habits} />
       </div>
     </div>
   );

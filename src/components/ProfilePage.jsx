@@ -1,197 +1,294 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 
-const defaultHabits = [
-  { id: 1, name: "Ejercicio", done: false },
-  { id: 2, name: "Tomar agua", done: false },
-  { id: 3, name: "Dormir 8 horas", done: false },
-  { id: 4, name: "Ayuno", done: false },
-];
+export default function ProfilePage() {
+  const userId = 1;
+  const [user, setUser] = useState({
+    age:"",
+    height:"",
+  });
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [quote, setQuote] = useState("");
 
-export default function PersonalPanel({ user }) {
-  const [habits, setHabits] = useState(defaultHabits);
-  const [newHabit, setNewHabit] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Cuando cambia el usuario, actualizamos los hábitos
   useEffect(() => {
-    if (user && Array.isArray(user.habits) && user.habits.length > 0) {
-      setHabits(user.habits);
-    } else {
-      setHabits(defaultHabits);
+    // Traer usuario
+    axios.get(`http://localhost:8081/api/users/${userId}`).then((res) => {
+      setUser(res.data);
+    });
+
+    // Traer frase motivacional
+    axios
+      .get("https://api.quotable.io/random?tags=inspirational|motivational")
+      .then((res) => setQuote(res.data.content))
+      .catch(() =>
+        setQuote("Sigue adelante, lo estás haciendo muy bien. ¡Tú puedes!")
+      );
+  }, [reloadTrigger]);
+
+  const handlePhotoUploaded = () => {
+    setReloadTrigger((prev) => prev + 1);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      await axios.put(`http://localhost:8081/api/users/${userId}`, user);
+      alert("Datos guardados correctamente");
+      setReloadTrigger((prev) => prev + 1); // refrescar perfil
+    } catch (err) {
+      alert("Error al guardar los cambios");
     }
-  }, [user]);
-
-  const toggleHabit = (id) => {
-    setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === id ? { ...habit, done: !habit.done } : habit
-      )
-    );
   };
 
-  const addHabit = () => {
-    if (newHabit.trim() === "") return;
-    setHabits((prev) => [
-      ...prev,
-      { id: Date.now(), name: newHabit.trim(), done: false },
-    ]);
-    setNewHabit("");
-  };
-
-  const saveHabits = () => {
-    if (!user) return;
-    setSaving(true);
-    // Guardamos hábitos en backend, aquí usa tu endpoint real
-    fetch(`http://localhost:8081/api/users/${user.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...user, habits }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error guardando hábitos");
-        alert("Hábitos guardados correctamente");
-      })
-      .catch(() => alert("Error al guardar hábitos"))
-      .finally(() => setSaving(false));
-  };
-
-  const handleRegisterWeight = () => {
-    alert("Función para registrar peso hoy (a implementar)");
-  };
-
-  const handleCheckKetosis = () => {
-    alert("Función para revisar si estás en cetosis (a implementar)");
-  };
-
-  if (!user) return <p>Cargando datos del usuario...</p>;
-
-  return (
-    <div style={{ maxWidth: 600, margin: "auto", marginTop: 20 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>
-          Bienvenido{user.name ? `, ${user.name}` : ""} 👋
-        </h2>
-        {user.profilePhoto && (
-          <img
-            src={user.profilePhoto}
-            alt="Foto de perfil"
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "2px solid #28a745",
-            }}
-          />
-        )}
-      </div>
-
-      <p style={{ fontStyle: "italic", color: "#2a9d8f" }}>
-        Sigue adelante, ¡estás haciendo un gran trabajo! 💪
+  if (!user)
+    return (
+      <p className="text-center mt-5" style={{ fontSize: "1.2rem" }}>
+        Cargando perfil...
       </p>
+    );
 
-      <h4>Mis hábitos</h4>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {habits.map(({ id, name, done }) => (
-          <button
-            key={id}
-            onClick={() => toggleHabit(id)}
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: "50%",
-              border: done ? "3px solid #28a745" : "3px solid #ccc",
-              backgroundColor: done ? "#28a745" : "transparent",
-              color: done ? "white" : "black",
-              cursor: "pointer",
-              fontWeight: "bold",
-              userSelect: "none",
-            }}
-            title={name}
-          >
-            {name}
-          </button>
-        ))}
+ return (
+  <>
+    <div className="card shadow p-4 mx-auto" style={{ maxWidth: "600px" }}>
+      <div className="text-center">
+        <h3 className="mb-1">
+          Bienvenida, {user.name} <span>👋</span>
+        </h3>
+        <p className="text-muted mb-3 fst-italic">"{quote}"</p>
+
+        <div className="text-center mb-3">
+          <ProfilePhotoWithEdit
+            profilePhoto={user.profilePhoto}
+            userId={userId}
+            onPhotoUploaded={handlePhotoUploaded}
+          />
+        </div>
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
-        <input
-          type="text"
-          placeholder="Nuevo hábito"
-          value={newHabit}
-          onChange={(e) => setNewHabit(e.target.value)}
-          style={{ padding: "0.4rem", marginRight: "0.5rem" }}
-        />
-        <button onClick={addHabit} style={{ padding: "0.5rem 1rem" }}>
-          Añadir
+      {/* Datos con botón editar */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h5 className="mb-0">Datos del perfil</h5>
+        <button
+          className="btn btn-sm btn-outline-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#editProfileModal"
+        >
+          <i className="bi bi-pencil-fill me-1"></i> Editar
         </button>
       </div>
 
-      <div
-        style={{
-          marginTop: "1rem",
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <button
-          onClick={saveHabits}
-          disabled={saving}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: saving ? "not-allowed" : "pointer",
-            flexGrow: 1,
-          }}
-        >
-          {saving ? "Guardando..." : "Guardar hábitos"}
-        </button>
+      <ul className="list-group mb-3">
+        <li className="list-group-item">
+          <strong>Nombre:</strong> {user.name}
+        </li>
+        <li className="list-group-item">
+          <strong>Apellidos:</strong> {user.lastName}
+        </li>
+        <li className="list-group-item">
+          <strong>Cumpleaños 🎂</strong> {user.birthDate}
+        </li>
+        <li className="list-group-item">
+          <strong>Edad</strong> {user.age}
+        </li>
+        <li className="list-group-item">
+          <strong>Género: </strong> {user.gender}
+        </li>
+        <li className="list-group-item">
+          <strong>Email:</strong> {user.email}
+        </li>
+        <li className="list-group-item">
+          <strong>Peso actual:</strong> {user.currentWeight} kg
+        </li>
+        <li className="list-group-item">
+          <strong>Peso meta:</strong> {user.targetWeight} kg
+        </li>
+        <li className="list-group-item">
+          <strong>Altura:</strong> {user.height} kg
+        </li>
+        <li className="list-group-item">
+          <strong>Nivel de actividad 🏃 </strong> {user.activityLevel}
+        </li>
+        <li className="list-group-item">
+          <strong>¿Embarazada? 🤰</strong> {user.pregnant ? "Sí" : "No"}
+        </li>
+      </ul>
+    </div>
 
-        <button
-          onClick={handleRegisterWeight}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            flexGrow: 1,
-          }}
-        >
-          Registrar peso hoy
-        </button>
+    {/* Modal para editar */}
+    <div
+      className="modal fade"
+      id="editProfileModal"
+      tabIndex="-1"
+      aria-labelledby="editProfileModalLabel"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="editProfileModalLabel">
+              Editar perfil
+            </h5>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div className="modal-body">
+            <div className="mb-3">
+              <label className="form-label">Nombre</label>
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                value={user.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Apellidos</label>
+              <input
+                type="text"
+                className="form-control"
+                name="lastName"
+                value={user.lastName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Fecha de Cumpleaños</label>
+              <input
+                type="text"
+                className="form-control"
+                name="birthDate"
+                value={user.birthDate}
+                onChange={handleChange}
+              />
+            </div>
+             <div className="mb-3">
+              <label className="form-label">Edad</label>
+              <input
+                type="number"
+                className="form-control"
+                name="age"
+                value={user.age}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Género</label>
+              <select
+                className="form-select"
+                name="gender"
+                value={user.gender || ""}
+                onChange={handleChange}
+              >
+                <option value="">-- Selecciona género --</option>
+                <option value="femenino">Femenino</option>
+                <option value="masculino">Masculino</option>
+                <option value="No Definido">No definido</option>
+                <option value="Binario">Binario</option>
+              </select>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={user.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Peso actual (kg)</label>
+              <input
+                type="number"
+                className="form-control"
+                name="currentWeight"
+                value={user.currentWeight}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Peso meta (kg)</label>
+              <input
+                type="number"
+                className="form-control"
+                name="targetWeight"
+                value={user.targetWeight}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Altura</label>
+              <input
+                type="number"
+                className="form-control"
+                name="height"
+                value={user.height}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Nivel de Actividad</label>
+              <select
+                className="form-select"
+                name="activityLevel"
+                value={user.activityLevel || ""}
+                onChange={handleChange}
+              >
+                <option value="">-- Selecciona nivel de actividad --</option>
+                <option value="Sin Actividad">Sin actividad</option>
+                <option value="Ligeramente Activo">Ligeramente Activo</option>
+                <option value="Muy Activo">Muy Activo</option>
+                <option value="Extra Activo">Extra Activo</option>
+              </select>
+            </div>
 
-        <button
-          onClick={handleCheckKetosis}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            flexGrow: 1,
-          }}
-        >
-          Revisar si estoy en cetosis
-        </button>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="pregnantCheck"
+                name="pregnant"
+                checked={user.pregnant}
+                onChange={handleChange}
+              />
+              <label className="form-check-label" htmlFor="pregnantCheck">
+                ¿Estás embarazada?
+              </label>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={handleSave}
+              data-bs-dismiss="modal"
+            >
+              Guardar cambios
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  </>
+);
 }

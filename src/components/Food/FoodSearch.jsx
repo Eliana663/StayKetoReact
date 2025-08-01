@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Mismacros';
-import TopNavBar from '@/components/TopNavbar';
+
 
 export default function FoodSearch() {
   const [searchItem, setSearchItem] = useState('');
