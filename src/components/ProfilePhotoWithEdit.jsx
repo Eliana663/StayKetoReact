@@ -19,7 +19,7 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Foto subida con éxito");
-      onPhotoUploaded();
+      onPhotoUploaded(); // para refrescar datos en el padre
     } catch (error) {
       alert("Error al subir la foto");
       console.error(error);
@@ -34,6 +34,10 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
           alt="Foto de perfil"
           className="rounded-circle img-thumbnail"
           style={{ width: "120px", height: "120px", objectFit: "cover" }}
+          onError={(e) => {
+            e.target.onerror = null; // evita bucle infinito si la imagen no carga
+            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto"; // placeholder si falla
+          }}
         />
       ) : (
         <div

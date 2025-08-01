@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import HabitRing from '@/components/PersonalPanel/HabitRing';
-import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular'; // IMPORTA tu segundo componente
+import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular';
 
 const userId = 1;
 
@@ -12,7 +12,7 @@ const defaultHabits = [
   { id: 4, name: "Ayuno", done: false },
 ];
 
-export default function PersonalPanel() {
+export default function PersonalPanel({ profilePhoto }) {
   const [user, setUser] = useState(null);
   const [habits, setHabits] = useState(defaultHabits);
   const [newHabit, setNewHabit] = useState("");
@@ -21,7 +21,9 @@ export default function PersonalPanel() {
   const [error, setError] = useState(null);
   const [registroMensual, setRegistroMensual] = useState([]);
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
-
+  const completedHabits = habits.filter(h => h.done).length;
+  const totalHabits = habits.length;
+  const percentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export default function PersonalPanel() {
       .put(`http://localhost:8081/api/users/${userId}`, {
         ...user,
         habits,
-        registroMensual, // Guarda también el registro mensual si quieres
+        registroMensual,
       })
       .then(() => alert("Hábitos guardados correctamente"))
       .catch(() => alert("Error al guardar hábitos"))
@@ -99,6 +101,22 @@ export default function PersonalPanel() {
 
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
+      {/* Foto de perfil centrada */}
+      {user && user.profilePhoto && (
+      <img
+        src={`http://localhost:8081/uploads/${user.profilePhoto}`}
+        alt="Foto de perfil"
+        style={{
+          width: 120,
+          height: 120,
+          borderRadius: "50%",
+          objectFit: "cover",
+          margin: "1rem auto",
+          display: "block",
+        }}
+      />
+    )}
+
       <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
       <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>
         {motivationalMessage}
@@ -203,10 +221,34 @@ export default function PersonalPanel() {
         </button>
       </div>
 
-      {/* Aquí los dos componentes, uno debajo del otro */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "40px 0", gap: "3rem" }}>
-        <HabitRing habits={habits} registroMensual={registroMensual} />
-        <HabitTrackerCircular habits={habits} />
+      {/* Anillo y gráfico circular de hábitos */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "40px 0",
+          gap: "3rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "3rem",
+          }}
+        >
+          <h2 style={{ marginBottom: "10px", whiteSpace: "nowrap" }}>
+            Progreso diario de hábitos
+          </h2>
+          <HabitRing habits={habits} />
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
+          <HabitTrackerCircular habits={habits} />
+        </div>
       </div>
     </div>
   );
