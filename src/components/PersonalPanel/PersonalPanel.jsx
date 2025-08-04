@@ -247,7 +247,10 @@ export default function PersonalPanel({ profilePhoto }) {
 
         <div style={{ textAlign: "center" }}>
           <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
-          <HabitTrackerCircular habits={habits} />
+          <HabitTrackerCircular
+            habits={habits}
+            registroMensual={registroMensual}
+          />
         </div>
       </div>
     </div>
