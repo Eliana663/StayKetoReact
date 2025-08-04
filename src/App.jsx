@@ -4,6 +4,7 @@ import ProfilePage from './components/ProfilePage';
 import TopNavbar from './components/TopNavBar';
 import PersonalPanel from './components/PersonalPanel/PersonalPanel';
 import AvocadoBackground from './components/AvocadoBackground';
+import LandingPage from './components/LandingPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
     <AvocadoBackground>
       
       <Routes>
+        <Route path="/home" element={<LandingPage />} />
         <Route path="/foodDiary" element={<FoodSearch />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/personalPanel" element={<PersonalPanel />} />

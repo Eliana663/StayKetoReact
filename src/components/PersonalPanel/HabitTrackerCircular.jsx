@@ -3,17 +3,17 @@ import React from "react";
 const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
 
 const HabitTrackerCircular = ({ habits = [], registroMensual = [] }) => {
-  const radius = 140;
-  const center = 240;
+  const radius = 250;
+  const center = 380;
   const numDays = 31;
   const anglePerDay = 360 / numDays;
   const habitCircleRadius = 10;
-  const habitSpacing = 20;
+  const habitSpacing = 25;
   const svgSize = center * 2;
 
   const degToRad = (deg) => (deg * Math.PI) / 180;
 
-  // Obtener nombre del mes dinámico en español
+  // Get  month name 
   const monthNames = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -25,17 +25,17 @@ const HabitTrackerCircular = ({ habits = [], registroMensual = [] }) => {
       {/* Fondo círculo grande */}
       <circle cx={center} cy={center} r={radius} fill="#fafafa" stroke="#ccc" />
 
-      {/* Título mes */}
+      {/* Month */}
       <text
         x={center}
-        y={30}
+        y={40}
         fontSize="24"
         fill="#333"
         textAnchor="middle"
         fontWeight="bold"
 
       >
-       Mes: {currentMonthName}
+       Mes:  {currentMonthName}
       </text>
 
       {Array.from({ length: numDays }).map((_, dayIndex) => {
@@ -72,7 +72,7 @@ const HabitTrackerCircular = ({ habits = [], registroMensual = [] }) => {
               })}
             </g>
 
-            {/* Número del día, sin rotar */}
+            {/* Day number */}
             <text
               x={labelX}
               y={labelY}

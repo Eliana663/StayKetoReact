@@ -7,15 +7,19 @@ export default function TopNavbar() {
   return (
     <nav className="navbar navbar-expand-lg bg-success border-bottom mb-1">
       <div className="container-fluid">
-        {/* Logo + texto */}
-        <a className="navbar-brand d-flex align-items-center fw-bold text-white fs-3" href="#">
+        
+         <Link
+          to="/home"
+          className="navbar-brand d-flex align-items-center fw-bold text-white fs-3"
+          style={{ textDecoration: 'none' }}
+        >
           <img
             src={avocadoImg}
             alt="Aguacate"
             style={{ width: '40px', height: '40px', marginRight: '10px' }}
           />
           StayKeto
-        </a>
+        </Link>
 
         <button
           className="navbar-toggler"

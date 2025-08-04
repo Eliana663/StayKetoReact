@@ -20,10 +20,13 @@ export default function PersonalPanel({ profilePhoto }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [registroMensual, setRegistroMensual] = useState([]);
+
+  // Edit panel
+  const [showEditPanel, setShowEditPanel] = useState(false);
+  const [editingHabitId, setEditingHabitId] = useState(null);
+  const [editingHabitName, setEditingHabitName] = useState("");
+
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
-  const completedHabits = habits.filter(h => h.done).length;
-  const totalHabits = habits.length;
-  const percentage = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
   useEffect(() => {
@@ -79,6 +82,48 @@ export default function PersonalPanel({ profilePhoto }) {
     setNewHabit("");
   };
 
+  const startEditingHabit = (id) => {
+    const habit = habits.find((h) => h.id === id);
+    if (habit) {
+      setEditingHabitId(id);
+      setEditingHabitName(habit.name);
+    }
+  };
+
+  const saveEditedHabit = () => {
+    if (editingHabitName.trim() === "") {
+      alert("El nombre del hábito no puede estar vacío.");
+      return;
+    }
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h
+      )
+    );
+    setEditingHabitId(null);
+    setEditingHabitName("");
+  };
+
+  const cancelEditing = () => {
+    setEditingHabitId(null);
+    setEditingHabitName("");
+  };
+
+  const deleteHabit = (id) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
+      setHabits((prev) => prev.filter((h) => h.id !== id));
+      setRegistroMensual((prev) =>
+        prev.map((r) => ({
+          ...r,
+          habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
+        }))
+      );
+      if (editingHabitId === id) {
+        cancelEditing();
+      }
+    }
+  };
+
   const saveHabits = () => {
     if (!user) return;
     setSaving(true);
@@ -103,19 +148,19 @@ export default function PersonalPanel({ profilePhoto }) {
     <div style={{ maxWidth: 600, margin: "auto" }}>
       {/* Foto de perfil centrada */}
       {user && user.profilePhoto && (
-      <img
-        src={`http://localhost:8081/uploads/${user.profilePhoto}`}
-        alt="Foto de perfil"
-        style={{
-          width: 120,
-          height: 120,
-          borderRadius: "50%",
-          objectFit: "cover",
-          margin: "1rem auto",
-          display: "block",
-        }}
-      />
-    )}
+        <img
+          src={`http://localhost:8081/uploads/${user.profilePhoto}`}
+          alt="Foto de perfil"
+          style={{
+            width: 120,
+            height: 120,
+            borderRadius: "50%",
+            objectFit: "cover",
+            margin: "1rem auto",
+            display: "block",
+          }}
+        />
+      )}
 
       <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
       <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>
@@ -162,6 +207,94 @@ export default function PersonalPanel({ profilePhoto }) {
           Añadir
         </button>
       </div>
+
+      {/* Botón para abrir/cerrar panel edición */}
+      <div style={{ marginTop: "1rem", textAlign: "center" }}>
+        <button
+          onClick={() => setShowEditPanel(!showEditPanel)}
+          style={{
+            padding: "0.6rem 1.5rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            borderRadius: "20px",
+            border: "1px solid #2a9d8f",
+            backgroundColor: showEditPanel ? "#2a9d8f" : "transparent",
+            color: showEditPanel ? "white" : "#2a9d8f",
+            transition: "all 0.3s",
+          }}
+        >
+          {showEditPanel ? "Cerrar edición de hábitos" : "Editar / Eliminar hábitos"}
+        </button>
+      </div>
+
+      {/* Panel de edición */}
+      {showEditPanel && (
+        <div
+          style={{
+            marginTop: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "10px",
+            padding: "1rem",
+            maxHeight: 300,
+            overflowY: "auto",
+          }}
+        >
+          {habits.length === 0 && <p>No hay hábitos para editar.</p>}
+
+          {habits.map((habit) => (
+            <div
+              key={habit.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "0.5rem",
+              }}
+            >
+              {editingHabitId === habit.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editingHabitName}
+                    onChange={(e) => setEditingHabitName(e.target.value)}
+                    style={{ flexGrow: 1, marginRight: "0.5rem", padding: "0.3rem" }}
+                  />
+                  <button
+                    onClick={saveEditedHabit}
+                    style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={cancelEditing}
+                    style={{ padding: "0.3rem 0.6rem" }}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>{habit.name}</span>
+                  <div>
+                    <button
+                      onClick={() => startEditingHabit(habit.id)}
+                      style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => deleteHabit(habit.id)}
+                      style={{ color: "red", padding: "0.3rem 0.6rem" }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div
         style={{
@@ -247,10 +380,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
         <div style={{ textAlign: "center" }}>
           <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
-          <HabitTrackerCircular
-            habits={habits}
-            registroMensual={registroMensual}
-          />
+          <HabitTrackerCircular habits={habits} registroMensual={registroMensual} />
         </div>
       </div>
     </div>
