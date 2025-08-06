@@ -17,6 +17,7 @@
 }
 
 .image {
+  width: 90px;
   max-height: 120px;
   object-fit: cover;
   border-top-left-radius: 0.25rem;

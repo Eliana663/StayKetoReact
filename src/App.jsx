@@ -13,7 +13,9 @@ function App() {
     <AvocadoBackground>
       
       <Routes>
+
         <Route path="/home" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/foodDiary" element={<FoodSearch />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/personalPanel" element={<PersonalPanel />} />
