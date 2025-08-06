@@ -34,47 +34,60 @@ export default function FoodSearch() {
     }
   };
 
-  const handleAddItem = (item, amount) => {
-    const quantity = Number(amount) || 100;
-    const factor = quantity / (item.quantity || 100);
+  const handleAddItem = async (item, amount) => {
+  const quantity = Number(amount) || 100;
+  const factor = quantity / (item.quantity || 100);
 
-    const newItem = {
-      id: item.id,
-      name: item.name,
-      carbohydrates: (item.carbohydrates || 0) * factor,
-      proteins: (item.proteins || 0) * factor,
-      fat: (item.fat || 0) * factor,
-      calories: (item.calories || 0) * factor,
-      amount: quantity,
+  const newItem = {
+    foodItemId: item.id,
+    name: item.name,
+    carbohydrates: (item.carbohydrates || 0) * factor,
+    proteins: (item.proteins || 0) * factor,
+    fat: (item.fat || 0) * factor,
+    calories: (item.calories || 0) * factor,
+    amount: quantity,
+    date: new Date().toISOString().slice(0, 10), // yyyy-MM-dd
+  };
+
+ 
+  setSelectedItems(prev => [...prev, newItem]);
+
+  // Saving in backend
+      try {
+        const res = await fetch('http://localhost:8081/api/daily-food', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(newItem),
+        });
+        if (!res.ok) throw new Error('Error guardando alimento');
+      } catch (error) {
+        console.error(error);
+      }
     };
+      const handleRemoveItem = (index) => {
+        setSelectedItems(prev => prev.filter((_, i) => i !== index));
+      };
 
-    setSelectedItems(prev => [...prev, newItem]);
-  };
+      const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
+      const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
+      const totalCarbs = selectedItems.reduce((sum, f) => sum + f.carbohydrates, 0);
+      const totalCalories = selectedItems.reduce((sum, f) => sum + f.calories, 0);
 
-  const handleRemoveItem = (index) => {
-    setSelectedItems(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
-  const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
-  const totalCarbs = selectedItems.reduce((sum, f) => sum + f.carbohydrates, 0);
-  const totalCalories = selectedItems.reduce((sum, f) => sum + f.calories, 0);
-
-  if (showMacros) {
-    return (
-      <div className="container my-4">
-        <button className="btn btn-secondary mb-3" onClick={() => setShowMacros(false)}>
-          Volver a búsqueda
-        </button>
-        <Mismacros
-          proteins={totalProteins}
-          fat={totalFat}
-          carbs={totalCarbs}
-          calories={totalCalories}
-        />
-      </div>
-    );
-  }
+      if (showMacros) {
+        return (
+          <div className="container my-4">
+            <button className="btn btn-secondary mb-3" onClick={() => setShowMacros(false)}>
+              Volver a búsqueda
+            </button>
+            <Mismacros
+              proteins={totalProteins}
+              fat={totalFat}
+              carbs={totalCarbs}
+              calories={totalCalories}
+            />
+          </div>
+        );
+      }
 
   return (
 
