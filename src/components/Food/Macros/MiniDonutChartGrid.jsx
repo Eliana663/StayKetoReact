@@ -2,62 +2,62 @@ import React, { useEffect, useState } from 'react';
 import MiniDonutChart from './MiniDonutChart';
 
 export default function MiniDonutChartGrid() {
-  const [dailyData, setDailyData] = useState(null); // null para diferenciar entre loading y vacío
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Función para obtener nombre del día en español
+  const getDayName = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { weekday: 'long' }); // ej: "lunes"
+  };
 
   useEffect(() => {
-    fetch('/api/daily-food/macros-by-date?start=2025-08-01&end=2025-08-07')
-      .then(res => res.json())
-      .then(data => {
-        // Si data es vacío o undefined, crear un array con días vacíos
-        const prepared = (data && data.length > 0 ? data : generateEmptyWeekData()).map(d => ({
-          ...d,
-          label: d.date ? new Date(d.date).toLocaleDateString() : d.label,
-          proteins: d.proteins ?? 0,
-          fat: d.fat ?? 0,
-          carbs: d.carbs ?? 0,
-          calories: d.calories ?? 0,
+    const hoy = new Date();
+    const hace7Dias = new Date();
+    hace7Dias.setDate(hoy.getDate() - 7);
+
+    const formatDate = (date) => date.toISOString().split('T')[0];
+
+    const start = formatDate(hace7Dias);
+    const end = formatDate(hoy);
+
+    setLoading(true);
+    setError(null);
+
+    fetch(`http://localhost:8081/api/daily-food/macros-by-date?start=${start}&end=${end}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Error al cargar datos');
+        return res.json();
+      })
+      .then(json => {
+        // Agregar label con nombre del día
+        const dataConLabels = json.map(item => ({
+          ...item,
+          label: getDayName(item.date)
         }));
-        setDailyData(prepared);
+
+        setData(dataConLabels);
         setLoading(false);
       })
-      .catch(() => {
-        setDailyData(generateEmptyWeekData());
+      .catch(err => {
+        setError(err.message);
         setLoading(false);
       });
   }, []);
 
-  // Función para generar datos vacíos para 7 días
-  function generateEmptyWeekData() {
-    const baseDate = new Date('2025-08-01');
-    return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(baseDate);
-      date.setDate(baseDate.getDate() + i);
-      return {
-        date: date.toISOString().slice(0, 10),
-        label: date.toLocaleDateString(),
-        proteins: 0,
-        fat: 0,
-        carbs: 0,
-        calories: 0,
-      };
-    });
-  }
-
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <p>Cargando datos de macros...</p>;
+  if (error) return <p className="text-danger">Error: {error}</p>;
+  if (data.length === 0) return <p>No hay datos para mostrar.</p>;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '12px',
-        justifyContent: 'center',
-      }}
-    >
-      {dailyData.map((day, index) => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+      {data.map((day, index) => (
         <div key={index} style={{ textAlign: 'center' }}>
-          <MiniDonutChart item={day} label={day.label || `Día ${index + 1}`} />
+          <MiniDonutChart
+            item={day}
+            label={day.label}
+          />
         </div>
       ))}
     </div>

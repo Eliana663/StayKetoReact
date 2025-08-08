@@ -9,10 +9,13 @@ export default function Mismacros() {
     carbs: 0,
     calories: 0,
   });
+  const [weeklyData, setWeeklyData] = useState([]);
 
-  // Aquí puedes ajustar las fechas que quieras para el rango semanal
-  const startDate = '2025-08-01'; // ejemplo, ajusta dinámicamente si quieres
-  const endDate = '2025-08-07';
+  // Para usar fechas dinámicas que siempre incluyan hoy y 6 días atrás
+  const today = new Date();
+  const formatDate = (d) => d.toISOString().slice(0, 10);
+  const endDate = formatDate(today);
+  const startDate = formatDate(new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000)); // 6 días antes
 
   useEffect(() => {
     async function fetchMacros() {
@@ -21,17 +24,23 @@ export default function Mismacros() {
           `http://localhost:8081/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
         );
         const data = await res.json();
-        // data es lista de MacroSummary por día
-        // Suma o toma solo el primer día (hoy) para los gráficos de hoy
-        if (data.length > 0) {
-          const todayMacros = data[0]; // por ejemplo, el primer día
-          setDailyMacros({
-            proteins: todayMacros.proteins || 0,
-            fat: todayMacros.fat || 0,
-            carbs: todayMacros.carbohydrates || 0,
-            calories: todayMacros.calories || 0,
-          });
-        }
+
+        setWeeklyData(data);
+
+        const todayString = formatDate(today);
+        const todayMacros = data.find(d => d.date === todayString) || {
+          proteins: 0,
+          fat: 0,
+          carbohydrates: 0,
+          calories: 0,
+        };
+
+        setDailyMacros({
+          proteins: todayMacros.proteins || 0,
+          fat: todayMacros.fat || 0,
+          carbs: todayMacros.carbohydrates || 0,
+          calories: todayMacros.calories || 0,
+        });
       } catch (error) {
         console.error('Error cargando macros:', error);
       }
@@ -39,7 +48,6 @@ export default function Mismacros() {
     fetchMacros();
   }, [startDate, endDate]);
 
-  // Ahora reutilizas tu código para los gráficos con dailyMacros
   const proteinGoal = 75;
   const fatGoal = 130;
   const carbGoal = 30;
@@ -60,7 +68,8 @@ export default function Mismacros() {
     },
     tooltip: {
       trigger: 'item',
-      formatter: params => `${params.name}: ${params.value.toFixed(2)} g (${params.percent.toFixed(1)}%)`
+      formatter: params =>
+        `${params.name}: ${params.value.toFixed(2)} g (${params.percent.toFixed(1)}%)`
     },
     color: ['blue', 'green', 'red'],
     legend: {
@@ -78,7 +87,8 @@ export default function Mismacros() {
       label: {
         show: true,
         position: 'outside',
-        formatter: params => `${params.name}\n${params.value.toFixed(2)} g (${params.percent.toFixed(1)}%)`,
+        formatter: params =>
+          `${params.name}\n${params.value.toFixed(2)} g (${params.percent.toFixed(1)}%)`,
         fontWeight: 'bold',
         borderColor: '#ccc',
         borderWidth: 1,
@@ -102,7 +112,7 @@ export default function Mismacros() {
 
       <div style={{ padding: '0 1rem', marginTop: 20 }}>
         <div className="mb-2">
-          <label>Carbohidratos (máx {carbGoal} g)</label>
+          <label>Carbohidratos: {dailyMacros.carbs.toFixed(1)} g / {carbGoal} g</label>
           <div style={{ background: '#f0f0f0', height: '14px', borderRadius: '7px' }}>
             <div style={{
               width: `${carbPct}%`,
@@ -114,7 +124,7 @@ export default function Mismacros() {
         </div>
 
         <div className="mb-2">
-          <label>Grasas (objetivo {fatGoal} g)</label>
+          <label>Grasas: {dailyMacros.fat.toFixed(1)} g / {fatGoal} g</label>
           <div style={{ background: '#f0f0f0', height: '14px', borderRadius: '7px' }}>
             <div style={{
               width: `${fatPct}%`,
@@ -126,7 +136,7 @@ export default function Mismacros() {
         </div>
 
         <div className="mb-2">
-          <label>Proteínas (objetivo {proteinGoal} g)</label>
+          <label>Proteínas: {dailyMacros.proteins.toFixed(1)} g / {proteinGoal} g</label>
           <div style={{ background: '#f0f0f0', height: '14px', borderRadius: '7px' }}>
             <div style={{
               width: `${proteinPct}%`,
@@ -138,7 +148,7 @@ export default function Mismacros() {
         </div>
 
         <div className="mb-2">
-          <label>Calorías (objetivo {calorieGoal} kcal)</label>
+          <label>Calorías: {dailyMacros.calories.toFixed(0)} kcal / {calorieGoal} kcal</label>
           <div style={{ background: '#f0f0f0', height: '14px', borderRadius: '7px' }}>
             <div style={{
               width: `${calPct}%`,
@@ -152,7 +162,7 @@ export default function Mismacros() {
 
       <div className="mt-5 px-3">
         <h3 className="text-lg font-semibold mb-2">Resumen Semanal</h3>
-        <MiniDonutChartGrid />
+        <MiniDonutChartGrid data={weeklyData} />
       </div>
     </div>
   );
