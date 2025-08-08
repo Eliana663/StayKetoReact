@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
-import Mismacros from '@/components/Food/Mismacros';
+import Mismacros from '@/components/Food/Macros/Mismacros';
 
 
 export default function FoodSearch() {
