@@ -1,5 +1,5 @@
 import { Modal } from 'react-bootstrap';
-import DonutChart from './DonutChart';
+import DonutChart from '@/components/Food/Macros/DonutChart'
 
 export default function FoodResumeModal({ show, onClose, item, amount, setAmount, onAdd }) {
   if (!item) return null;

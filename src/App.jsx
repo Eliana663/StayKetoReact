@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import FoodSearch from './components/Food/FoodSearch';
 import ProfilePage from './components/ProfilePage';
 import TopNavbar from './components/TopNavBar';
-import PersonalPanel from './components/PersonalPanel/PersonalPanel';
+import PersonalPanel from './components/DailyHabits/PersonalPanel';
 import AvocadoBackground from './components/AvocadoBackground';
 import LandingPage from './components/LandingPage';
 

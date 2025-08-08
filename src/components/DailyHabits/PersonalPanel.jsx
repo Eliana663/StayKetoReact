@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import HabitRing from '@/components/PersonalPanel/HabitRing';
-import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular';
+import HabitRing from '@/components/DailyHabits/HabitRing';
+import HabitTrackerCircular from '@/components/DailyHabits/HabitTrackerCircular';
 
 const userId = 1;
 
