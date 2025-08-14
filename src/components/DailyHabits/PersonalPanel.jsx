@@ -5,6 +5,7 @@ import HabitTrackerCircular from '@/components/DailyHabits/HabitTrackerCircular'
 
 const userId = 1;
 
+// Default habits
 const defaultHabits = [
   { id: 1, name: "Ejercicio", done: false },
   { id: 2, name: "Tomar agua", done: false },
@@ -13,183 +14,149 @@ const defaultHabits = [
 ];
 
 export default function PersonalPanel({ profilePhoto }) {
+  // --- State ---
   const [user, setUser] = useState(null);
-  const [habits, setHabits] = useState(defaultHabits);
-  const [newHabit, setNewHabit] = useState("");
+  const [habits, setHabits] = useState(defaultHabits); // current habits
+  const [newHabit, setNewHabit] = useState("");         // input value
+  const [monthlyHabits, setMonthlyHabits] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [registroMensual, setRegistroMensual] = useState([]);
-
-  // Edit panel
-  const [showEditPanel, setShowEditPanel] = useState(false);
-  const [editingHabitId, setEditingHabitId] = useState(null);
-  const [editingHabitName, setEditingHabitName] = useState("");
 
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
+  // --- Load user and habits ---
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`http://localhost:8081/api/users/${userId}`)
-      .then((res) => {
+    axios.get(`http://localhost:8081/api/users/${userId}`)
+      .then(res => {
         setUser(res.data);
-        if (res.data.habits && res.data.habits.length > 0) {
-          setHabits(res.data.habits);
-        }
-        if (res.data.registroMensual) {
-          setRegistroMensual(res.data.registroMensual);
-        }
+        if (res.data.habits?.length) setHabits(res.data.habits);
+        if (res.data.monthlyHabits) setMonthlyHabits(res.data.monthlyHabits);
       })
       .catch(() => setError("Error al cargar datos del usuario"))
       .finally(() => setLoading(false));
   }, []);
 
-  const toggleHabit = (id) => {
-    setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === id ? { ...habit, done: !habit.done } : habit
-      )
-    );
-
-    const today = new Date().getDate();
-
-    setRegistroMensual((prev) => {
-      const registroDia = prev.find((r) => r.dia === today);
-
-      if (registroDia) {
-        const habitExists = registroDia.habitosCumplidos.includes(id);
-        const nuevosHabitos = habitExists
-          ? registroDia.habitosCumplidos.filter((hid) => hid !== id)
-          : [...registroDia.habitosCumplidos, id];
-
-        return prev.map((r) =>
-          r.dia === today ? { ...r, habitosCumplidos: nuevosHabitos } : r
-        );
-      } else {
-        return [...prev, { dia: today, habitosCumplidos: [id] }];
-      }
-    });
-  };
-
+  // --- Add new habit ---
   const addHabit = () => {
-    if (newHabit.trim() === "") return;
-    setHabits((prev) => [
-      ...prev,
-      { id: Date.now(), name: newHabit.trim(), done: false },
-    ]);
-    setNewHabit("");
-  };
+    const trimmed = newHabit.trim();
+    if (!trimmed) return;
 
-  const startEditingHabit = (id) => {
-    const habit = habits.find((h) => h.id === id);
-    if (habit) {
-      setEditingHabitId(id);
-      setEditingHabitName(habit.name);
+    if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) {
+      return alert("Ya existe un hábito con ese nombre");
     }
-  };
 
-  const saveEditedHabit = () => {
-    if (editingHabitName.trim() === "") {
-      alert("El nombre del hábito no puede estar vacío.");
-      return;
-    }
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h
-      )
-    );
-    setEditingHabitId(null);
-    setEditingHabitName("");
-  };
+    const todayStr = new Date().toISOString().split('T')[0];
+    const habitObj = { userId, habitName: trimmed, completed: false, date: todayStr };
 
-  const cancelEditing = () => {
-    setEditingHabitId(null);
-    setEditingHabitName("");
-  };
-
-  const deleteHabit = (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
-      setHabits((prev) => prev.filter((h) => h.id !== id));
-      setRegistroMensual((prev) =>
-        prev.map((r) => ({
-          ...r,
-          habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
-        }))
-      );
-      if (editingHabitId === id) {
-        cancelEditing();
-      }
-    }
-  };
-
-  const saveHabits = () => {
-    if (!user) return;
-    setSaving(true);
-    axios
-      .put(`http://localhost:8081/api/users/${userId}`, {
-        ...user,
-        habits,
-        registroMensual,
+    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [habitObj])
+      .then(res => {
+        const saved = res.data[0];
+        setHabits(prev => [
+          ...prev,
+          { id: saved.id, name: saved.habitName, done: saved.completed, trackerId: saved.id }
+        ]);
+        setNewHabit(""); // clear input
       })
-      .then(() => alert("Hábitos guardados correctamente"))
-      .catch(() => alert("Error al guardar hábitos"))
-      .finally(() => setSaving(false));
+      .catch(err => console.error("Error al agregar hábito:", err));
   };
 
-  const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
-  const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
+  // --- Toggle habit ---
+  const toggleHabit = (id) => {
+    const habit = habits.find(h => h.id === id);
+    if (!habit) return;
+
+    const newDone = !habit.done;
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Update habit locally
+    setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
+
+    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [{
+      userId,
+      habitName: habit.name,
+      completed: newDone,
+      date: todayStr
+    }])
+    .then(res => {
+      const trackerId = res.data[0]?.id;
+      if (!trackerId) return;
+      console.log("Response trackerId:", trackerId);
+
+      // Update trackerId in habits
+      setHabits(prev => prev.map(h => h.id === id ? { ...h, trackerId, done: newDone } : h));
+
+      // Update monthlyHabits
+      const today = new Date().getDate();
+     setMonthlyHabits(prev => {
+        const today = new Date().getDate();
+        const existingDay = prev.find(d => d.dia === today);
+        if (existingDay) {
+          const updated = prev.map(d =>
+            d.dia === today
+              ? { 
+                  ...d, 
+                  dayHabits: [...d.dayHabits, { trackerId: habit.trackerId || habit.id, done: true }] 
+                }
+              : d
+          );
+          return updated;
+        } else {
+          return [...prev, { dia: today, dayHabits: [{ trackerId: habit.trackerId || habit.id, done: true }] }];
+        }
+      });
+    })
+    .catch(err => console.error("Error updating habit:", err));
+  };
+
+  // --- Prepare monthly habits for circular tracker ---
+  const filteredMonthlyHabits = monthlyHabits.map(day => ({
+    ...day,
+    dayHabits: day.dayHabits.map(h => {
+      const master = habits.find(m => m.id === h.id);
+      return { ...h, done: master?.done || false };
+    })
+  }));
 
   if (loading) return <p>Cargando datos...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
-      {/* Foto de perfil centrada */}
-      {user && user.profilePhoto && (
+      {user?.profilePhoto && (
         <img
           src={`http://localhost:8081/uploads/${user.profilePhoto}`}
           alt="Foto de perfil"
-          style={{
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            objectFit: "cover",
-            margin: "1rem auto",
-            display: "block",
-          }}
+          style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", margin: "1rem auto", display: "block" }}
         />
       )}
 
       <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
-      <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>
-        {motivationalMessage}
-      </p>
+      <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>{motivationalMessage}</p>
 
       <h4 style={{ margin: "40px 10px" }}>Mis hábitos cumplidos hoy:</h4>
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
         {habits.map((habit, index) => {
-          const { id, name, done } = habit;
           const baseColor = colors[index % colors.length];
           return (
             <button
-              key={id}
-              onClick={() => toggleHabit(id)}
+              key={habit.id}
+              onClick={() => toggleHabit(habit.id)}
               style={{
                 width: 100,
                 height: 100,
                 borderRadius: "50%",
-                border: done ? `3px solid ${baseColor}` : "3px solid #ccc",
-                backgroundColor: done ? baseColor : "transparent",
-                color: done ? "white" : "black",
+                border: habit.done ? `3px solid ${baseColor}` : "3px solid #ccc",
+                backgroundColor: habit.done ? baseColor : "transparent",
+                color: habit.done ? "white" : "black",
                 cursor: "pointer",
                 fontWeight: "bold",
                 userSelect: "none",
               }}
-              title={name}
+              title={habit.name}
             >
-              {name}
+              {habit.name}
             </button>
           );
         })}
@@ -200,203 +167,15 @@ export default function PersonalPanel({ profilePhoto }) {
           type="text"
           placeholder="Nuevo hábito"
           value={newHabit}
-          onChange={(e) => setNewHabit(e.target.value)}
+          onChange={e => setNewHabit(e.target.value)}
           style={{ padding: "0.4rem", marginRight: "0.5rem" }}
         />
-        <button onClick={addHabit} style={{ padding: "0.5rem 1rem" }}>
-          Añadir
-        </button>
+        <button onClick={addHabit} style={{ padding: "0.5rem 1rem" }}>Añadir</button>
       </div>
 
-      {/* Botón para abrir/cerrar panel edición */}
-      <div style={{ marginTop: "1rem", textAlign: "center" }}>
-        <button
-          onClick={() => setShowEditPanel(!showEditPanel)}
-          style={{
-            padding: "0.6rem 1.5rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            borderRadius: "20px",
-            border: "1px solid #2a9d8f",
-            backgroundColor: showEditPanel ? "#2a9d8f" : "transparent",
-            color: showEditPanel ? "white" : "#2a9d8f",
-            transition: "all 0.3s",
-          }}
-        >
-          {showEditPanel ? "Cerrar edición de hábitos" : "Editar / Eliminar hábitos"}
-        </button>
-      </div>
-
-      {/* Panel de edición */}
-      {showEditPanel && (
-        <div
-          style={{
-            marginTop: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "10px",
-            padding: "1rem",
-            maxHeight: 300,
-            overflowY: "auto",
-          }}
-        >
-          {habits.length === 0 && <p>No hay hábitos para editar.</p>}
-
-          {habits.map((habit) => (
-            <div
-              key={habit.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "0.5rem",
-              }}
-            >
-              {editingHabitId === habit.id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingHabitName}
-                    onChange={(e) => setEditingHabitName(e.target.value)}
-                    style={{ flexGrow: 1, marginRight: "0.5rem", padding: "0.3rem" }}
-                  />
-                  <button
-                    onClick={saveEditedHabit}
-                    style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    onClick={cancelEditing}
-                    style={{ padding: "0.3rem 0.6rem" }}
-                  >
-                    Cancelar
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span>{habit.name}</span>
-                  <div>
-                    <button
-                      onClick={() => startEditingHabit(habit.id)}
-                      style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => deleteHabit(habit.id)}
-                      style={{ color: "red", padding: "0.3rem 0.6rem" }}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div
-        style={{
-          marginTop: "1rem",
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <button
-          onClick={saveHabits}
-          disabled={saving}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: saving ? "not-allowed" : "pointer",
-            flexGrow: 1,
-          }}
-        >
-          {saving ? "Guardando..." : "Guardar hábitos"}
-        </button>
-
-        <button
-          onClick={handleRegisterWeight}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            flexGrow: 1,
-          }}
-        >
-          Registrar peso hoy
-        </button>
-
-        <button
-          onClick={handleCheckKetosis}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            flexGrow: 1,
-          }}
-        >
-          Revisar si estoy en cetosis
-        </button>
-         <button
-          onClick={handleCheckKetosis}
-          style={{
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            padding: "0.6rem 1.5rem",
-            borderRadius: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            flexGrow: 1,
-          }}
-        >
-          Registrar medidas hoy
-        </button>
-      </div>
-
-      {/* Habit ring and circular Habit Tracker*/}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          margin: "40px 0",
-          gap: "3rem",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "3rem",
-          }}
-        >
-          <h2 style={{ marginBottom: "10px", whiteSpace: "nowrap" }}>
-            Progreso diario de hábitos
-          </h2>
-          <HabitRing habits={habits} />
-        </div>
-
-        <div style={{ textAlign: "center" }}>
-          <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
-          <HabitTrackerCircular habits={habits} registroMensual={registroMensual} />
-        </div>
+      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
+        <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
+        <HabitTrackerCircular habits={habits} monthlyHabits={filteredMonthlyHabits} />
       </div>
     </div>
   );
