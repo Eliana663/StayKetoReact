@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChartGrid from '@/components/Food/Macros/MiniDonutChartGrid';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 export default function Mismacros() {
   const [dailyMacros, setDailyMacros] = useState({
@@ -11,24 +12,33 @@ export default function Mismacros() {
   });
   const [weeklyData, setWeeklyData] = useState([]);
 
-  // Para usar fechas dinámicas que siempre incluyan hoy y 6 días atrás
+  // 📅 Calcular inicio y fin de semana actual (lunes a domingo)
   const today = new Date();
-  const formatDate = (d) => d.toISOString().slice(0, 10);
-  const endDate = formatDate(today);
-  const startDate = formatDate(new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000)); // 6 días antes
+  const startDate = format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  const endDate = format(endOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+
+  const formatDate = (d) => format(new Date(d), 'yyyy-MM-dd');
 
   useEffect(() => {
     async function fetchMacros() {
       try {
+        console.log('📅 Fechas solicitadas:', startDate, endDate);
+
         const res = await fetch(
           `http://localhost:8081/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
         );
         const data = await res.json();
 
-        setWeeklyData(data);
+        // 🛡 Filtrar días vacíos (todos en cero)
+        const filteredData = data.filter(d =>
+          (d.proteins > 0 || d.fat > 0 || d.carbohydrates > 0 || d.calories > 0)
+        );
 
+        setWeeklyData(filteredData);
+
+        // 📅 Macros del día actual
         const todayString = formatDate(today);
-        const todayMacros = data.find(d => d.date === todayString) || {
+        const todayMacros = filteredData.find(d => d.date === todayString) || {
           proteins: 0,
           fat: 0,
           carbohydrates: 0,
@@ -42,7 +52,7 @@ export default function Mismacros() {
           calories: todayMacros.calories || 0,
         });
       } catch (error) {
-        console.error('Error cargando macros:', error);
+        console.error('❌ Error cargando macros:', error);
       }
     }
     fetchMacros();
@@ -162,7 +172,13 @@ export default function Mismacros() {
 
       <div className="mt-5 px-3">
         <h3 className="text-lg font-semibold mb-2">Resumen Semanal</h3>
-        <MiniDonutChartGrid data={weeklyData} />
+        {/* 📅 Pasar fecha formateada al componente para mostrar debajo */}
+        <MiniDonutChartGrid
+          data={weeklyData.map(d => ({
+            ...d,
+            displayDate: format(new Date(d.date), 'dd/MM/yyyy')
+          }))}
+        />
       </div>
     </div>
   );

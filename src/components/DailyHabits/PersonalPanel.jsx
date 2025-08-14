@@ -352,9 +352,24 @@ export default function PersonalPanel({ profilePhoto }) {
         >
           Revisar si estoy en cetosis
         </button>
+         <button
+          onClick={handleCheckKetosis}
+          style={{
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            padding: "0.6rem 1.5rem",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            flexGrow: 1,
+          }}
+        >
+          Registrar medidas hoy
+        </button>
       </div>
 
-      {/* Anillo y gráfico circular de hábitos */}
+      {/* Habit ring and circular Habit Tracker*/}
       <div
         style={{
           display: "flex",

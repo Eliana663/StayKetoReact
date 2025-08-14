@@ -15,7 +15,7 @@ export default function ProfilePage() {
     // Traer usuario
     axios.get(`http://localhost:8081/api/users/${userId}`).then((res) => {
       setUser(res.data);
-      console.log(res.data.profilePhoto)
+      console.log(res.data.profilePhoto) 
     });
 
     // Traer frase motivacional
@@ -31,14 +31,7 @@ export default function ProfilePage() {
     setReloadTrigger((prev) => prev + 1);
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
+  
   const handleSave = async () => {
     try {
       await axios.put(`http://localhost:8081/api/users/${userId}`, user);

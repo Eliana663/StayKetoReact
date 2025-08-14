@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 
-export default function MiniDonutChart({ item, label }) {
-  // Valores por defecto para evitar errores
+export default function MiniDonutChart({ item, label, dateLabel }) {
   const proteins = item?.proteins || 0;
   const fat = item?.fat || 0;
   const carbs = item?.carbohydrates || 0;
@@ -34,9 +33,12 @@ export default function MiniDonutChart({ item, label }) {
   };
 
   return (
-    <div style={{ width: 120, height: 120 }}>
-      <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />
-      <div style={{ textAlign: 'center', marginTop: 6, fontSize: 12 }}>{label}</div>
+    <div style={{ width: 120, height: 140 }}>
+      <ReactECharts option={option} style={{ height: 120, width: '100%' }} />
+      <div style={{ textAlign: 'center', fontSize: 12, marginTop: 4 }}>
+        <div>{label}</div>
+        <div style={{ fontSize: 10, color: '#666' }}>{dateLabel}</div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import ReactECharts from 'echarts-for-react';
 import MiniDonutChart from './MiniDonutChart';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 export default function MiniDonutChartGrid() {
   const [data, setData] = useState([]);
@@ -14,13 +16,15 @@ export default function MiniDonutChartGrid() {
 
   useEffect(() => {
     const hoy = new Date();
-    const hace7Dias = new Date();
-    hace7Dias.setDate(hoy.getDate() - 7);
 
-    const formatDate = (date) => date.toISOString().split('T')[0];
+    // 📅 Calcular inicio y fin de la semana actual (lunes a domingo)
+    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); // lunes
+    const finSemana = endOfWeek(hoy, { weekStartsOn: 1 }); // domingo
 
-    const start = formatDate(hace7Dias);
-    const end = formatDate(hoy);
+    const formatDate = (date) => format(date, 'yyyy-MM-dd');
+
+    const start = formatDate(inicioSemana);
+    const end = formatDate(finSemana);
 
     setLoading(true);
     setError(null);
@@ -31,10 +35,11 @@ export default function MiniDonutChartGrid() {
         return res.json();
       })
       .then(json => {
-        // Agregar label con nombre del día
+        // Agregar nombre del día y fecha formateada
         const dataConLabels = json.map(item => ({
           ...item,
-          label: getDayName(item.date)
+          label: getDayName(item.date), // día de la semana
+          dateLabel: format(new Date(item.date), 'dd/MM/yyyy') // fecha
         }));
 
         setData(dataConLabels);
@@ -56,7 +61,8 @@ export default function MiniDonutChartGrid() {
         <div key={index} style={{ textAlign: 'center' }}>
           <MiniDonutChart
             item={day}
-            label={day.label}
+            label={`${day.label}`} // Día
+            dateLabel={day.dateLabel} // Fecha
           />
         </div>
       ))}
