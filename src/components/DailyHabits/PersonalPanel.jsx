@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import HabitRing from '@/components/DailyHabits/HabitRing';
 import HabitTrackerCircular from '@/components/DailyHabits/HabitTrackerCircular';
 
 const userId = 1;
@@ -13,28 +12,82 @@ const defaultHabits = [
   { id: 4, name: "Ayuno", done: false },
 ];
 
+
+
+
 export default function PersonalPanel({ profilePhoto }) {
   // --- State ---
   const [user, setUser] = useState(null);
   const [habits, setHabits] = useState(defaultHabits); // current habits
-  const [newHabit, setNewHabit] = useState("");         // input value
+  const [newHabit, setNewHabit] = useState("");         
   const [monthlyHabits, setMonthlyHabits] = useState([]);
+  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
+  const habitColors = {};
 
-  // --- Load user and habits ---
+  //Edit panel
+
+  const [showEditPanel, setShowEditPanel] = useState(false);
+  const [editingHabitId, setEditingHabitId] = useState(null);
+  const [editingHabitName, setEditingHabitName] = useState("");
+
+    defaultHabits.forEach((h, index) => {
+    habitColors[h.name] = colors[index % colors.length];
+      });
+
+    defaultHabits.forEach((h, index) => {
+    habitColors[h.name] = colors[index % colors.length];
+  });
+
+
+
+  // --- Load user and monthly habits ---
   useEffect(() => {
     setLoading(true);
+
+    // Traer info del usuario
     axios.get(`http://localhost:8081/api/users/${userId}`)
+      .then(res => setUser(res.data))
+      .catch(() => setError("Error al cargar datos del usuario"));
+
+    // Traer hábitos del mes
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    
+
+    axios.get(`http://localhost:8081/api/habit-tracker/month?userId=${userId}&year=${year}&month=${month}`)
       .then(res => {
-        setUser(res.data);
-        if (res.data.habits?.length) setHabits(res.data.habits);
-        if (res.data.monthlyHabits) setMonthlyHabits(res.data.monthlyHabits);
+        const monthly = res.data.monthlyTracker.map(d => ({
+          dia: new Date(d.date).getDate(),
+          dayHabits: d.completedHabits.map(h => ({
+            trackerId: h.id,
+            done: true,
+            name: h.name
+          }))
+        }));
+        setMonthlyHabits(monthly);
+
+        // Marcar los hábitos de hoy como completados
+        const todayDay = today.getDate();
+        const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
+
+       setHabits(prev =>
+          prev.map(h => {
+            const completedToday = todayHabits.find(th => th.name === h.name);
+            return {
+              ...h,
+              done: !!completedToday,         
+              trackerId: completedToday?.id || h.trackerId 
+            };
+          })
+        );
+        
       })
-      .catch(() => setError("Error al cargar datos del usuario"))
+      .catch(() => setError("Error al cargar hábitos mensuales"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -48,14 +101,14 @@ export default function PersonalPanel({ profilePhoto }) {
     }
 
     const todayStr = new Date().toISOString().split('T')[0];
-    const habitObj = { userId, habitName: trimmed, completed: false, date: todayStr };
+    const habitObj = { userId, habit: trimmed, completed: false, date: todayStr };
 
     axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [habitObj])
       .then(res => {
         const saved = res.data[0];
         setHabits(prev => [
           ...prev,
-          { id: saved.id, name: saved.habitName, done: saved.completed, trackerId: saved.id }
+          { id: saved.id, name: saved.habit, done: saved.completed, trackerId: saved.id }
         ]);
         setNewHabit(""); // clear input
       })
@@ -70,54 +123,116 @@ export default function PersonalPanel({ profilePhoto }) {
     const newDone = !habit.done;
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // Update habit locally
-    setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
+    setHabits(prev => prev.map(h => h.id === id ? { ...h } : h));
 
     axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [{
       userId,
-      habitName: habit.name,
-      completed: newDone,
+      habit: { id: habit.id, name: habit.name},
       date: todayStr
     }])
     .then(res => {
-      const trackerId = res.data[0]?.id;
-      if (!trackerId) return;
-      console.log("Response trackerId:", trackerId);
+      const updatedHabit = res.data[0];
+      if (!updatedHabit?.id) return;
 
-      // Update trackerId in habits
-      setHabits(prev => prev.map(h => h.id === id ? { ...h, trackerId, done: newDone } : h));
+      setHabits(prev => prev.map(h => h.id === id 
+        ? { ...h, trackerId: updatedHabit.id, done: updatedHabit.completed } 
+        : h
+      ));
 
-      // Update monthlyHabits
       const today = new Date().getDate();
-     setMonthlyHabits(prev => {
-        const today = new Date().getDate();
+      setMonthlyHabits(prev => {
         const existingDay = prev.find(d => d.dia === today);
+        const newDayHabit = { trackerId: updatedHabit.id, done: updatedHabit.completed, name: habit.name };
+
         if (existingDay) {
-          const updated = prev.map(d =>
+          const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== updatedHabit.id);
+          return prev.map(d =>
             d.dia === today
-              ? { 
-                  ...d, 
-                  dayHabits: [...d.dayHabits, { trackerId: habit.trackerId || habit.id, done: true }] 
-                }
+              ? { ...d, dayHabits: [...dayHabitsFiltered, newDayHabit] }
               : d
           );
-          return updated;
         } else {
-          return [...prev, { dia: today, dayHabits: [{ trackerId: habit.trackerId || habit.id, done: true }] }];
+          return [...prev, { dia: today, dayHabits: [newDayHabit] }];
         }
       });
+
     })
     .catch(err => console.error("Error updating habit:", err));
   };
 
+   const startEditingHabit = (id) => {
+    const habit = habits.find((h) => h.id === id);
+    if (habit) {
+      setEditingHabitId(id);
+      setEditingHabitName(habit.name);
+    }
+  };
+
+  const saveEditedHabit = () => {
+    if (editingHabitName.trim() === "") {
+      alert("El nombre del hábito no puede estar vacío.");
+      return;
+    }
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h
+      )
+    );
+    setEditingHabitId(null);
+    setEditingHabitName("");
+  };
+
+  const cancelEditing = () => {
+    setEditingHabitId(null);
+    setEditingHabitName("");
+  };
+
+  const deleteHabit = (id) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
+      setHabits((prev) => prev.filter((h) => h.id !== id));
+      setRegistroMensual((prev) =>
+        prev.map((r) => ({
+          ...r,
+          habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
+        }))
+      );
+      if (editingHabitId === id) {
+        cancelEditing();
+      }
+    }
+  };
+
+  const saveHabits = () => {
+    if (!user) return;
+    setSaving(true);
+    axios
+      .put(`http://localhost:8081/api/users/${userId}`, {
+        ...user,
+        habits,
+        registroMensual,
+      })
+      .then(() => alert("Hábitos guardados correctamente"))
+      .catch(() => alert("Error al guardar hábitos"))
+      .finally(() => setSaving(false));
+  };
+
+  const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
+  const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
+
+  if (loading) return <p>Cargando datos...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+
   // --- Prepare monthly habits for circular tracker ---
-  const filteredMonthlyHabits = monthlyHabits.map(day => ({
-    ...day,
-    dayHabits: day.dayHabits.map(h => {
-      const master = habits.find(m => m.id === h.id);
-      return { ...h, done: master?.done || false };
-    })
-  }));
+  const filteredMonthlyHabits = monthlyHabits.map(day => {
+    const dayHabitsArray = day.dayHabits || [];
+    return {
+      ...day,
+      dayHabits: dayHabitsArray.map(h => {
+        const master = habits.find(m => m.trackerId === h.trackerId || m.id === h.trackerId);
+        return { ...h, done: master?.done ?? true };
+      })
+    };
+  });
 
   if (loading) return <p>Cargando datos...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -173,9 +288,158 @@ export default function PersonalPanel({ profilePhoto }) {
         <button onClick={addHabit} style={{ padding: "0.5rem 1rem" }}>Añadir</button>
       </div>
 
+{/* Botón para abrir/cerrar panel edición */}
+      <div style={{ marginTop: "1rem", textAlign: "center" }}>
+        <button
+          onClick={() => setShowEditPanel(!showEditPanel)}
+          style={{
+            padding: "0.6rem 1.5rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            borderRadius: "20px",
+            border: "1px solid #2a9d8f",
+            backgroundColor: showEditPanel ? "#2a9d8f" : "transparent",
+            color: showEditPanel ? "white" : "#2a9d8f",
+            transition: "all 0.3s",
+          }}
+        >
+          {showEditPanel ? "Cerrar edición de hábitos" : "Editar / Eliminar hábitos"}
+        </button>
+      </div>
+
+      {/* Panel de edición */}
+      {showEditPanel && (
+        <div
+          style={{
+            marginTop: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "10px",
+            padding: "1rem",
+            maxHeight: 300,
+            overflowY: "auto",
+          }}
+        >
+          {habits.length === 0 && <p>No hay hábitos para editar.</p>}
+
+          {habits.map((habit) => (
+            <div
+              key={habit.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "0.5rem",
+              }}
+            >
+              {editingHabitId === habit.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editingHabitName}
+                    onChange={(e) => setEditingHabitName(e.target.value)}
+                    style={{ flexGrow: 1, marginRight: "0.5rem", padding: "0.3rem" }}
+                  />
+                  <button
+                    onClick={saveEditedHabit}
+                    style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={cancelEditing}
+                    style={{ padding: "0.3rem 0.6rem" }}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>{habit.name}</span>
+                  <div>
+                    <button
+                      onClick={() => startEditingHabit(habit.id)}
+                      style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem" }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => deleteHabit(habit.id)}
+                      style={{ color: "red", padding: "0.3rem 0.6rem" }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div
+        style={{
+          marginTop: "1rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+       <button
+          onClick={handleRegisterWeight}
+          style={{
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            padding: "0.6rem 1.5rem",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            flexGrow: 1,
+          }}
+        >
+          Registrar peso hoy
+        </button>
+
+        <button
+          onClick={handleCheckKetosis}
+          style={{
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            padding: "0.6rem 1.5rem",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            flexGrow: 1,
+          }}
+        >
+          Revisar si estoy en cetosis
+        </button>
+         <button
+          onClick={handleCheckKetosis}
+          style={{
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            padding: "0.6rem 1.5rem",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            flexGrow: 1,
+          }}
+        >
+          Registrar medidas hoy
+        </button>
+      </div>
+
+
+
       <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
-        <h2 style={{ marginBottom: "10px" }}>Registro de hábitos mensual</h2>
-        <HabitTrackerCircular habits={habits} monthlyHabits={filteredMonthlyHabits} />
+        <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>Registro de hábitos mensual</h2>
+        <HabitTrackerCircular 
+        habits={habits} 
+        monthlyHabits={filteredMonthlyHabits}
+        habitColors={habitColors}  />
       </div>
     </div>
   );

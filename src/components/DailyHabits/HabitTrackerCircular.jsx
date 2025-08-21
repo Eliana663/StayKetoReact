@@ -1,8 +1,8 @@
 import React from "react";
 
-const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
 
-const HabitTrackerCircular = ({ habits = [], monthlyHabits = [] }) => {
+const HabitTrackerCircular = ({ habits = [], monthlyHabits = [], habitColors }) => {
+
   const radius = 250;
   const center = 380;
   const numDays = 31;
@@ -51,9 +51,8 @@ const HabitTrackerCircular = ({ habits = [], monthlyHabits = [] }) => {
             <g transform={`translate(${center},${center}) rotate(${dayAngle})`}>
               {dayHabits.map((habitObj, i) => {
                 // Buscamos el hábito completo para obtener el índice
-                const habit = habits.find(h => h.trackerId === habitObj.trackerId || h.id === habitObj.trackerId);
-                const habitIndex = habit ? habits.indexOf(habit) : -1;
-                const color = habitIndex >= 0 ? colors[habitIndex % colors.length] : "#999";
+                
+                const circleColor = habitColors[habitObj.name] || "#ccc";
 
                 const cx = radius - i * habitSpacing - habitCircleRadius;
                 const cy = 0;
@@ -64,7 +63,7 @@ const HabitTrackerCircular = ({ habits = [], monthlyHabits = [] }) => {
                     cx={cx}
                     cy={cy}
                     r={habitCircleRadius}
-                    fill={color}
+                    fill={circleColor}
                     stroke="white"
                     strokeWidth={1}
                   />

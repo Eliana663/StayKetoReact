@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
     // Traer frase motivacional
     axios
-      .get("https://api.quotable.io/random?tags=inspirational|motivational")
+      .get("https://api.quotable.io/random?tags=inspirational|motivational") // NO WORKING: SHOULD CHANGE FOR A REAL ONE
       .then((res) => setQuote(res.data.content))
       .catch(() =>
         setQuote("Sigue adelante, lo estás haciendo muy bien. ¡Tú puedes!")
