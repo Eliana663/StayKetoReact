@@ -123,13 +123,14 @@ export default function PersonalPanel({ profilePhoto }) {
     const newDone = !habit.done;
     const todayStr = new Date().toISOString().split('T')[0];
 
-    setHabits(prev => prev.map(h => h.id === id ? { ...h } : h));
+    setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
 
-    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [{
+    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', {
       userId,
-      habit: { id: habit.id, name: habit.name},
-      date: todayStr
-    }])
+      date: todayStr,
+      habit: {id: habit.id, name: habit.name},
+      completed: newDone
+    })
     .then(res => {
       const updatedHabit = res.data[0];
       if (!updatedHabit?.id) return;
@@ -141,11 +142,13 @@ export default function PersonalPanel({ profilePhoto }) {
 
       const today = new Date().getDate();
       setMonthlyHabits(prev => {
+        
         const existingDay = prev.find(d => d.dia === today);
         const newDayHabit = { trackerId: updatedHabit.id, done: updatedHabit.completed, name: habit.name };
 
         if (existingDay) {
           const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== updatedHabit.id);
+          const newDayHabits = updatedHabit.completed ? [...dayHabitsFiltered, newDayHabit] : dayHabitsFiltered;
           return prev.map(d =>
             d.dia === today
               ? { ...d, dayHabits: [...dayHabitsFiltered, newDayHabit] }
