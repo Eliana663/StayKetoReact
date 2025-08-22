@@ -3,6 +3,7 @@ import React from "react";
 
 const HabitTrackerCircular = ({ habits = [], monthlyHabits = [], habitColors }) => {
 
+  console.log("Render HabitTrackerCircular", { monthlyHabits });
   const radius = 250;
   const center = 380;
   const numDays = 31;

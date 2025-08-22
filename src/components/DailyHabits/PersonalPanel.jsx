@@ -70,7 +70,7 @@ export default function PersonalPanel({ profilePhoto }) {
         }));
         setMonthlyHabits(monthly);
 
-        // Marcar los hábitos de hoy como completados
+        // Completed habits marked for today
         const todayDay = today.getDate();
         const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
 
@@ -116,115 +116,100 @@ export default function PersonalPanel({ profilePhoto }) {
 
   // --- Toggle habit ---
   const toggleHabit = (id) => {
-    const habit = habits.find(h => h.id === id);
-    if (!habit) return;
+  const habit = habits.find(h => h.id === id);
+  if (!habit) return;
 
-    const newDone = !habit.done;
-    const todayStr = new Date().toISOString().split('T')[0];
+  const newDone = !habit.done;
+  const today = new Date().getDate();
 
-    setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
+  // 1️⃣ Actualizamos habits de hoy
+  setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
 
-    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', {
-      userId,
-      date: todayStr,
-      habit: {id: habit.id, name: habit.name},
-      completed: newDone
-    })
-    .then(res => {
-      const updatedHabit = res.data[0];
-      if (!updatedHabit?.id) return;
-
-      setHabits(prev => prev.map(h => h.id === id 
-        ? { ...h, trackerId: updatedHabit.id, done: updatedHabit.completed } 
-        : h
-      ));
-
-      const today = new Date().getDate();
+  // 2️⃣ Actualizamos monthlyHabits para reflejar el cambio
       setMonthlyHabits(prev => {
-        
         const existingDay = prev.find(d => d.dia === today);
-        const newDayHabit = { trackerId: updatedHabit.id, done: updatedHabit.completed, name: habit.name };
+        const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name };
 
         if (existingDay) {
-          const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== updatedHabit.id);
-          const newDayHabits = updatedHabit.completed ? [...dayHabitsFiltered, newDayHabit] : dayHabitsFiltered;
-          return prev.map(d =>
-            d.dia === today
-              ? { ...d, dayHabits: [...dayHabitsFiltered, newDayHabit] }
-              : d
-          );
+          const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== habit.id);
+          const updatedDay = { 
+            ...existingDay, 
+            dayHabits: newDone ? [...dayHabitsFiltered, newDayHabit] : dayHabitsFiltered
+          };
+          return [...prev.filter(d => d.dia !== today), updatedDay];
         } else {
           return [...prev, { dia: today, dayHabits: [newDayHabit] }];
         }
       });
 
-    })
-    .catch(err => console.error("Error updating habit:", err));
-  };
-
-   const startEditingHabit = (id) => {
-    const habit = habits.find((h) => h.id === id);
-    if (habit) {
-      setEditingHabitId(id);
-      setEditingHabitName(habit.name);
-    }
-  };
-
-  const saveEditedHabit = () => {
-    if (editingHabitName.trim() === "") {
-      alert("El nombre del hábito no puede estar vacío.");
-      return;
-    }
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h
-      )
-    );
-    setEditingHabitId(null);
-    setEditingHabitName("");
-  };
-
-  const cancelEditing = () => {
-    setEditingHabitId(null);
-    setEditingHabitName("");
-  };
-
-  const deleteHabit = (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
-      setHabits((prev) => prev.filter((h) => h.id !== id));
-      setRegistroMensual((prev) =>
-        prev.map((r) => ({
-          ...r,
-          habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
-        }))
-      );
-      if (editingHabitId === id) {
-        cancelEditing();
-      }
-    }
-  };
-
-  
-  const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
-  const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
-
-  if (loading) return <p>Cargando datos...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
-  // --- Prepare monthly habits for circular tracker ---
-  const filteredMonthlyHabits = monthlyHabits.map(day => {
-    const dayHabitsArray = day.dayHabits || [];
-    return {
-      ...day,
-      dayHabits: dayHabitsArray.map(h => {
-        const master = habits.find(m => m.trackerId === h.trackerId || m.id === h.trackerId);
-        return { ...h, done: master?.done ?? true };
-      })
+      // 3️⃣ Mandamos el POST al backend (opcional, para guardar)
+      const todayStr = new Date().toISOString().split('T')[0];
+      axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', {
+        userId,
+        date: todayStr,
+        habit: { id: habit.id, name: habit.name },
+        completed: newDone
+      }).catch(err => console.error("Error updating habit:", err));
     };
-  });
+      const startEditingHabit = (id) => {
+        const habit = habits.find((h) => h.id === id);
+        if (habit) {
+          setEditingHabitId(id);
+          setEditingHabitName(habit.name);
+        }
+      };
 
-  if (loading) return <p>Cargando datos...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+      const saveEditedHabit = () => {
+        if (editingHabitName.trim() === "") {
+          alert("El nombre del hábito no puede estar vacío.");
+          return;
+        }
+        setHabits((prev) =>
+          prev.map((h) =>
+            h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h
+          )
+        );
+        setEditingHabitId(null);
+        setEditingHabitName("");
+      };
+
+      const cancelEditing = () => {
+        setEditingHabitId(null);
+        setEditingHabitName("");
+      };
+
+      const deleteHabit = (id) => {
+        if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
+          setHabits((prev) => prev.filter((h) => h.id !== id));
+          setRegistroMensual((prev) =>
+            prev.map((r) => ({
+              ...r,
+              habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
+            }))
+          );
+          if (editingHabitId === id) {
+            cancelEditing();
+          }
+        }
+      };
+
+      
+      const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
+      const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
+
+      if (loading) return <p>Cargando datos...</p>;
+      if (error) return <p style={{ color: "red" }}>{error}</p>;
+
+      // --- Prepare monthly habits for circular tracker ---
+        const filteredMonthlyHabits = monthlyHabits.map(day => ({
+          ...day,
+          dayHabits: day.dayHabits.map(h => {
+            const master = habits.find(m => m.trackerId === h.trackerId || m.id === h.trackerId);
+            return { ...h, done: master?.done ?? false };
+          })
+        }));
+      if (loading) return <p>Cargando datos...</p>;
+      if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
