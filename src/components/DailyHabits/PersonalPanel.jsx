@@ -21,7 +21,6 @@ export default function PersonalPanel({ profilePhoto }) {
   const [habits, setHabits] = useState(defaultHabits); // current habits
   const [newHabit, setNewHabit] = useState("");         
   const [monthlyHabits, setMonthlyHabits] = useState([]);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
@@ -205,20 +204,7 @@ export default function PersonalPanel({ profilePhoto }) {
     }
   };
 
-  const saveHabits = () => {
-    if (!user) return;
-    setSaving(true);
-    axios
-      .put(`http://localhost:8081/api/users/${userId}`, {
-        ...user,
-        habits,
-        registroMensual,
-      })
-      .then(() => alert("Hábitos guardados correctamente"))
-      .catch(() => alert("Error al guardar hábitos"))
-      .finally(() => setSaving(false));
-  };
-
+  
   const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
   const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
 
