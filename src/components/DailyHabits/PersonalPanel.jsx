@@ -58,7 +58,7 @@ export default function PersonalPanel({ profilePhoto }) {
     const month = today.getMonth() + 1;
     
 
-    axios.get(`http://localhost:8081/api/habit-tracker/month?userId=${userId}&year=${year}&month=${month}`)
+    axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${userId}&year=${year}&month=${month}`)
       .then(res => {
         const monthly = res.data.monthlyTracker.map(d => ({
           dia: new Date(d.date).getDate(),
@@ -99,16 +99,13 @@ export default function PersonalPanel({ profilePhoto }) {
       return alert("Ya existe un hábito con ese nombre");
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const habitObj = { userId, habit: trimmed, completed: false, date: todayStr };
+  const habitObj = {name: newHabit};
 
-    axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', [habitObj])
+    axios.post('http://localhost:8081/api/habit/new-habit', habitObj)
       .then(res => {
-        const saved = res.data[0];
+        const saved = res.data;
         setHabits(prev => [
-          ...prev,
-          { id: saved.id, name: saved.habit, done: saved.completed, trackerId: saved.id }
-        ]);
+          ...prev, saved]);
         setNewHabit(""); // clear input
       })
       .catch(err => console.error("Error al agregar hábito:", err));
@@ -144,7 +141,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
       // 3️⃣ Mandamos el POST al backend (opcional, para guardar)
       const todayStr = new Date().toISOString().split('T')[0];
-      axios.post('http://localhost:8081/api/habit-tracker/bulk-habits', {
+      axios.post('http://localhost:8081/api/habit/tracker/bulk-habits', {
         userId,
         date: todayStr,
         habit: { id: habit.id, name: habit.name },
@@ -204,7 +201,7 @@ export default function PersonalPanel({ profilePhoto }) {
         const filteredMonthlyHabits = monthlyHabits.map(day => ({
           ...day,
           dayHabits: day.dayHabits.map(h => {
-            const master = habits.find(m => m.trackerId === h.trackerId || m.id === h.trackerId);
+            const master = habits.find(m => m.trackerId ? m.trackerId === h.trackerId : m.id === h.id);
             return { ...h, done: master?.done ?? false };
           })
         }));
