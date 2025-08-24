@@ -24,7 +24,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
-  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
+  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
   const habitColors = {};
 
   //Edit panel
@@ -45,50 +45,54 @@ export default function PersonalPanel({ profilePhoto }) {
 
   // --- Load user and monthly habits ---
   useEffect(() => {
-    setLoading(true);
+  setLoading(true);
 
-    // Traer info del usuario
-    axios.get(`http://localhost:8081/api/users/${userId}`)
-      .then(res => setUser(res.data))
-      .catch(() => setError("Error al cargar datos del usuario"));
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
 
-    // Traer hábitos del mes
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    
-
+  Promise.all([
+    axios.get(`http://localhost:8081/api/users/${userId}`),
+    axios.get(`http://localhost:8081/api/habit/user/${userId}`),
     axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${userId}&year=${year}&month=${month}`)
-      .then(res => {
-        const monthly = res.data.monthlyTracker.map(d => ({
-          dia: new Date(d.date).getDate(),
-          dayHabits: d.completedHabits.map(h => ({
-            trackerId: h.id,
-            done: true,
-            name: h.name
-          }))
-        }));
-        setMonthlyHabits(monthly);
+  ])
+    .then(([userRes, habitsRes, monthlyRes]) => {
+      // 1️⃣ Usuario
+      setUser(userRes.data);
 
-        // Completed habits marked for today
-        const todayDay = today.getDate();
-        const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
+      // 2️⃣ Todos los hábitos del usuario
+      setHabits(habitsRes.data);
 
-       setHabits(prev =>
-          prev.map(h => {
-            const completedToday = todayHabits.find(th => th.name === h.name);
-            return {
-              ...h,
-              done: !!completedToday,         
-              trackerId: completedToday?.id || h.trackerId 
-            };
-          })
-        );
-        
-      })
-      .catch(() => setError("Error al cargar hábitos mensuales"))
-      .finally(() => setLoading(false));
-  }, []);
+      // 3️⃣ Registro mensual
+      const monthly = monthlyRes.data.monthlyTracker.map(d => ({
+        dia: new Date(d.date).getDate(),
+        dayHabits: d.completedHabits.map(h => ({
+          trackerId: h.id,
+          done: true,
+          name: h.name
+        }))
+      }));
+      setMonthlyHabits(monthly);
+
+      // Marcar hábitos completados hoy
+      const todayDay = today.getDate();
+      const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
+      setHabits(prev =>
+        prev.map(h => {
+          const completedToday = todayHabits.find(th => th.name === h.name);
+          return {
+            ...h,
+            done: !!completedToday,
+            trackerId: completedToday?.trackerId || h.trackerId
+          };
+        })
+      );
+    })
+    .catch(() => setError("Error al cargar datos del usuario o hábitos"))
+    .finally(() => setLoading(false));
+
+}, []);
+
 
   // --- Add new habit ---
   const addHabit = () => {
@@ -99,7 +103,11 @@ export default function PersonalPanel({ profilePhoto }) {
       return alert("Ya existe un hábito con ese nombre");
     }
 
-  const habitObj = {name: newHabit};
+   if (habits.length >= 6) {
+    return alert("No puedes agregar más de 6 hábitos");
+  }
+
+  const habitObj = {name: newHabit, userId: user.id};
 
     axios.post('http://localhost:8081/api/habit/new-habit', habitObj)
       .then(res => {
