@@ -210,13 +210,11 @@ export default function PersonalPanel({ profilePhoto }) {
           setMonthlyHabits((prev) =>
             prev.map((day) => ({
               ...day,
-              dayHabits: (day.dayHabits || []).filter(h => h.id !== id),
-              completedHabits: (day.completedHabits || []).filter((h) => h.id !== id),
+              dayHabits: (day.dayHabits || []).filter(h => h.trackerId !== id),
+              completedHabits: (day.completedHabits || []).filter((h) => h.trackerId !== id),
             }))
            );
-          if (editingHabitId === id) {
-            cancelEditing();
-          }
+          if (editingHabitId === id) cancelEditing();
 
          
 

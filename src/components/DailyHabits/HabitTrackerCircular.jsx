@@ -49,17 +49,17 @@ const HabitTrackerCircular = ({ monthlyHabits = [] }) => {
         return (
           <React.Fragment key={day}>
             <g transform={`translate(${center},${center}) rotate(${dayAngle})`}>
-              {dayHabits.map((habitObj, i) => {
+              {dayHabits.map((habitObj) => {
                 // Buscamos el hábito completo para obtener el índice
                 
                 const circleColor = habitObj.color || "#ccc";
-
-                const cx = radius - i * habitSpacing - habitCircleRadius;
+                const index = dayHabits.indexOf(habitObj);
+                const cx = radius - index * habitSpacing - habitCircleRadius;
                 const cy = 0;
 
                 return (
                   <circle
-                    key={i}
+                    key={habitObj.trackerId}
                     cx={cx}
                     cy={cy}
                     r={habitCircleRadius}
