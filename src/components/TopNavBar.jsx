@@ -82,7 +82,7 @@ export default function TopNavbar() {
                   <Link
                   className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 
                   to="/personalPanel">
-                    <span style={{ fontSize: '1.5rem' }}>📋</span> Mis hábitos diarios
+                    <span style={{ fontSize: '1.5rem' }}>📋</span> Panel Personal
                   </Link>
                 </li>
                

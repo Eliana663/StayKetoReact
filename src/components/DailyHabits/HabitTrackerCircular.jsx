@@ -1,7 +1,7 @@
 import React from "react";
 
 
-const HabitTrackerCircular = ({ habits = [], monthlyHabits = [], habitColors }) => {
+const HabitTrackerCircular = ({ monthlyHabits = [] }) => {
 
   const radius = 250;
   const center = 380;
@@ -52,7 +52,7 @@ const HabitTrackerCircular = ({ habits = [], monthlyHabits = [], habitColors }) 
               {dayHabits.map((habitObj, i) => {
                 // Buscamos el hábito completo para obtener el índice
                 
-                const circleColor = habitColors[habitObj.name] || "#ccc";
+                const circleColor = habitObj.color || "#ccc";
 
                 const cx = radius - i * habitSpacing - habitCircleRadius;
                 const cy = 0;

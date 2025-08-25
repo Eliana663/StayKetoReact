@@ -4,7 +4,7 @@ const HabitRing = ({ habits }) => {
   const radius = 60;
   const strokeWidth = 20;
   const gap = 2;
-  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14", "#1abc9c"];
+  const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
 
   const totalHabits = habits.length;
   const completedHabits = habits.filter((h) => h.done).length;
@@ -28,7 +28,7 @@ const HabitRing = ({ habits }) => {
   }, [finalPercentage]);
 
   const anglePerHabit = 360 / totalHabits;
-  const circumference = 2 * Math.PI * radius;
+  
 
   return (
     <div

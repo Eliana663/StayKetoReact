@@ -24,8 +24,11 @@ export default function PersonalPanel({ profilePhoto }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+
+  // Assign colors
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
-  const habitColors = {};
+  const habitColor = getRandomColor(habits); 
+    
 
   //Edit panel
 
@@ -33,17 +36,29 @@ export default function PersonalPanel({ profilePhoto }) {
   const [editingHabitId, setEditingHabitId] = useState(null);
   const [editingHabitName, setEditingHabitName] = useState("");
 
-    defaultHabits.forEach((h, index) => {
-    habitColors[h.name] = colors[index % colors.length];
-      });
 
-    defaultHabits.forEach((h, index) => {
-    habitColors[h.name] = colors[index % colors.length];
-  });
+  // Obtener RandomColor de la paleta
+  function getRandomHexColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  }
+  function getRandomColor(habits) {
+  
+  const usedColors = habits.map(h => h.color);
+  const availableColors = colors.filter(c => !usedColors.includes(c));
 
-
-
-  // --- Load user and monthly habits ---
+  if (availableColors.length > 0) {
+    
+    return availableColors[Math.floor(Math.random() * availableColors.length)];
+  } else {
+   
+    let newColor;
+    do {
+      newColor = getRandomHexColor();
+    } while (usedColors.includes(newColor)); 
+    return newColor;
+  }
+}
+   // --- Load user and monthly habits ---
   useEffect(() => {
   setLoading(true);
 
@@ -69,7 +84,8 @@ export default function PersonalPanel({ profilePhoto }) {
         dayHabits: d.completedHabits.map(h => ({
           trackerId: h.id,
           done: true,
-          name: h.name
+          name: h.name,
+          color: h.color
         }))
       }));
       setMonthlyHabits(monthly);
@@ -107,8 +123,9 @@ export default function PersonalPanel({ profilePhoto }) {
     return alert("No puedes agregar más de 6 hábitos");
   }
 
-  const habitObj = {name: newHabit, userId: user.id};
+  const habitObj = {name: newHabit, userId: user.id, color: habitColor};
 
+  
     axios.post('http://localhost:8081/api/habit/new-habit', habitObj)
       .then(res => {
         const saved = res.data;
@@ -133,7 +150,8 @@ export default function PersonalPanel({ profilePhoto }) {
   // 2️⃣ Actualizamos monthlyHabits para reflejar el cambio
       setMonthlyHabits(prev => {
         const existingDay = prev.find(d => d.dia === today);
-        const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name };
+        const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name, color: habit.color };
+
 
         if (existingDay) {
           const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== habit.id);
@@ -185,16 +203,28 @@ export default function PersonalPanel({ profilePhoto }) {
 
       const deleteHabit = (id) => {
         if (window.confirm("¿Estás seguro de que quieres eliminar este hábito?")) {
+
           setHabits((prev) => prev.filter((h) => h.id !== id));
-          setRegistroMensual((prev) =>
-            prev.map((r) => ({
-              ...r,
-              habitosCumplidos: r.habitosCumplidos.filter((hid) => hid !== id),
+
+          
+          setMonthlyHabits((prev) =>
+            prev.map((day) => ({
+              ...day,
+              dayHabits: (day.dayHabits || []).filter(h => h.id !== id),
+              completedHabits: (day.completedHabits || []).filter((h) => h.id !== id),
             }))
-          );
+           );
           if (editingHabitId === id) {
             cancelEditing();
           }
+
+         
+
+          axios.delete(`http://localhost:8081/api/habit/delete/${id}`)
+          .then(() => {
+            setHabits(prev => prev.filter(h => h.id !==id));
+          })
+
         }
       };
 
@@ -231,8 +261,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
       <h4 style={{ margin: "40px 10px" }}>Mis hábitos cumplidos hoy:</h4>
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {habits.map((habit, index) => {
-          const baseColor = colors[index % colors.length];
+        {habits.map((habit) => {
           return (
             <button
               key={habit.id}
@@ -241,8 +270,8 @@ export default function PersonalPanel({ profilePhoto }) {
                 width: 100,
                 height: 100,
                 borderRadius: "50%",
-                border: habit.done ? `3px solid ${baseColor}` : "3px solid #ccc",
-                backgroundColor: habit.done ? baseColor : "transparent",
+                border: habit.done ? `3px solid ${habit.color}` : "3px solid #ccc",
+                backgroundColor: habit.done ? habit.color : "transparent",
                 color: habit.done ? "white" : "black",
                 cursor: "pointer",
                 fontWeight: "bold",
@@ -415,10 +444,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
       <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
         <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>Registro de hábitos mensual</h2>
-        <HabitTrackerCircular 
-        habits={habits} 
-        monthlyHabits={filteredMonthlyHabits}
-        habitColors={habitColors}  />
+        <HabitTrackerCircular monthlyHabits={filteredMonthlyHabits} />
       </div>
     </div>
   );
