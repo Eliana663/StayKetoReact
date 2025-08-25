@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 
+
 export default function ProfilePage() {
   const userId = 1;
   const [user, setUser] = useState({
@@ -15,12 +16,12 @@ export default function ProfilePage() {
     // Traer usuario
     axios.get(`http://localhost:8081/api/users/${userId}`).then((res) => {
       setUser(res.data);
-      console.log(res.data.profilePhoto) 
+      console.log(res.data.profilePhoto);
     });
 
     // Traer frase motivacional
     axios
-      .get("https://api.quotable.io/random?tags=inspirational|motivational") // NO WORKING: SHOULD CHANGE FOR A REAL ONE
+      .get("https://api.quotable.io/random?tags=inspirational|motivational")
       .then((res) => setQuote(res.data.content))
       .catch(() =>
         setQuote("Sigue adelante, lo estás haciendo muy bien. ¡Tú puedes!")
@@ -31,12 +32,11 @@ export default function ProfilePage() {
     setReloadTrigger((prev) => prev + 1);
   };
 
-  
   const handleSave = async () => {
     try {
       await axios.put(`http://localhost:8081/api/users/${userId}`, user);
       alert("Datos guardados correctamente");
-      setReloadTrigger((prev) => prev + 1); // refrescar perfil
+      setReloadTrigger((prev) => prev + 1);
     } catch (err) {
       alert("Error al guardar los cambios");
     }
@@ -138,8 +138,7 @@ export default function ProfilePage() {
               ></button>
             </div>
             <div className="modal-body">
-              {/* Aquí van los inputs para editar el perfil */}
-              {/* ... tu código para inputs ... */}
+              {/* Inputs para editar perfil */}
             </div>
             <div className="modal-footer">
               <button
@@ -161,6 +160,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      
+      
     </>
   );
 }

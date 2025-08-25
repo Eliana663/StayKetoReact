@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import HabitTrackerCircular from '@/components/DailyHabits/HabitTrackerCircular';
+import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular';
+import AddWeight from "@/components/PersonalPanel/AddWeight";
 
 const userId = 1;
 
@@ -24,6 +25,9 @@ export default function PersonalPanel({ profilePhoto }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+
+  //Personal Panel buttons functions
+  const [showAddWeight, setShowAddWeight] = useState(false);
 
   // Assign colors
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
@@ -226,8 +230,16 @@ export default function PersonalPanel({ profilePhoto }) {
         }
       };
 
-      
-      const handleRegisterWeight = () => alert("Función para registrar peso hoy (a implementar)");
+      // Weight register
+      const handleRegisterWeight = () => {
+        setShowAddWeight(true);
+      };
+
+      const handleCloseModal = () => {
+        setShowAddWeight(false);
+      };
+
+
       const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
 
       if (loading) return <p>Cargando datos...</p>;
@@ -405,6 +417,8 @@ export default function PersonalPanel({ profilePhoto }) {
         >
           Registrar peso hoy
         </button>
+
+        {showAddWeight && <AddWeight onClose={handleCloseModal} />}
 
         <button
           onClick={handleCheckKetosis}
