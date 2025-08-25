@@ -10923,6 +10923,158 @@ INSERT INTO `food_image` (`image_url`) VALUES ('http://localhost:8081/images/Ace
 
 
 
+SELECT * FROM food_item;
+SELECT * FROM food_image;
+SELECT * FROM daily_food_entries;
+
+
+SELECT COUNT(*) FROM food_item;
+
+SELECT name, COUNT(*) AS cantidaddaily_log
+FROM food_item
+GROUP BY name
+HAVING cantidad > 1;
+
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE t1 FROM food_item t1
+INNER JOIN food_item t2 
+WHERE 
+    t1.id > t2.id AND
+    t1.name = t2.name;
+    food_item
+
+ALTER TABLE food_image
+DROP COLUMN path,
+DROP COLUMN food_name;
+
+SELECT * FROM food_item;
+SHOW CREATE TABLE food_item;
+SELECT id, name, image_id FROM food_item WHERE image_id IS NULL OR image_id NOT IN (SELECT id FROM food_image);
+
+SET SQL_SAFE_UPDATES = 0; -- para desactivar el safe mode
+
+UPDATE food_item fi
+JOIN food_image fimg ON fimg.food_id = fi.id
+SET fi.image_id = fimg.id;
+
+SELECT profile_photo FROM user WHERE id = 1;
+
+INSERT INTO user (name, email, current_weight, target_weight, pregnant) 
+VALUES ('Eliana', 'eliana@example.com', 58.6, 54, false);
+
+SELECT * FROM user;
+
+ALTER TABLE user
+DROP COLUMN lastname;
+
+//HABIT TRACKER - HABIT 
+
+DROP TABLE habit_records;
+
+SELECT * FROM habit_tracker;
+SELECT * FROM habit;
+SELECT * FROM user_habit;
+SELECT * FROM user;
+
+SELECT h.id, h.name FROM user join habit as h WHERE user.id = 1;
+
+
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM habit_tracker;
+SET SQL_SAFE_UPDATES = 1;
+
+ALTER TABLE habit_tracker RENAME COLUMN habit_name TO habit;
+ALTER TABLE habit_tracker DROP COLUMN completed;
+
+ALTER TABLE habit_tracker DROP COLUMN habit;
+ALTER TABLE habit DROP COLUMN description;
+
+
+UPDATE habit_tracker
+SET habit_id = 1
+WHERE habit = 'Ejercicio';
+
+SELECT * FROM habit_tracker WHERE user_id = 1 AND YEAR(date) = 2025 AND MONTH(date) = 8;
+
+DROP TABLE habit_records;
+
+SELECT * FROM habit_tracker;
+SELECT * FROM habit;
+
+SELECT * FROM user;
+
+SELECT h.id, h.name FROM user join habit as h WHERE user.id = 1;
+
+
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM habit_tracker;
+SET SQL_SAFE_UPDATES = 1;
+
+ALTER TABLE habit_tracker RENAME COLUMN habit_name TO habit;
+ALTER TABLE habit_tracker DROP COLUMN completed;
+
+ALTER TABLE habit_tracker DROP COLUMN habit;
+ALTER TABLE habit DROP COLUMN description;
+
+
+UPDATE habit_tracker
+SET habit_id = 1
+WHERE habit = 'Ejercicio';
+
+SELECT * FROM habit_tracker WHERE user_id = 1 AND YEAR(date) = 2025 AND MONTH(date) = 8;
+
+// FOOD food_item
+
+
+
+
+
+SELECT * FROM food_item;
+SELECT * FROM food_image;
+SELECT * FROM daily_food_entries;
+
+
+SELECT COUNT(*) FROM food_item;
+
+SELECT name, COUNT(*) AS cantidaddaily_log
+FROM food_item
+GROUP BY name
+HAVING cantidad > 1;
+
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE t1 FROM food_item t1
+INNER JOIN food_item t2 
+WHERE 
+    t1.id > t2.id AND
+    t1.name = t2.name;
+    food_item
+
+ALTER TABLE food_image
+DROP COLUMN path,
+DROP COLUMN food_name;
+
+SELECT * FROM food_item;
+SHOW CREATE TABLE food_item;
+SELECT id, name, image_id FROM food_item WHERE image_id IS NULL OR image_id NOT IN (SELECT id FROM food_image);
+
+SET SQL_SAFE_UPDATES = 0; -- para desactivar el safe mode
+
+UPDATE food_item fi
+JOIN food_image fimg ON fimg.food_id = fi.id
+SET fi.image_id = fimg.id;
+
+SELECT profile_photo FROM user WHERE id = 1;
+
+INSERT INTO user (name, email, current_weight, target_weight, pregnant) 
+VALUES ('Eliana', 'eliana@example.com', 58.6, 54, false);
+
+SELECT * FROM user;
+
+ALTER TABLE user
+DROP COLUMN lastname;
+
 
 
 
