@@ -1,5 +1,8 @@
+
+import ReactDOM from 'react-dom/client';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import EditWeights from "@/components/PersonalPanel/EditWeights";
 
 
 
@@ -11,6 +14,35 @@ export default function AddWeigh({onClose}) {
     const [time] = useState(new Date().toLocaleTimeString()); 
     const [user, setUser] = useState({ targetWeight: "", });
 
+
+    const openGoalWeight = () => {
+    const nuevaVentana = window.open(
+    '',
+    '_blank',
+    'width=400,height=300,left=500,top=200'
+  );
+
+  if (!nuevaVentana) return;
+
+  const root = ReactDOM.createRoot(nuevaVentana.document.body);
+  
+  root.render(
+    <EditWeights
+      initialTargetWeight={user.targetWeight}
+      initialCurrentWeight={weight}
+      onSave={({ targetWeight: newTarget, currentWeight: newCurrent }) => {
+        
+        setUser((prev) => ({ ...prev, targetWeight: newTarget }));
+        setWeight(newCurrent);
+
+  
+        // axios.put(...) etc.
+
+        nuevaVentana.close();
+      }}
+    />
+  );
+};
 
     
         useEffect(() => {
@@ -34,6 +66,7 @@ export default function AddWeigh({onClose}) {
     .then(() => alert("Peso guardado correctamente"))
     .catch(err => console.error(err));
   };
+
   
   return (
   <div 
@@ -86,9 +119,22 @@ export default function AddWeigh({onClose}) {
                <span className="text-gray-800 font-semibold">
                 🎯 Peso meta: {user.targetWeight} kg
               </span>
-    </div>
+              <button 
+                  onClick={openGoalWeight} 
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    color: '#0d8920ff', 
+                    textDecoration: 'underline', 
+                    cursor: 'pointer', 
+                    marginLeft: '10px' 
+                  }}
+                >
+                  Editar peso meta
+                </button>
 
-          </form>
+            </div>
+            </form>
         </div>
         <div className="modal-footer">
           <button type="button" className="btn btn-secondary btn-lg" onClick={onClose}>
