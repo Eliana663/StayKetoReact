@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
 export default function EditWeights({ initialTargetWeight, initialCurrentWeight, onSave }) {
-  const [targetWeight, setTargetWeight] = useState(initialTargetWeight);
-  const [currentWeight, setCurrentWeight] = useState(initialCurrentWeight);
+  const [targetWeight, setTargetWeight] = useState(initialTargetWeight || '');
+  const [currentWeight, setCurrentWeight] = useState(initialCurrentWeight || '');
 
-  const handleGuardar = () => {
+  const handleSave = () => {
     onSave({ targetWeight, currentWeight });
   };
 
@@ -33,7 +33,7 @@ export default function EditWeights({ initialTargetWeight, initialCurrentWeight,
       </div>
 
       <button
-        onClick={handleGuardar}
+        onClick={handleSave}
         style={{
           backgroundColor: '#4CAF50',
           color: 'white',

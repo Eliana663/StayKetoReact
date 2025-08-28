@@ -76,13 +76,13 @@ export default function PersonalPanel({ profilePhoto }) {
     axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${userId}&year=${year}&month=${month}`)
   ])
     .then(([userRes, habitsRes, monthlyRes]) => {
-      // 1️⃣ Usuario
+      //  Usuer
       setUser(userRes.data);
 
-      // 2️⃣ Todos los hábitos del usuario
+      // All user habits
       setHabits(habitsRes.data);
 
-      // 3️⃣ Registro mensual
+      // monthly tracker
       const monthly = monthlyRes.data.monthlyTracker.map(d => ({
         dia: new Date(d.date).getDate(),
         dayHabits: d.completedHabits.map(h => ({

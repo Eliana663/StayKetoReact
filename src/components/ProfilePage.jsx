@@ -13,13 +13,11 @@ export default function ProfilePage() {
   const [quote, setQuote] = useState("");
 
   useEffect(() => {
-    // Traer usuario
     axios.get(`http://localhost:8081/api/users/${userId}`).then((res) => {
       setUser(res.data);
-      console.log(res.data.profilePhoto);
-    });
+          });
 
-    // Traer frase motivacional
+    
     axios
       .get("https://api.quotable.io/random?tags=inspirational|motivational")
       .then((res) => setQuote(res.data.content))
