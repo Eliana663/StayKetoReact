@@ -33,13 +33,13 @@ export default function AddWeigh({ onClose }) {
           try {
             // Guardar peso actual en historial
             await axios.post(
-              `http://localhost:8081/api/graphics/users/${user.id}/daily-weight`,
+              `http://localhost:8081/api/charts/users/${user.id}/daily-weight`,
               { weight: newCurrent }
             );
 
             // Guardar peso meta
             await axios.put(
-              `http://localhost:8081/api/graphics/users/${user.id}/goal-weight`,
+              `http://localhost:8081/api/charts/users/${user.id}/goal-weight`,
               { targetWeight: newTarget }
             );
 
@@ -70,7 +70,7 @@ export default function AddWeigh({ onClose }) {
     }
 
     try {
-      await axios.post(`http://localhost:8081/api/graphics/users/${user.id}/daily-weight`, {
+      await axios.post(`http://localhost:8081/api/charts/users/${user.id}/daily-weight`, {
         weight: parseFloat(weight)
       });
 

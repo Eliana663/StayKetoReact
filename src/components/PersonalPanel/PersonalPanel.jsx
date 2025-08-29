@@ -94,7 +94,7 @@ export default function PersonalPanel({ profilePhoto }) {
       }));
       setMonthlyHabits(monthly);
 
-      // Marcar hábitos completados hoy
+      // Completed habits today
       const todayDay = today.getDate();
       const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
       setHabits(prev =>

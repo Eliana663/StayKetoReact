@@ -1,6 +1,6 @@
 import aguacateSonriente from '../assets/aguacateSonriente.jpg';
 
-export default function FondoConAguacate({ children }) {
+export default function AvocadoBackground({ children }) {
   const style = {
     background: `
       linear-gradient(rgba(208, 232, 201, 0.7), rgba(208, 232, 201, 0.7)),

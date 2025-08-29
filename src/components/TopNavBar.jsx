@@ -86,7 +86,7 @@ export default function TopNavbar() {
                 <li>
                   <Link
                     className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 
-                    to="/personalPanel"
+                    to="/panelPersonal"
                   >
                     <span style={{ fontSize: '1.5rem' }}>📋</span> Panel Personal
                   </Link>
@@ -105,9 +105,12 @@ export default function TopNavbar() {
                   </Link>
                 </li>
                 <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
+                  <Link
+                   className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 
+                   to="/progresoGraficos"
+                   >
                     <span style={{ fontSize: '1.5rem' }}>📈</span> Gráficos y progreso
-                  </a>
+                  </Link>
                 </li>
                 <li><hr className="dropdown-divider" /></li>
                 <li>
