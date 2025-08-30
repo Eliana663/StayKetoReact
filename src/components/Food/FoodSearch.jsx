@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useUser } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
 
 export default function FoodSearch() {
+
+  const { user } = useUser();
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -10,6 +13,10 @@ export default function FoodSearch() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showMacros, setShowMacros] = useState(false);
 
+  if (!user) {
+    console.error("No user logged in");
+    return;
+  }
   
   const fetchTodaySelectedItems = async () => {
     try {
@@ -61,12 +68,12 @@ export default function FoodSearch() {
       proteins: (item.proteins || 0) * factor,
       fat: (item.fat || 0) * factor,
       calories: (item.calories || 0) * factor,
-      amount: quantity,
+      weightInGrams: quantity,
       date: new Date().toISOString().slice(0, 10), // yyyy-MM-dd
     };
 
     try {
-      const res = await fetch('http://localhost:8081/api/daily-food', {
+      const res = await fetch(`http://localhost:8081/api/daily-food/users/${user.id}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newItem),
