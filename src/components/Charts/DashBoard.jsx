@@ -1,13 +1,17 @@
+import { useUser } from '../AuthContext';
 import WeightChart from '@/components/Charts/WeightChart';
 
-export default function Dashboard({ userId }) {
+export default function Dashboard() {
+
+  const { user} = useUser();
+
   return (
     <div>
       <h2>Graficos y Progreso</h2>
 
     
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <WeightChart userId={userId} />
+        <WeightChart userId={user.Id} />
         </div>
     </div>
   )
