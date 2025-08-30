@@ -5,15 +5,12 @@ import AddWeight from "@/components/PersonalPanel/AddWeight";
 
 const userId = 1;
 
-// Default habits
 const defaultHabits = [
   { id: 1, name: "Ejercicio", done: false },
   { id: 2, name: "Tomar agua", done: false },
   { id: 3, name: "Dormir 8 horas", done: false },
   { id: 4, name: "Ayuno", done: false },
 ];
-
-
 
 
 export default function PersonalPanel({ profilePhoto }) {
@@ -35,13 +32,12 @@ export default function PersonalPanel({ profilePhoto }) {
     
 
   //Edit panel
-
   const [showEditPanel, setShowEditPanel] = useState(false);
   const [editingHabitId, setEditingHabitId] = useState(null);
   const [editingHabitName, setEditingHabitName] = useState("");
 
 
-  // Obtener RandomColor de la paleta
+  // Get Random color from palette
   function getRandomHexColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
   }
@@ -62,7 +58,7 @@ export default function PersonalPanel({ profilePhoto }) {
     return newColor;
   }
 }
-   // --- Load user and monthly habits ---
+   //Load user and monthly habits
   useEffect(() => {
   setLoading(true);
 
@@ -76,7 +72,7 @@ export default function PersonalPanel({ profilePhoto }) {
     axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${userId}&year=${year}&month=${month}`)
   ])
     .then(([userRes, habitsRes, monthlyRes]) => {
-      //  Usuer
+      //  User
       setUser(userRes.data);
 
       // All user habits
@@ -148,10 +144,10 @@ export default function PersonalPanel({ profilePhoto }) {
   const newDone = !habit.done;
   const today = new Date().getDate();
 
-  // 1️⃣ Actualizamos habits de hoy
+  
   setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
 
-  // 2️⃣ Actualizamos monthlyHabits para reflejar el cambio
+
       setMonthlyHabits(prev => {
         const existingDay = prev.find(d => d.dia === today);
         const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name, color: habit.color };
@@ -169,7 +165,7 @@ export default function PersonalPanel({ profilePhoto }) {
         }
       });
 
-      // 3️⃣ Mandamos el POST al backend (opcional, para guardar)
+    
       const todayStr = new Date().toISOString().split('T')[0];
       axios.post('http://localhost:8081/api/habit/tracker/bulk-habits', {
         userId,

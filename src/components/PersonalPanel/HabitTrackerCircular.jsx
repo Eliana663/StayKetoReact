@@ -71,7 +71,7 @@ const HabitTrackerCircular = ({ monthlyHabits = [] }) => {
               })}
             </g>
 
-            {/* Número del día */}
+            
             <text
               x={labelX}
               y={labelY}

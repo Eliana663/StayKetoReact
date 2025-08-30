@@ -62,7 +62,7 @@ export default function AddWeigh({ onClose }) {
     );
   };
 
-  // Guardar peso desde la ventana modal principal
+  
   const handleSave = async () => {
     if (!user.id) {
       alert("Usuario no cargado todavía");

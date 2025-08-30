@@ -21,7 +21,7 @@ export default function TopNavbar() {
           StayKeto
         </Link>
 
-        {/* Botón responsive */}
+        {/* Reponsive button */}
         <button
           className="navbar-toggler"
           type="button"
@@ -37,7 +37,7 @@ export default function TopNavbar() {
         {/* Contenido del navbar */}
         <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
           
-          {/* Menú principal */}
+          {/* Main Menu */}
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
             <li className="nav-item">
               <a className="nav-link text-white" href="#">Dieta Cetogénica</a>
@@ -53,7 +53,7 @@ export default function TopNavbar() {
             </li>
           </ul>
 
-          {/* Dropdown de usuario alineado a la derecha */}
+          {/* User dropdown */}
           <div className="d-flex align-items-center ms-auto position-relative">
                 <div className="dropdown">
           <button
