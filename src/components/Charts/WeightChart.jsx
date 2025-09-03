@@ -1,4 +1,4 @@
-import { useUser } from '../AuthContext'; // ajusta la ruta según tu estructura
+import { useUser } from '../AuthContext';
 import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import axios from 'axios';

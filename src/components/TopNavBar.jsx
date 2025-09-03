@@ -92,9 +92,9 @@ export default function TopNavbar() {
                   </Link>
                 </li>
                 <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
+                  <Link className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" to="/calculadoraKeto">
                     <span style={{ fontSize: '1.5rem' }}>🧮</span> Calculadora Keto
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link
