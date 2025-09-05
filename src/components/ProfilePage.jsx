@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
-
+import { useUser } from './AuthContext';
 
 export default function ProfilePage() {
-  const userId = 1;
-  const [user, setUser] = useState({
-    age: "",
-    height: "",
-  });
+  const { user, setUser } = useUser();
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [quote, setQuote] = useState("");
 
-  useEffect(() => {
-    axios.get(`http://localhost:8081/api/users/${userId}`).then((res) => {
-      setUser(res.data);
-          });
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month}-${day}`;
+  };
 
-    
+  useEffect(() => {
     axios
       .get("https://api.quotable.io/random?tags=inspirational|motivational")
       .then((res) => setQuote(res.data.content))
@@ -32,7 +29,7 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:8081/api/users/${userId}`, user);
+      await axios.put(`http://localhost:8081/api/users/${user.id}`, user);
       alert("Datos guardados correctamente");
       setReloadTrigger((prev) => prev + 1);
     } catch (err) {
@@ -59,13 +56,12 @@ export default function ProfilePage() {
           <div className="text-center mb-3">
             <ProfilePhotoWithEdit
               profilePhoto={user.profilePhoto}
-              userId={userId}
+              userId={user.id}
               onPhotoUploaded={handlePhotoUploaded}
             />
           </div>
         </div>
 
-        {/* Datos con botón editar */}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="mb-0">Datos del perfil</h5>
           <button
@@ -85,13 +81,13 @@ export default function ProfilePage() {
             <strong>Apellidos:</strong> {user.lastName}
           </li>
           <li className="list-group-item">
-            <strong>Cumpleaños 🎂</strong> {user.birthDate}
+            <strong>Cumpleaños 🎂:</strong> {user.birthDate}
           </li>
           <li className="list-group-item">
-            <strong>Edad</strong> {user.age}
+            <strong>Edad:</strong> {user.age}
           </li>
           <li className="list-group-item">
-            <strong>Género: </strong> {user.gender}
+            <strong>Género:</strong> {user.gender}
           </li>
           <li className="list-group-item">
             <strong>Email:</strong> {user.email}
@@ -103,10 +99,13 @@ export default function ProfilePage() {
             <strong>Peso meta:</strong> {user.targetWeight} kg
           </li>
           <li className="list-group-item">
-            <strong>Altura:</strong> {user.height} kg
+            <strong>Altura:</strong> {user.height} cm
           </li>
           <li className="list-group-item">
-            <strong>Nivel de actividad 🏃 </strong> {user.activityLevel}
+            <strong>Nivel de actividad 🏃:</strong> {user.activityLevel}
+          </li>
+          <li className="list-group-item">
+            <strong>Objetivo 🎯:</strong> {user.goal}
           </li>
           <li className="list-group-item">
             <strong>¿Embarazada? 🤰</strong> {user.pregnant ? "Sí" : "No"}
@@ -114,7 +113,7 @@ export default function ProfilePage() {
         </ul>
       </div>
 
-      {/* Modal para editar */}
+      {/* Modal para editar perfil */}
       <div
         className="modal fade"
         id="editProfileModal"
@@ -136,8 +135,173 @@ export default function ProfilePage() {
               ></button>
             </div>
             <div className="modal-body">
-              {/* Inputs para editar perfil */}
+              {/* Nombre */}
+              <div className="mb-3">
+                <label>Nombre</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={user.name || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, name: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Apellidos */}
+              <div className="mb-3">
+                <label>Apellidos</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={user.lastName || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, lastName: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Fecha de nacimiento */}
+              <div className="mb-3">
+                <label>Fecha de nacimiento</label>
+                <input
+                type="date"
+                className="form-control"
+                value={formatDateForInput(user.birthDate)}
+                onChange={(e) =>
+                  setUser({ ...user, birthDate: e.target.value }) // guardar en ISO o formatear según backend
+                }
+              />
+              </div>
+
+              {/* Edad */}
+              <div className="mb-3">
+                <label>Edad</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={user.age || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, age: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Género */}
+              <div className="mb-3">
+                <label>Género</label>
+                <select
+                  className="form-control"
+                  value={user.gender || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, gender: e.target.value })
+                  }
+                >
+                  <option value="">Selecciona</option>
+                  <option value="female">Femenino</option>
+                  <option value="male">Masculino</option>
+                </select>
+              </div>
+
+              {/* Email */}
+              <div className="mb-3">
+                <label>Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={user.email || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, email: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Peso actual */}
+              <div className="mb-3">
+                <label>Peso actual (kg)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={user.currentWeight || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, currentWeight: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Peso meta */}
+              <div className="mb-3">
+                <label>Peso meta (kg)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={user.targetWeight || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, targetWeight: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Altura */}
+              <div className="mb-3">
+                <label>Altura (cm)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={user.height || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, height: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Nivel de actividad */}
+              <div className="mb-3">
+                <label>Nivel de actividad</label>
+                <select
+                  className="form-control"
+                  value={user.activityLevel || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, activityLevel: e.target.value })
+                  }
+                >
+                  <option value="">Selecciona</option>
+                  <option value="sedentary">Sedentario</option>
+                  <option value="light">Ligero</option>
+                  <option value="moderate">Moderado</option>
+                  <option value="active">Activo</option>
+                </select>
+              </div>
+
+              {/* Objetivo */}
+              <div className="mb-3">
+                <label>Objetivo</label>
+                <select
+                  className="form-control"
+                  value={user.goal || ""}
+                  onChange={(e) => setUser({ ...user, goal: e.target.value })}
+                >
+                  <option value="">Selecciona</option>
+                  <option value="Perder Peso">Perder peso</option>
+                  <option value="Mantener">Mantener</option>
+                  <option value="Ganar Músculo">Ganar músculo</option>
+                </select>
+              </div>
+
+              {/* Embarazo */}
+              <div className="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={user.pregnant || false}
+                  onChange={(e) =>
+                    setUser({ ...user, pregnant: e.target.checked })
+                  }
+                />
+                <label className="form-check-label">Embarazada</label>
+              </div>
             </div>
+
             <div className="modal-footer">
               <button
                 type="button"
@@ -158,9 +322,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-
-      
-      
     </>
   );
 }
