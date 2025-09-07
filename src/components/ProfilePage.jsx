@@ -266,10 +266,10 @@ export default function ProfilePage() {
                   }
                 >
                   <option value="">Selecciona</option>
-                  <option value="sedentary">Sedentario</option>
-                  <option value="light">Ligero</option>
-                  <option value="moderate">Moderado</option>
-                  <option value="active">Activo</option>
+                  <option value="Sedentario">Sedentario</option>
+                  <option value="Ligero">Ligero</option>
+                  <option value="Moderado">Moderado</option>
+                  <option value="Activo">Activo</option>
                 </select>
               </div>
 

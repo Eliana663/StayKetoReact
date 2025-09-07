@@ -1,34 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactECharts from "echarts-for-react";
+import axios from "axios";
+import { useUser } from "../AuthContext"; 
 
 function CalorieChart() {
-  const maxCalories = 3000;
+  const { user } = useUser();
+  const [goalValues, setGoalValues] = useState({
+    loseWeight: 0,
+    maintain: 0,
+    gainMuscle: 0,
+    goal: "",
+  });
+  const [selectedGoal, setSelectedGoal] = useState("");
+  const [currentCalories, setCurrentCalories] = useState(0);
 
-  const goals = {
-    LOSE_WEIGHT: { label: "Perder peso", target: 1400 },
-    MAINTAIN: { label: "Mantener", target: 1600 },
-    GAIN_MUSCLE: { label: "Ganar músculo", target: 2000 },
+  const goalOptions = ["Perder peso", "Mantener", "Ganar musculo"];
+  const maxCalories = 3000; 
+
+  useEffect(() => {
+    if (!user) return; 
+
+    axios
+      .get(`http://localhost:8081/api/calories/user/${user.id}`)
+      .then((res) => {
+        const data = res.data;
+        setGoalValues(data);
+        setSelectedGoal(data.goal); 
+        
+        if (data.goal === "Perder peso") setCurrentCalories(data.loseWeightCalories);
+        else if (data.goal === "Mantener") setCurrentCalories(data.maintenanceCalories);
+        else setCurrentCalories(data.gainMuscleCalories);
+      })
+      .catch((err) => console.error(err));
+  }, [user]);
+
+  // Manejar click en los botones
+  const handleGoalClick = (goal) => {
+    setSelectedGoal(goal);
+    if (goal === "Perder peso") setCurrentCalories(goalValues.loseWeightCalories);
+    else if (goal === "Mantener") setCurrentCalories(goalValues.maintenanceCalories);
+    else setCurrentCalories(goalValues.gainMuscleCalories);
   };
 
-  const [selectedGoal, setSelectedGoal] = useState("MAINTAIN");
-  const [dailyCalories, setDailyCalories] = useState(goals[selectedGoal].target);
-
-  const handleGoalClick = (goalKey) => {
-    setSelectedGoal(goalKey);
-    setDailyCalories(goals[goalKey].target);
-  };
-
-  // Determinar color del semicírculo según objetivo
-  let mainColor;
-  if (selectedGoal === "LOSE_WEIGHT") {
-    mainColor = dailyCalories < 1600 ? "#ef4444" : "#22c55e";
-  } else if (selectedGoal === "MAINTAIN") {
-    mainColor = Math.abs(dailyCalories - 1600) <= 50 ? "#facc15" : "#22c55e";
-  } else {
-    mainColor = dailyCalories > 1600 ? "#22c55e" : "#ef4444";
-  }
-
-  const percentage = Math.min(dailyCalories / maxCalories, 1);
+  const percentage = Math.min(currentCalories / maxCalories, 1);
 
   const option = {
     series: [
@@ -43,7 +57,7 @@ function CalorieChart() {
           lineStyle: {
             width: 30,
             color: [
-              [percentage, mainColor],
+              [percentage, "#16a34a"],
               [1, "#e5e7eb"],
             ],
           },
@@ -53,12 +67,12 @@ function CalorieChart() {
         axisLabel: { show: false },
         detail: {
           valueAnimation: true,
-          formatter: function (value) {
-            return `${dailyCalories} kcal\nObjetivo diario de calorías`;
+          formatter: function () {
+            return `${currentCalories.toFixed(0)} kcal\nObjetivo diario`;
           },
           fontSize: 20,
           lineHeight: 30,
-          offsetCenter: [0, "30%"], // ajusta verticalmente dentro del gauge
+          offsetCenter: [0, "30%"],
         },
         data: [{ value: percentage }],
       },
@@ -67,20 +81,19 @@ function CalorieChart() {
   };
 
   return (
-    
     <div style={{ width: "100%", maxWidth: "500px", margin: "0 auto", textAlign: "center" }}>
-        {/* Título */}
-        <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "70px" }}>
-            Mis Objetivos de Calorías
-        </h2>
-      {/* Botones arriba del gauge */}
+      <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "70px" }}>
+        Mis Objetivos de Calorías
+      </h2>
+
+      {/* Select goal buttons */}
       <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginBottom: "24px" }}>
-        {Object.keys(goals).map((key) => {
-          const isActive = selectedGoal === key;
+        {goalOptions.map((goal) => {
+          const isActive = selectedGoal === goal;
           return (
             <button
-              key={key}
-              onClick={() => handleGoalClick(key)}
+              key={goal}
+              onClick={() => handleGoalClick(goal)}
               style={{
                 padding: "12px 24px",
                 borderRadius: "9999px",
@@ -95,7 +108,7 @@ function CalorieChart() {
                 cursor: "pointer",
               }}
             >
-              {goals[key].label}
+              {goal}
             </button>
           );
         })}
@@ -105,22 +118,6 @@ function CalorieChart() {
       <div style={{ width: "100%", height: "600px" }}>
         <ReactECharts option={option} style={{ width: "100%", height: "100%" }} />
       </div>
-
-      {/* Slider debajo del gauge */}
-      <input
-        type="range"
-        min={0}
-        max={maxCalories}
-        value={dailyCalories}
-        onChange={(e) => setDailyCalories(Number(e.target.value))}
-        style={{
-          width: "100%",
-          marginTop: "24px",
-          height: "6px",
-          borderRadius: "3px",
-          accentColor: "#16a34a", 
-        }}
-      />
     </div>
   );
 }
