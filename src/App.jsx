@@ -8,6 +8,7 @@ import LandingPage from './components/LandingPage';
 import DashBoard from './components/Charts/DashBoard';
 import { AuthContext } from './components/AuthContext';
 import { RequireUser } from './components/RequireUser';
+import CalorieGoal from './components/CetoCalc/CalorieGoal'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/panelPersonal" element={<PersonalPanel />} />
               <Route path="/progresoGraficos" element={<DashBoard />} />
+              <Route path="/calculadoraKeto" element={<CalorieGoal />} />
             </Routes>
         </RequireUser>
       </AuthContext>
