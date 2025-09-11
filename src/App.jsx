@@ -8,35 +8,27 @@ import LandingPage from './components/LandingPage';
 import DashBoard from './components/Charts/DashBoard';
 import { AuthContext } from './components/AuthContext';
 import { RequireUser } from './components/RequireUser';
-import CalorieGoal from './components/CetoCalc/CalorieGoal'
+import CalorieGoal from './components/CetoCalc/CalorieGoal';
 
 function App() {
   return (
-  <>
-    <TopNavbar />
-    <AvocadoBackground>
-      {/* Public Routes*/}
-      <Routes>
+    <AuthContext>
+      <TopNavbar />
+      <AvocadoBackground>
+        <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<LandingPage />} />
-      </Routes>
 
-      {/* Private Routes */}
-
-      <AuthContext>
-        <RequireUser>
-            <Routes>
-              <Route path="/foodDiary" element={<FoodSearch />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/panelPersonal" element={<PersonalPanel />} />
-              <Route path="/progresoGraficos" element={<DashBoard />} />
-              <Route path="/calculadoraKeto" element={<CalorieGoal />} />
-            </Routes>
-        </RequireUser>
-      </AuthContext>
-    </AvocadoBackground>
-    </>
-    
+          {/* Private Routes */}
+          <Route path="/foodDiary" element={<RequireUser><FoodSearch /></RequireUser>} />
+          <Route path="/profile" element={<RequireUser><ProfilePage /></RequireUser>} />
+          <Route path="/panelPersonal" element={<RequireUser><PersonalPanel /></RequireUser>} />
+          <Route path="/progresoGraficos" element={<RequireUser><DashBoard /></RequireUser>} />
+          <Route path="/calculadoraKeto" element={<RequireUser><CalorieGoal /></RequireUser>} />
+        </Routes>
+      </AvocadoBackground>
+    </AuthContext>
   );
 }
 
