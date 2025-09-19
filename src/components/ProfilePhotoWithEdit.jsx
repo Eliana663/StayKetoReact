@@ -36,7 +36,7 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
           style={{ width: "120px", height: "120px", objectFit: "cover" }}
           onError={(e) => {
             e.target.onerror = null; 
-            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto"; // placeholder si falla
+            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto"; 
           }}
         />
       ) : (

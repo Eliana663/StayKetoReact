@@ -7,7 +7,7 @@ export default function TopNavbar() {
     <nav className="navbar navbar-expand-lg bg-success border-bottom mb-1">
       <div className="container-fluid">
         
-        {/* Logo */}
+        
         <Link
           to="/home"
           className="navbar-brand d-flex align-items-center fw-bold text-white fs-3"
@@ -21,7 +21,7 @@ export default function TopNavbar() {
           StayKeto
         </Link>
 
-        {/* Reponsive button */}
+       
         <button
           className="navbar-toggler"
           type="button"
@@ -34,10 +34,10 @@ export default function TopNavbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Contenido del navbar */}
+     
         <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
           
-          {/* Main Menu */}
+          
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
             <li className="nav-item">
               <a className="nav-link text-white" href="#">Dieta Cetogénica</a>
@@ -49,11 +49,13 @@ export default function TopNavbar() {
               <a className="nav-link text-white" href="#">Recetas Keto</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Iniciar Sesión</a>
-            </li>
+                <Link className="nav-link text-white" to="/landing">
+                  Iniciar Sesión
+                </Link>
+              </li>
           </ul>
 
-          {/* User dropdown */}
+          
           <div className="d-flex align-items-center ms-auto position-relative">
                 <div className="dropdown">
           <button
