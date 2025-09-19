@@ -22,8 +22,6 @@ export default function Mismacros() {
   useEffect(() => {
     async function fetchMacros() {
       try {
-        console.log('📅 Fechas solicitadas:', startDate, endDate);
-
         const res = await fetch(
           `http://localhost:8081/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
         );
