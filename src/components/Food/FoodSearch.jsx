@@ -39,16 +39,18 @@ export default function FoodSearch() {
       setLoading(true);
       setError(null);
       const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`);
-      if (!response.ok) throw new Error('Error al obtener los alimentos');
+          if (!response.ok) throw new Error('Error al obtener los alimentos');
 
-      const data = await response.json();
-      if (!data || data.length === 0) {
-        setFoodItems([]);
-        setError('No se encontraron alimentos con ese término');
-        return;
-      }
+          const data = await response.json(); 
+
+          if (!data || data.length === 0) {
+            setFoodItems([]);
+            setError('No se encontraron alimentos con ese término');
+            return;
+          }
 
       setFoodItems(data);
+
     } catch (err) {
       setError(err.message);
       setFoodItems([]);

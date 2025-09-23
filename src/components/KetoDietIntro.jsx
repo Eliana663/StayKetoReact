@@ -11,8 +11,8 @@ const KetoDietIntro = () => {
   return (
     <section className="bg-light min-vh-100 d-flex flex-column justify-content-center align-items-center text-center p-4">
       <div className="container">
-        <h1 className="display-3 fw-bold text-success mb-4">
-          Bienvenido a <span className="text-warning">StayKeto</span>
+        <h1 className="display-3 fw-bold text-success mb-4" data-testid="main-heading">
+            Bienvenido a <span className="text-warning">StayKeto</span>
         </h1>
         <p className="lead text-secondary mb-4">
           La dieta cetogénica es un estilo de alimentación bajo en carbohidratos y alto en grasas saludables,
@@ -27,7 +27,7 @@ const KetoDietIntro = () => {
             <div className="card h-100 shadow-sm">
               <div className="card-body">
                 <div className="fs-1 mb-3">🍳</div>
-                <h5 className="card-title fw-bold">Macros diarios</h5>
+                <h5 className="card-title fw-bold" data-testid="card-macros">Macros diarios</h5>
                 <p className="card-text">Calcula automáticamente tus macros diarios.</p>
               </div>
             </div>
@@ -36,7 +36,7 @@ const KetoDietIntro = () => {
             <div className="card h-100 shadow-sm">
               <div className="card-body">
                 <div className="fs-1 mb-3">⚡</div>
-                <h5 className="card-title fw-bold">Cetosis</h5>
+                <h5 className="card-title fw-bold" data-testid="card-cetosis">Cetosis</h5>
                 <p className="card-text">Mide tu nivel de cetosis fácilmente.</p>
               </div>
             </div>
@@ -45,7 +45,7 @@ const KetoDietIntro = () => {
             <div className="card h-100 shadow-sm">
               <div className="card-body">
                 <div className="fs-1 mb-3">📊</div>
-                <h5 className="card-title fw-bold">Progreso</h5>
+                <h5 className="card-title fw-bold" data-testid="card-progreso">Progreso</h5>
                 <p className="card-text">Visualiza tu progreso con gráficos claros.</p>
               </div>
             </div>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
-import { useUser } from './AuthContext';
+import { useUser } from "./AuthContext";
 
-export default function ProfilePage() {
+function ProfilePage() {
   const { user, setUser } = useUser();
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [quote, setQuote] = useState("");
@@ -65,6 +65,7 @@ export default function ProfilePage() {
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="mb-0">Datos del perfil</h5>
           <button
+            data-testid="edit-profile-btn"
             className="btn btn-sm btn-outline-primary"
             data-bs-toggle="modal"
             data-bs-target="#editProfileModal"
@@ -137,21 +138,21 @@ export default function ProfilePage() {
             <div className="modal-body">
               {/* Nombre */}
               <div className="mb-3">
-                <label>Nombre</label>
+                <label htmlFor="nameInput">Nombre</label>
                 <input
+                  id="nameInput"
                   type="text"
                   className="form-control"
                   value={user.name || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, name: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, name: e.target.value })}
                 />
               </div>
 
               {/* Apellidos */}
               <div className="mb-3">
-                <label>Apellidos</label>
+                <label htmlFor="lastNameInput">Apellidos</label>
                 <input
+                  id="lastNameInput"
                   type="text"
                   className="form-control"
                   value={user.lastName || ""}
@@ -163,34 +164,35 @@ export default function ProfilePage() {
 
               {/* Fecha de nacimiento */}
               <div className="mb-3">
-                <label>Fecha de nacimiento</label>
+                <label htmlFor="birthDateInput">Fecha de nacimiento</label>
                 <input
-                type="date"
-                className="form-control"
-                value={formatDateForInput(user.birthDate)}
-                onChange={(e) =>
-                  setUser({ ...user, birthDate: e.target.value }) // guardar en ISO o formatear según backend
-                }
-              />
+                  id="birthDateInput"
+                  type="date"
+                  className="form-control"
+                  value={formatDateForInput(user.birthDate)}
+                  onChange={(e) =>
+                    setUser({ ...user, birthDate: e.target.value })
+                  }
+                />
               </div>
 
               {/* Edad */}
               <div className="mb-3">
-                <label>Edad</label>
+                <label htmlFor="ageInput">Edad</label>
                 <input
+                  id="ageInput"
                   type="number"
                   className="form-control"
                   value={user.age || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, age: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, age: e.target.value })}
                 />
               </div>
 
               {/* Género */}
               <div className="mb-3">
-                <label>Género</label>
+                <label htmlFor="genderInput">Género</label>
                 <select
+                  id="genderInput"
                   className="form-control"
                   value={user.gender || ""}
                   onChange={(e) =>
@@ -205,8 +207,9 @@ export default function ProfilePage() {
 
               {/* Email */}
               <div className="mb-3">
-                <label>Email</label>
+                <label htmlFor="emailInput">Email</label>
                 <input
+                  id="emailInput"
                   type="email"
                   className="form-control"
                   value={user.email || ""}
@@ -218,8 +221,9 @@ export default function ProfilePage() {
 
               {/* Peso actual */}
               <div className="mb-3">
-                <label>Peso actual (kg)</label>
+                <label htmlFor="currentWeightInput">Peso actual (kg)</label>
                 <input
+                  id="currentWeightInput"
                   type="number"
                   className="form-control"
                   value={user.currentWeight || ""}
@@ -231,8 +235,9 @@ export default function ProfilePage() {
 
               {/* Peso meta */}
               <div className="mb-3">
-                <label>Peso meta (kg)</label>
+                <label htmlFor="targetWeightInput">Peso meta (kg)</label>
                 <input
+                  id="targetWeightInput"
                   type="number"
                   className="form-control"
                   value={user.targetWeight || ""}
@@ -244,8 +249,9 @@ export default function ProfilePage() {
 
               {/* Altura */}
               <div className="mb-3">
-                <label>Altura (cm)</label>
+                <label htmlFor="heightInput">Altura (cm)</label>
                 <input
+                  id="heightInput"
                   type="number"
                   className="form-control"
                   value={user.height || ""}
@@ -257,8 +263,9 @@ export default function ProfilePage() {
 
               {/* Nivel de actividad */}
               <div className="mb-3">
-                <label>Nivel de actividad</label>
+                <label htmlFor="activityLevelInput">Nivel de actividad</label>
                 <select
+                  id="activityLevelInput"
                   className="form-control"
                   value={user.activityLevel || ""}
                   onChange={(e) =>
@@ -275,8 +282,9 @@ export default function ProfilePage() {
 
               {/* Objetivo */}
               <div className="mb-3">
-                <label>Objetivo</label>
+                <label htmlFor="goalInput">Objetivo</label>
                 <select
+                  id="goalInput"
                   className="form-control"
                   value={user.goal || ""}
                   onChange={(e) => setUser({ ...user, goal: e.target.value })}
@@ -291,6 +299,7 @@ export default function ProfilePage() {
               {/* Embarazo */}
               <div className="mb-3 form-check">
                 <input
+                  id="pregnantInput"
                   type="checkbox"
                   className="form-check-input"
                   checked={user.pregnant || false}
@@ -298,7 +307,9 @@ export default function ProfilePage() {
                     setUser({ ...user, pregnant: e.target.checked })
                   }
                 />
-                <label className="form-check-label">Embarazada</label>
+                <label htmlFor="pregnantInput" className="form-check-label">
+                  Embarazada
+                </label>
               </div>
             </div>
 
@@ -325,3 +336,5 @@ export default function ProfilePage() {
     </>
   );
 }
+
+export default ProfilePage;
