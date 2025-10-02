@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular';
 import AddWeight from "@/components/PersonalPanel/AddWeight";
+import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
 
 const userId = 1;
 
@@ -21,6 +22,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const [monthlyHabits, setMonthlyHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCheckKetosis, setShowCheckKetosis] = useState(false);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
   //Personal Panel buttons functions
@@ -236,7 +238,9 @@ export default function PersonalPanel({ profilePhoto }) {
       };
 
 
-      const handleCheckKetosis = () => alert("Función para revisar si estás en cetosis (a implementar)");
+      const handleCheckKetosis = () => { 
+        setShowCheckKetosis(true);
+      };
 
       if (loading) return <p>Cargando datos...</p>;
       if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -447,7 +451,11 @@ export default function PersonalPanel({ profilePhoto }) {
           Registrar medidas hoy
         </button>
       </div>
-
+        {showCheckKetosis && (
+          <div style={{ marginTop: "1rem", border: "1px solid #ccc", borderRadius: "10px", padding: "1rem" }}>
+            <CheckKetosis onClose={() => setShowCheckKetosis(false)} />
+          </div>
+        )}
 
 
       <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
