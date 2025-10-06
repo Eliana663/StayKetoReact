@@ -4,10 +4,9 @@ function CheckKetosis({ onClose }) {
   const preguntas = [
     { id: 1, label: "Glucosa en sangre (mg/dL)", type: "number", key: "glucosa" },
     { id: 2, label: "Cuerpos cetónicos (mmol/L)", type: "number", key: "cuerposCet" },
-    { id: 3, label: "Peso (kg)", type: "number", key: "peso" },
-    { id: 4, label: "Cantidad de carbohidratos consumidos hoy (g)", type: "number", key: "carbs" },
-    { id: 5, label: "Horas de ayuno", type: "number", key: "ayuno" },
-    { id: 6, label: "Aliento", type: "radio", key: "aliento", options: ["Normal", "Afrutado"] },
+    { id: 3, label: "Aliento", type: "radio", key: "aliento", options: ["Normal", "Afrutado"] },
+    { id: 4, label: "Micción", type: "radio", key: "miccion", options: ["Normal", "Frecuente"] },
+    { id: 5, label: "Congestión Nasal", type: "radio", key: "congestion", options: ["Si", "No"] },
   ];
 
   const [respuestas, setRespuestas] = useState({});
@@ -16,15 +15,28 @@ function CheckKetosis({ onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // cálculo simple de cetosis
+    
     const cuerpos = parseFloat(respuestas.cuerposCet);
-    if (respuestas.aliento === "Afrutado" || cuerpos > 0.5) {
-      setResultado("¡Estás en cetosis!");
-    } else {
-      setResultado("Aún no estás en cetosis.");
-    }
+    const glucosa = respuestas.glucosa;
+    const aliento = respuestas.aliento;
+    const miccion = respuestas.miccion; 
+    const congestion = respuestas.congestion;
+    
 
-    console.log(respuestas);
+   if (!isNaN(cuerpos) && cuerpos > 0.5) {
+        setResultado("¡Enhorabuena! ¡Estás en cetosis!"); 
+      } else if (!isNaN(glucosa) && glucosa <= 80) {
+        setResultado("¡Probablemente estás en cetosis!"); 
+      } else if (
+        aliento === "Afrutado" ||
+        miccion === "Frecuente" ||
+        congestion === "Si"
+      ) {
+        setResultado("Podrías estar entrando en cetosis"); 
+      } else {
+        setResultado("Aún no estás en cetosis"); 
+      }
+    
   };
 
   return (
