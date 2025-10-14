@@ -3,6 +3,7 @@ import axios from "axios";
 import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircular';
 import AddWeight from "@/components/PersonalPanel/AddWeight";
 import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
+import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurements";
 
 const userId = 1;
 
@@ -23,6 +24,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCheckKetosis, setShowCheckKetosis] = useState(false);
+  const [showBodyMeasurements, setShowBodyMeasurements] = useState(false);
   const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
 
   //Personal Panel buttons functions
@@ -228,7 +230,6 @@ export default function PersonalPanel({ profilePhoto }) {
         }
       };
 
-      // Weight register
       const handleRegisterWeight = () => {
         setShowAddWeight(true);
       };
@@ -240,6 +241,15 @@ export default function PersonalPanel({ profilePhoto }) {
 
       const handleCheckKetosis = () => { 
         setShowCheckKetosis(true);
+      };
+
+      
+      const handleToggleMeasurements = () => {
+      setShowBodyMeasurements(prev => !prev);
+    };
+
+      const handleCloseMeasurements = () => {
+        setShowBodyMeasurements(false);
       };
 
       if (loading) return <p>Cargando datos...</p>;
@@ -306,7 +316,7 @@ export default function PersonalPanel({ profilePhoto }) {
         <button onClick={addHabit} style={{ padding: "0.5rem 1rem" }}>Añadir</button>
       </div>
 
-{/* Botón para abrir/cerrar panel edición */}
+
       <div style={{ marginTop: "1rem", textAlign: "center" }}>
         <button
           onClick={() => setShowEditPanel(!showEditPanel)}
@@ -325,7 +335,7 @@ export default function PersonalPanel({ profilePhoto }) {
         </button>
       </div>
 
-      {/* Panel de edición */}
+      
       {showEditPanel && (
         <div
           style={{
@@ -435,8 +445,8 @@ export default function PersonalPanel({ profilePhoto }) {
         >
           Revisar si estoy en cetosis
         </button>
-         <button
-          onClick={handleCheckKetosis}
+       <button
+          onClick={handleToggleMeasurements}
           style={{
             backgroundColor: "#28a745",
             color: "white",
@@ -450,6 +460,9 @@ export default function PersonalPanel({ profilePhoto }) {
         >
           Registrar medidas hoy
         </button>
+
+
+{showBodyMeasurements && <BodyMeasurementsForm onClose={handleCloseMeasurements} />}
       </div>
         {showCheckKetosis && (
           <div style={{ marginTop: "1rem", border: "1px solid #ccc", borderRadius: "10px", padding: "1rem" }}>
