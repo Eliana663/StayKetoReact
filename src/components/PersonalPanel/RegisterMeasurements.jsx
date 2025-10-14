@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import illustration from '../../assets/figura.png'; 
+import { useUser } from '../AuthContext';
+import axios from "axios";
 
 export default function BodyMeasurementsForm() {
+
+  const { user } = useUser();
   const [measurements, setMeasurements] = useState({
     brazo: '',
     pecho: '',
@@ -17,10 +21,36 @@ export default function BodyMeasurementsForm() {
     setMeasurements(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Medidas ingresadas:', measurements);
+    if (!user) {
+      alert("Usuario no disponible");
+      return;
+    }
     
+     const dto = {
+        userId: user.id, 
+        arm: parseInt(measurements.brazo),
+        chest: parseInt(measurements.pecho),
+        underBust: parseInt(measurements.bajoPecho),
+        waist: parseInt(measurements.cintura),
+        belly: parseInt(measurements.cadera),
+        leg: parseInt(measurements.pierna),
+        date: new Date().toISOString().split("T")[0]
+      };
+
+  try {
+    const res = await axios.post(
+      "http://localhost:8081/api/daily-measurements",
+      dto
+    );
+    console.log("Medidas guardadas:", res.data);
+    alert("Medidas guardadas correctamente");
+  } catch (error) {
+    console.error(error);
+    alert("Error guardando medidas");
+  }
+
   };
 
   return (
@@ -31,12 +61,12 @@ export default function BodyMeasurementsForm() {
           <img src={illustration} alt="Figura femenina" className="img-fluid" />
 
           {/* Puntos y etiquetas */}
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '24%', left: '20%' }}>Brazo</span>
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '26%', left: '30%' }}>Pecho</span>
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '32%', left: '25%' }}>Bajo Pecho</span>
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '37%', left: '29%' }}>Cintura</span>
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '45%', left: '25%' }}>Cadera</span>
-          <span className="badge bg-white text-dark position-absolute" style={{ top: '60%', left: '25%' }}>Muslo</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '23%', left: '15%' }}>Brazo</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '23%', left: '59%' }}>Pecho</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '27%', left: '25%' }}>Bajo Pecho</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '31%', left: '29%' }}>Cintura</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '39%', left: '25%' }}>Cadera</span>
+          <span className="badge bg-white text-dark position-absolute" style={{ top: '50%', left: '25%' }}>Pierna</span>
           
         </div>
 
