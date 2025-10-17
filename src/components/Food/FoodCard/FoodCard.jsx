@@ -52,19 +52,20 @@ export default function FoodCard({ item, onAdd }) {
 
           
         </div>
-
-                <div className={`${styles.buttonContainer} col-md-1 text-center`}>
-          <button
-            className="btn btn-outline-success"
-            title="Agregar"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAdd(item, amount);
-            }}
-          >
-            <PlusCircle />
-          </button>
-        </div>
+        {onAdd && (
+          <div className={`${styles.buttonContainer} col-md-1 text-center`}>
+            <button
+              className="btn btn-outline-success"
+              title="Agregar"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(item, amount);
+              }}
+            >
+              <PlusCircle />
+            </button>
+          </div>
+        )}
       </div>
     </div>
       <FoodResumeModal

@@ -43,7 +43,9 @@ export default function TopNavbar() {
               <a className="nav-link text-white" href="#">Dieta Cetogénica</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Alimentos permitidos</a>
+              <Link className="nav-link text-white" to="/allowedFoods">
+              Alimentos permitidos
+              </Link>
             </li>
             <li className="nav-item">
               <a className="nav-link text-white" href="#">Recetas Keto</a>

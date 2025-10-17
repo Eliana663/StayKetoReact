@@ -42,6 +42,7 @@ export default function FoodResumeModal({ show, onClose, item, amount, setAmount
           />
         </div>
         <DonutChart item={chartDataItem} />
+        {onAdd && (
         <button
           className="btn btn-success mt-3"
           onClick={() => {
@@ -51,6 +52,7 @@ export default function FoodResumeModal({ show, onClose, item, amount, setAmount
         >
           Añadir alimento
         </button>
+        )}
       </Modal.Body>
     </Modal>
   );
