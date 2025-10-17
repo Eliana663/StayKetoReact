@@ -1,0 +1,1 @@
+export { default as AllowedFoods } from './AllowedFoods';

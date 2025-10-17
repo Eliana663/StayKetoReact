@@ -10,6 +10,7 @@ import { AuthContext } from './components/AuthContext';
 import { RequireUser } from './components/RequireUser';
 import CalorieGoal from './components/CetoCalc/CalorieGoal';
 import KetoDietIntro from './components/KetoDietIntro';
+import { AllowedFoods } from './components/MainMenu';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<KetoDietIntro />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/home" element={<KetoDietIntro />} />
+          <Route path="/allowedFoods" element={<AllowedFoods />} />
 
           {/* Private Routes */}
           <Route path="/foodDiary" element={<RequireUser><FoodSearch /></RequireUser>} />
