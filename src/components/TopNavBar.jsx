@@ -49,7 +49,9 @@ export default function TopNavbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Recetas Keto</a>
+               <Link className="nav-link text-white" to="/KetoRecipes">
+                  Recetas Keto
+                </Link>
             </li>
             <li className="nav-item">
                 <Link className="nav-link text-white" to="/landing">
