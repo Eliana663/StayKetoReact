@@ -40,7 +40,8 @@ export default function TopNavbar() {
           
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Dieta Cetogénica</a>
+              <Link className="nav-link text-white" to="/ketoDiet">Dieta Cetogénica
+              </Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link text-white" to="/allowedFoods">
