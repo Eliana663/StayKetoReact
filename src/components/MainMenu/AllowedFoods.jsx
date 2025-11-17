@@ -9,11 +9,6 @@ export default function AllowedFoods() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!user) {
-    console.error("No user logged in");
-    return null;
-  }
-
   const fetchFoodByName = async (name) => {
     try {
       setLoading(true);

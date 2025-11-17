@@ -7,11 +7,15 @@ export default function FoodCard({ item, onAdd }) {
   const [amount, setAmount] = useState(100); // 100 g default
   const factor = amount / (item.quantity || 100);
   const [showModal, setShowModal] = useState(false); // to show, hide Foodresumemodal
-  const baseUrl = "http://localhost:8081";
-  const imagePath = item.image_url || '';
+  const baseUrl = "http://localhost:8081/public-images";
+ const rawPath = item.image_url || 'default.jpg';
+  const imagePath = rawPath.startsWith('/images/')
+    ? rawPath.replace('/images/', '')
+    : rawPath;
+
   const fullImageUrl = imagePath.startsWith('http')
     ? imagePath
-    : `${baseUrl}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+  : `${baseUrl}/${imagePath}`;
 
   return (
     <>
