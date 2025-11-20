@@ -6,25 +6,28 @@ export const AuthContext = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Suponiendo que guardas el token en localStorage
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (!token) {
-            // No hay token → usuario no logueado
-            setUser(null);
-            setLoading(false);
-            return;
-        }
-
         const fetchUser = async () => {
+            if (!token) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
             try {
-                const res = await fetch(`http://localhost:8081/api/users/me`, {
+                const res = await fetch("http://localhost:8081/api/users/me", {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     }
                 });
-                if (!res.ok) throw new Error("No user found");
+
+                if (!res.ok) {
+                    throw new Error("No se pudo obtener el usuario");
+                }
+
                 const data = await res.json();
                 setUser(data);
             } catch (err) {
@@ -42,7 +45,7 @@ export const AuthContext = ({ children }) => {
         <UserContext.Provider value={{ user, setUser, loading }}>
             {children}
         </UserContext.Provider>
-    )
-}
+    );
+};
 
 export const useUser = () => useContext(UserContext);
