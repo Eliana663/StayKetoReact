@@ -11,7 +11,7 @@ function WeightChart() {
   useEffect(() => {
     if (!user) return;
 
-    axios.get(`http://localhost:8081/api/charts/users/${user.id}/daily-weight`)
+    axios.get(`http://localhost:8081/api/weight/users/${user.id}/daily-weight`)
       .then(res => setWeights(res.data || []))
       .catch(err => console.error('Error fetching weights:', err));
   }, [user]);

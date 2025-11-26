@@ -85,11 +85,7 @@ export default function TopNavbar() {
                     <span style={{ fontSize: '1.5rem' }}>👤</span> Mi cuenta
                   </Link>
                 </li>
-                <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
-                    <span style={{ fontSize: '1.5rem' }}>⚙️</span> Configuración
-                  </a>
-                </li>
+               
                 <li>
                   <Link
                     className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 

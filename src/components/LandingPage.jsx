@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useUser } from './AuthContext';
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,30 +12,31 @@ export default function LandingPage() {
   const [token, setToken] = useState(null);
 
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post("http://localhost:8081/auth/login", {
-        email,
-        password,
-      });
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:8081/auth/login", {
+      email,
+      password,
+    });
 
-      const jwt = res.data.token;
+    const jwt = res.data.token;
+    localStorage.setItem("token", jwt); // 👈 usar "token" para que coincida con AuthContext
 
-      setToken(jwt);
-      localStorage.setItem("jwt", jwt);
+    // fetch de usuario actual
+    const userRes = await axios.get("http://localhost:8081/api/users/me", {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
 
-      alert("Login exitoso!");
-
-      // 👉 aquí te vas al perfil
-      navigate("/profile");
-
-    } catch (err) {
-      alert("Error al iniciar sesión");
-      console.error(err);
-    }
-  };
+    setUser(userRes.data); // actualizar contexto
+    navigate("/profile"); // ir al perfil
+  } catch (err) {
+    console.error(err);
+    alert("Email o contraseña incorrectos");
+  }
+};
 
   const getPrivateData = async () => {
     const jwt = token || localStorage.getItem("jwt");

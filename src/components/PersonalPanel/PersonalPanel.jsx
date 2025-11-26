@@ -4,8 +4,10 @@ import HabitTrackerCircular from '@/components/PersonalPanel/HabitTrackerCircula
 import AddWeight from "@/components/PersonalPanel/AddWeight";
 import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
 import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurements";
+import Quote from "../Quote";
+import { useUser } from "../AuthContext";
 
-const userId = 1;
+
 
 const defaultHabits = [
   { id: 1, name: "Ejercicio", done: false },
@@ -16,8 +18,8 @@ const defaultHabits = [
 
 
 export default function PersonalPanel({ profilePhoto }) {
+ const { user, setUser } = useUser();
   // --- State ---
-  const [user, setUser] = useState(null);
   const [habits, setHabits] = useState(defaultHabits); // current habits
   const [newHabit, setNewHabit] = useState("");         
   const [monthlyHabits, setMonthlyHabits] = useState([]);
@@ -25,7 +27,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const [error, setError] = useState(null);
   const [showCheckKetosis, setShowCheckKetosis] = useState(false);
   const [showBodyMeasurements, setShowBodyMeasurements] = useState(false);
-  const motivationalMessage = "Sigue adelante, ¡estás haciendo un gran trabajo! 💪";
+ 
 
   //Personal Panel buttons functions
   const [showAddWeight, setShowAddWeight] = useState(false);
@@ -63,7 +65,8 @@ export default function PersonalPanel({ profilePhoto }) {
   }
 }
    //Load user and monthly habits
-  useEffect(() => {
+ useEffect(() => {
+  if (!user) return; // si no hay user, no hacemos nada
   setLoading(true);
 
   const today = new Date();
@@ -71,47 +74,30 @@ export default function PersonalPanel({ profilePhoto }) {
   const month = today.getMonth() + 1;
 
   Promise.all([
-    axios.get(`http://localhost:8081/api/users/${userId}`),
-    axios.get(`http://localhost:8081/api/habit/user/${userId}`),
-    axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${userId}&year=${year}&month=${month}`)
+    axios.get(`http://localhost:8081/api/users/${user.id}`),
+    axios.get(`http://localhost:8081/api/habit/user/${user.id}`),
+    axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`)
   ])
-    .then(([userRes, habitsRes, monthlyRes]) => {
-      //  User
-      setUser(userRes.data);
+  .then(([userRes, habitsRes, monthlyRes]) => {
+    setUser(userRes.data);
+    setHabits(habitsRes.data);
 
-      // All user habits
-      setHabits(habitsRes.data);
+    const monthly = monthlyRes.data.monthlyTracker.map(d => ({
+      dia: new Date(d.date).getDate(),
+      dayHabits: d.completedHabits.map(h => ({
+        trackerId: h.id,
+        done: true,
+        name: h.name,
+        color: h.color
+      }))
+    }));
+    setMonthlyHabits(monthly);
+  })
+  .catch(() => setError("Error al cargar datos del usuario o hábitos"))
+  .finally(() => setLoading(false));
+}, [user?.id]); 
 
-      // monthly tracker
-      const monthly = monthlyRes.data.monthlyTracker.map(d => ({
-        dia: new Date(d.date).getDate(),
-        dayHabits: d.completedHabits.map(h => ({
-          trackerId: h.id,
-          done: true,
-          name: h.name,
-          color: h.color
-        }))
-      }));
-      setMonthlyHabits(monthly);
 
-      // Completed habits today
-      const todayDay = today.getDate();
-      const todayHabits = monthly.find(d => d.dia === todayDay)?.dayHabits || [];
-      setHabits(prev =>
-        prev.map(h => {
-          const completedToday = todayHabits.find(th => th.name === h.name);
-          return {
-            ...h,
-            done: !!completedToday,
-            trackerId: completedToday?.trackerId || h.trackerId
-          };
-        })
-      );
-    })
-    .catch(() => setError("Error al cargar datos del usuario o hábitos"))
-    .finally(() => setLoading(false));
-
-}, []);
 
 
   // --- Add new habit ---
@@ -172,7 +158,7 @@ export default function PersonalPanel({ profilePhoto }) {
     
       const todayStr = new Date().toISOString().split('T')[0];
       axios.post('http://localhost:8081/api/habit/tracker/bulk-habits', {
-        userId,
+        userId: user.id,
         date: todayStr,
         habit: { id: habit.id, name: habit.name },
         completed: newDone
@@ -277,7 +263,7 @@ export default function PersonalPanel({ profilePhoto }) {
       )}
 
       <h2>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
-      <p style={{ fontStyle: "italic", color: "#2a9d8f", fontSize: "2rem" }}>{motivationalMessage}</p>
+       <Quote />
 
       <h4 style={{ margin: "40px 10px" }}>Mis hábitos cumplidos hoy:</h4>
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
