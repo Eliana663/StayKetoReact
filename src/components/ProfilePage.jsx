@@ -2,26 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 import { useUser } from "./AuthContext";
+import Quote from "./Quote";
 
 function ProfilePage() {
   const { user, setUser } = useUser();
-  const [reloadTrigger, setReloadTrigger] = useState(0);
-  const [quote, setQuote] = useState("");
 
   const formatDateForInput = (dateStr) => {
     if (!dateStr) return "";
     const [day, month, year] = dateStr.split("/");
     return `${year}-${month}-${day}`;
   };
-
-  useEffect(() => {
-    axios
-      .get("https://api.quotable.io/random?tags=inspirational|motivational")
-      .then((res) => setQuote(res.data.content))
-      .catch(() =>
-        setQuote("Sigue adelante, lo estás haciendo muy bien. ¡Tú puedes!")
-      );
-  }, [reloadTrigger]);
 
   const handlePhotoUploaded = () => {
     setReloadTrigger((prev) => prev + 1);
@@ -51,8 +41,7 @@ function ProfilePage() {
           <h3 className="mb-1">
             Bienvenida, {user.name} <span>👋</span>
           </h3>
-          <p className="text-muted mb-3 fst-italic">"{quote}"</p>
-
+          <Quote />
           <div className="text-center mb-3">
             <ProfilePhotoWithEdit
               profilePhoto={user.profilePhoto}

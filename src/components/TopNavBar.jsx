@@ -40,7 +40,8 @@ export default function TopNavbar() {
           
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Dieta Cetogénica</a>
+              <Link className="nav-link text-white" to="/ketoDiet">Dieta Cetogénica
+              </Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link text-white" to="/allowedFoods">
@@ -48,7 +49,9 @@ export default function TopNavbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Recetas Keto</a>
+               <Link className="nav-link text-white" to="/KetoRecipes">
+                  Recetas Keto
+                </Link>
             </li>
             <li className="nav-item">
                 <Link className="nav-link text-white" to="/landing">
@@ -82,11 +85,7 @@ export default function TopNavbar() {
                     <span style={{ fontSize: '1.5rem' }}>👤</span> Mi cuenta
                   </Link>
                 </li>
-                <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" href="#">
-                    <span style={{ fontSize: '1.5rem' }}>⚙️</span> Configuración
-                  </a>
-                </li>
+               
                 <li>
                   <Link
                     className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 

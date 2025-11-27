@@ -1,7 +1,60 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useUser } from './AuthContext';
 
 export default function LandingPage() {
-  const [isLogin, setIsLogin] = useState(true); // controla si mostrar login o registro
+  const [isLogin, setIsLogin] = useState(true);
+
+  // Estados login
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState(null);
+
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:8081/auth/login", {
+      email,
+      password,
+    });
+
+    const jwt = res.data.token;
+    localStorage.setItem("token", jwt); // 👈 usar "token" para que coincida con AuthContext
+
+    // fetch de usuario actual
+    const userRes = await axios.get("http://localhost:8081/api/users/me", {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+
+    setUser(userRes.data); // actualizar contexto
+    navigate("/profile"); // ir al perfil
+  } catch (err) {
+    console.error(err);
+    alert("Email o contraseña incorrectos");
+  }
+};
+
+  const getPrivateData = async () => {
+    const jwt = token || localStorage.getItem("jwt");
+    if (!jwt) {
+      alert("No hay token, haz login primero.");
+      return;
+    }
+    try {
+      const res = await axios.get("http://localhost:8081/api/users/1", {
+        headers: { Authorization: "Bearer " + jwt },
+      });
+      alert("Datos privados: " + JSON.stringify(res.data));
+    } catch (err) {
+      alert("No se pudo acceder a los datos privados");
+      console.error(err);
+    }
+  };
+
 
   return (
     <div
@@ -52,10 +105,12 @@ export default function LandingPage() {
             <h2 style={{ marginBottom: "1rem", textAlign: "center" }}>
               Iniciar sesión
             </h2>
-            <form>
+            <form onSubmit={handleLogin}>
               <input
                 type="email"
                 placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 style={{
                   width: "100%",
@@ -69,6 +124,8 @@ export default function LandingPage() {
               <input
                 type="password"
                 placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 style={{
                   width: "100%",
@@ -106,6 +163,14 @@ export default function LandingPage() {
                 Iniciar sesión
               </button>
             </form>
+
+            <button 
+              onClick={getPrivateData} 
+              style={{ marginTop: "1rem", width: "100%", padding: "0.6rem", fontWeight: "bold", cursor: "pointer" }}
+            >
+              Probar endpoint privado
+            </button>
+
             <p style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}>
               ¿No tienes cuenta?{" "}
               <button
