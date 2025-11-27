@@ -4,18 +4,21 @@ import { PlusCircle } from 'lucide-react';
 import { FoodResumeModal }from '@/components/Food';
 
 export default function FoodCard({ item, onAdd }) {
-  const [amount, setAmount] = useState(100); // 100 g default
+  const [amount, setAmount] = useState(100); 
   const factor = amount / (item.quantity || 100);
-  const [showModal, setShowModal] = useState(false); // to show, hide Foodresumemodal
-  const baseUrl = "http://localhost:8081/public-images";
+  const [showModal, setShowModal] = useState(false); 
+  const baseUrl = "http://localhost:8081/images";
  const rawPath = item.image_url || 'default.jpg';
   const imagePath = rawPath.startsWith('/images/')
     ? rawPath.replace('/images/', '')
     : rawPath;
 
-  const fullImageUrl = imagePath.startsWith('http')
-    ? imagePath
-  : `${baseUrl}/${imagePath}`;
+  const normalizedPath = imagePath.replace(/ /g, '_').toLowerCase();
+  
+
+  const fullImageUrl = normalizedPath.startsWith('http')
+    ? normalizedPath
+  : `${baseUrl}/${normalizedPath}`;
 
   return (
     <>
