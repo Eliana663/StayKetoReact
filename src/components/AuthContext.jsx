@@ -2,50 +2,50 @@ import { createContext, useState, useEffect, useContext } from "react";
 
 const UserContext = createContext(null);
 
-export const AuthContext = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            if (!token) {
-                setUser(null);
-                setLoading(false);
-                return;
-            }
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch("http://localhost:8081/api/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
-            try {
-                const res = await fetch("http://localhost:8081/api/users/me", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
+        if (!res.ok) {
+          throw new Error("No autorizado");
+        }
 
-                if (!res.ok) {
-                    throw new Error("No se pudo obtener el usuario");
-                }
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("Token inválido o sesión expirada.", err);
+        setUser(null);
+        localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                const data = await res.json();
-                setUser(data);
-            } catch (err) {
-                console.error(err);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
+    fetchUser();
+  }, [token]);
 
-        fetchUser();
-    }, [token]);
-
-    return (
-        <UserContext.Provider value={{ user, setUser, loading }}>
-            {children}
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={{ user, setUser, loading }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = () => useContext(UserContext);

@@ -1,35 +1,32 @@
-import { Routes, Route } from 'react-router-dom';
-import FoodSearch from './components/Food/FoodSearch';
-import ProfilePage from './components/ProfilePage';
-import TopNavbar from './components/TopNavBar';
-import PersonalPanel from './components/PersonalPanel/PersonalPanel';
-import AvocadoBackground from './components/AvocadoBackground';
-import LandingPage from './components/LandingPage';
-import DashBoard from './components/Charts/DashBoard';
-import { AuthContext } from './components/AuthContext';
-import { RequireUser } from './components/RequireUser';
-import CalorieGoal from './components/CetoCalc/CalorieGoal';
-import KetoDietIntro from './components/KetoDietIntro';
-import { AllowedFoods } from './components/MainMenu';
-import { KetoDiet } from './components/MainMenu';
-import { KetoRecipesPage } from './components/MainMenu';
-
+import { Routes, Route } from "react-router-dom";
+import FoodSearch from "./components/Food/FoodSearch";
+import ProfilePage from "./components/ProfilePage";
+import TopNavbar from "./components/TopNavBar";
+import PersonalPanel from "./components/PersonalPanel/PersonalPanel";
+import AvocadoBackground from "./components/AvocadoBackground";
+import LandingPage from "./components/LandingPage";
+import DashBoard from "./components/Charts/DashBoard";
+import CalorieGoal from "./components/CetoCalc/CalorieGoal";
+import KetoDietIntro from "./components/KetoDietIntro";
+import { AllowedFoods, KetoDiet, KetoRecipesPage } from "./components/MainMenu";
+import { AuthProvider } from "./components/AuthContext";
+import { RequireUser } from "./components/RequireUser";
 
 function App() {
   return (
-    <AuthContext>
+    <AuthProvider>
       <TopNavbar />
       <AvocadoBackground>
         <Routes>
-          {/* Public Routes */}
+          {/* Rutas públicas */}
           <Route path="/" element={<KetoDietIntro />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/home" element={<KetoDietIntro />} />
           <Route path="/allowedFoods" element={<AllowedFoods />} />
-          <Route path= "/ketoDiet" element={<KetoDiet />} />
+          <Route path="/ketoDiet" element={<KetoDiet />} />
           <Route path="/ketoRecipes" element={<KetoRecipesPage />} />
 
-          {/* Private Routes */}
+          {/* Rutas privadas */}
           <Route path="/foodDiary" element={<RequireUser><FoodSearch /></RequireUser>} />
           <Route path="/profile" element={<RequireUser><ProfilePage /></RequireUser>} />
           <Route path="/panelPersonal" element={<RequireUser><PersonalPanel /></RequireUser>} />
@@ -37,7 +34,7 @@ function App() {
           <Route path="/calculadoraKeto" element={<RequireUser><CalorieGoal /></RequireUser>} />
         </Routes>
       </AvocadoBackground>
-    </AuthContext>
+    </AuthProvider>
   );
 }
 

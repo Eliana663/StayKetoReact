@@ -27,7 +27,8 @@ export default function PersonalPanel({ profilePhoto }) {
   const [error, setError] = useState(null);
   const [showCheckKetosis, setShowCheckKetosis] = useState(false);
   const [showBodyMeasurements, setShowBodyMeasurements] = useState(false);
- 
+  const token = localStorage.getItem("token"); 
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
   //Personal Panel buttons functions
   const [showAddWeight, setShowAddWeight] = useState(false);
@@ -74,10 +75,10 @@ export default function PersonalPanel({ profilePhoto }) {
   const month = today.getMonth() + 1;
 
   Promise.all([
-    axios.get(`http://localhost:8081/api/users/${user.id}`),
-    axios.get(`http://localhost:8081/api/habit/user/${user.id}`),
-    axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`)
-  ])
+  axios.get(`http://localhost:8081/api/users/${user.id}`, config),
+  axios.get(`http://localhost:8081/api/habit/user/${user.id}`, config),
+  axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`, config)
+])
   .then(([userRes, habitsRes, monthlyRes]) => {
     setUser(userRes.data);
     setHabits(habitsRes.data);

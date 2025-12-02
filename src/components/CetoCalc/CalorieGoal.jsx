@@ -16,12 +16,14 @@ function CalorieChart() {
 
   const goalOptions = ["Perder peso", "Mantener", "Ganar musculo"];
   const maxCalories = 3000; 
+  const token = localStorage.getItem("token"); 
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
     if (!user) return; 
 
     axios
-      .get(`http://localhost:8081/api/calories/user/${user.id}`)
+      .get(`http://localhost:8081/api/calories/user/${user.id}`, config)
       .then((res) => {
         const data = res.data;
         setGoalValues(data);
