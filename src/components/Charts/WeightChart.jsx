@@ -6,12 +6,14 @@ import axios from 'axios';
 function WeightChart() {
   const { user } = useUser();
   const [weights, setWeights] = useState([]);
+  const token = localStorage.getItem("token"); 
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
   // Traer datos del backend
   useEffect(() => {
     if (!user) return;
 
-    axios.get(`http://localhost:8081/api/weight/users/${user.id}/daily-weight`)
+    axios.get(`http://localhost:8081/api/weight/users/${user.id}/daily-weight`, config)
       .then(res => setWeights(res.data || []))
       .catch(err => console.error('Error fetching weights:', err));
   }, [user]);

@@ -6,26 +6,69 @@ import Quote from "./Quote";
 
 function ProfilePage() {
   const { user, setUser } = useUser();
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const formatDateForInput = (dateStr) => {
-    if (!dateStr) return "";
-    const [day, month, year] = dateStr.split("/");
-    return `${year}-${month}-${day}`;
-  };
+  if (!dateStr) return "";
+
+  if (dateStr.includes("-")) return dateStr;
+
+  const [day, month, year] = dateStr.split("/");
+  return `${year}-${month}-${day}`;
+};
+
 
   const handlePhotoUploaded = () => {
     setReloadTrigger((prev) => prev + 1);
   };
 
-  const handleSave = async () => {
-    try {
-      await axios.put(`http://localhost:8081/api/users/${user.id}`, user);
-      alert("Datos guardados correctamente");
-      setReloadTrigger((prev) => prev + 1);
-    } catch (err) {
-      alert("Error al guardar los cambios");
+const handleSave = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("No hay token disponible. Inicia sesión de nuevo.");
+      return;
     }
-  };
+
+     const payload = {
+      name: user.name,
+      lastName: user.lastName,
+      birthDate: user.birthDate,
+      age: user.age,
+      gender: user.gender,
+      currentWeight: user.currentWeight,
+      targetWeight: user.targetWeight,
+      height: user.height,
+      activityLevel: user.activityLevel,
+      goal: user.goal,
+      pregnant: user.pregnant,
+      email: user.email,
+    };
+
+     
+    const res = await axios.put(
+      `http://localhost:8081/api/users/${user.id}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔑 aquí está el header
+        },
+      }
+    );
+
+    console.log("Respuesta del servidor:", res.data);
+    alert("Datos guardados correctamente");
+
+   
+    if (setReloadTrigger) {
+      setReloadTrigger((prev) => prev + 1);
+    }
+
+  } catch (err) {
+    console.error("Error al guardar los cambios:", err.response?.data || err.message);
+    alert("Error al guardar los cambios: revisa la consola para más detalles");
+  }
+};
 
   if (!user)
     return (
@@ -38,9 +81,16 @@ function ProfilePage() {
     <>
       <div className="card shadow p-4 mx-auto" style={{ maxWidth: "600px" }}>
         <div className="text-center">
-          <h3 className="mb-1">
-            Bienvenida, {user.name} <span>👋</span>
-          </h3>
+        <h3 className="mb-1">
+        {user?.name
+          ? user.gender === "male"
+            ? `Bienvenido, ${user.name}`
+            : user.gender === "female"
+            ? `Bienvenida, ${user.name}`
+            : `${user.name}`
+          : "Bienvenido/a"}{" "}
+        <span>👋</span>
+      </h3>
           <Quote />
           <div className="text-center mb-3">
             <ProfilePhotoWithEdit
@@ -97,10 +147,7 @@ function ProfilePage() {
           <li className="list-group-item">
             <strong>Objetivo 🎯:</strong> {user.goal}
           </li>
-          <li className="list-group-item">
-            <strong>¿Embarazada? 🤰</strong> {user.pregnant ? "Sí" : "No"}
-          </li>
-        </ul>
+          </ul>
       </div>
 
       {/* Modal para editar perfil */}
@@ -161,6 +208,7 @@ function ProfilePage() {
                   value={formatDateForInput(user.birthDate)}
                   onChange={(e) =>
                     setUser({ ...user, birthDate: e.target.value })
+                    
                   }
                 />
               </div>
@@ -311,14 +359,17 @@ function ProfilePage() {
                 Cancelar
               </button>
               <button
-                type="button"
-                className="btn btn-success"
-                onClick={handleSave}
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => {
+                  document.activeElement.blur(); // quita el foco del botón
+                  handleSave();                  // guarda los cambios
+                }}
                 data-bs-dismiss="modal"
-              >
+                >
                 Guardar cambios
               </button>
-            </div>
+             </div>
           </div>
         </div>
       </div>

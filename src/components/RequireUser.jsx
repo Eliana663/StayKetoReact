@@ -1,10 +1,12 @@
-import { useUser } from './AuthContext';
+import { Navigate } from "react-router-dom";
+import { useUser } from "./AuthContext";
 
 export const RequireUser = ({ children }) => {
   const { user, loading } = useUser();
 
-  if (loading) return <p>Loading user...</p>;
-  if (!user) return <p>Please log in</p>;
+  if (loading) return <p>Cargando...</p>; // Espera a cargar user
 
-  return children; 
+  if (!user) return <Navigate to="/landing" replace />; // Si no hay user, redirige
+
+  return children;
 };

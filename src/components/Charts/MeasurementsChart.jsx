@@ -7,11 +7,13 @@ const colors = ['#5470C6', '#91CC75', '#EE6666', '#FAC858', '#73C0DE', '#3BA272'
 export default function MeasurementsChart({ userId }) {
   const [measurements, setMeasurements] = useState([]);
   const [option, setOption] = useState(null);
+  const token = localStorage.getItem("token"); 
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
     if (!userId) return;
 
-    axios.get(`http://localhost:8081/api/daily-measurements/user/${userId}`)
+    axios.get(`http://localhost:8081/api/daily-measurements/user/${userId}`,config)
       .then(res => setMeasurements(res.data))
       .catch(err => console.error(err));
   }, [userId]);

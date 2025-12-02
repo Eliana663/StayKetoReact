@@ -4,7 +4,6 @@ import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
 
 export default function FoodSearch() {
-
   const { user } = useUser();
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
@@ -13,15 +12,24 @@ export default function FoodSearch() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showMacros, setShowMacros] = useState(false);
 
+  const token = localStorage.getItem("token"); 
+  const configHeaders = { 
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+
   if (!user) {
     console.error("No user logged in");
-    return;
+    return <p>No hay usuario logueado.</p>;
   }
-  
+
+  // --- Traer alimentos del día ---
   const fetchTodaySelectedItems = async () => {
     try {
       const today = new Date().toISOString().slice(0, 10); // yyyy-MM-dd
-      const res = await fetch(`http://localhost:8081/api/daily-food?date=${today}`);
+      const res = await fetch(`http://localhost:8081/api/daily-food?date=${today}`, {
+        headers: configHeaders
+      });
       if (!res.ok) throw new Error('Error al cargar alimentos del día');
       const data = await res.json();
       setSelectedItems(data);
@@ -34,23 +42,26 @@ export default function FoodSearch() {
     fetchTodaySelectedItems();
   }, []);
 
+  // --- Buscar alimentos por nombre ---
   const fetchFoodByName = async (name) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`);
-          if (!response.ok) throw new Error('Error al obtener los alimentos');
 
-          const data = await response.json(); 
+      const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`, {
+        headers: configHeaders
+      });
+      if (!response.ok) throw new Error('Error al obtener los alimentos');
 
-          if (!data || data.length === 0) {
-            setFoodItems([]);
-            setError('No se encontraron alimentos con ese término');
-            return;
-          }
+      const data = await response.json(); 
+
+      if (!data || data.length === 0) {
+        setFoodItems([]);
+        setError('No se encontraron alimentos con ese término');
+        return;
+      }
 
       setFoodItems(data);
-
     } catch (err) {
       setError(err.message);
       setFoodItems([]);
@@ -59,6 +70,7 @@ export default function FoodSearch() {
     }
   };
 
+  // --- Añadir alimento al día ---
   const handleAddItem = async (item, amount) => {
     const quantity = Number(amount) || 100;
     const factor = quantity / (item.quantity || 100);
@@ -71,29 +83,29 @@ export default function FoodSearch() {
       fat: (item.fat || 0) * factor,
       calories: (item.calories || 0) * factor,
       weightInGrams: quantity,
-      date: new Date().toISOString().slice(0, 10), // yyyy-MM-dd
+      date: new Date().toISOString().slice(0, 10),
     };
 
     try {
       const res = await fetch(`http://localhost:8081/api/daily-food/users/${user.id}`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: configHeaders,
         body: JSON.stringify(newItem),
       });
       if (!res.ok) throw new Error('Error guardando alimento');
 
-      
       await fetchTodaySelectedItems();
     } catch (error) {
       console.error(error);
     }
   };
 
+  // --- Remover alimento ---
   const handleRemoveItem = (index) => {
-   
     setSelectedItems(prev => prev.filter((_, i) => i !== index));
   };
 
+  // --- Totales ---
   const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
   const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
   const totalCarbs = selectedItems.reduce((sum, f) => sum + f.carbohydrates, 0);
