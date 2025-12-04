@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import DonutChart from '@/components/Food/DonutChart';
+import { api } from "../../api";
 
 export default function FoodResumeModal({ show, onClose, item, amount, setAmount, onAdd }) {
   if (!item) return null;
@@ -11,7 +12,7 @@ export default function FoodResumeModal({ show, onClose, item, amount, setAmount
 
   const imageUrl = item.image_url?.startsWith('http')
     ? item.image_url
-    : `http://localhost:8081${item.image_url?.startsWith('/') ? '' : '/'}${item.image_url || 'images/default.jpg'}`;
+    : `${api.defaults.baseURL}${item.image_url?.startsWith('/') ? '' : '/'}${item.image_url || 'images/default.jpg'}`;
 
   const chartDataItem = {
     carbohydrates: (Number(item.carbohydrates) || 0) * factor,

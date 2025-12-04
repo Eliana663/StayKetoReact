@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
+import { api } from "../../api";
 
 export default function AllowedFoods() {
   const { user } = useUser();
@@ -13,7 +14,7 @@ export default function AllowedFoods() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`);
+      const response = await api.get(`api/food/searchByName?name=${encodeURIComponent(name)}`);
       if (!response.ok) throw new Error('Error al obtener los alimentos');
       const data = await response.json();
 

@@ -6,6 +6,9 @@ import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
 import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurements";
 import Quote from "../Quote";
 import { useUser } from "../AuthContext";
+import { api } from "../../api";
+import { UPLOADS_URL } from "../../api";
+
 
 
 
@@ -67,7 +70,7 @@ export default function PersonalPanel({ profilePhoto }) {
 }
    //Load user and monthly habits
  useEffect(() => {
-  if (!user) return; // si no hay user, no hacemos nada
+  if (!user) return; 
   setLoading(true);
 
   const today = new Date();
@@ -75,9 +78,9 @@ export default function PersonalPanel({ profilePhoto }) {
   const month = today.getMonth() + 1;
 
   Promise.all([
-  axios.get(`http://localhost:8081/api/users/${user.id}`, config),
-  axios.get(`http://localhost:8081/api/habit/user/${user.id}`, config),
-  axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`, config)
+  api.get(`/api/users/${user.id}`, config),
+  api.get(`/api/habit/user/${user.id}`, config),
+  api.get(`/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`, config)
 ])
   .then(([userRes, habitsRes, monthlyRes]) => {
     setUser(userRes.data);
@@ -117,7 +120,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const habitObj = {name: newHabit, userId: user.id, color: habitColor};
 
   
-    axios.post('http://localhost:8081/api/habit/new-habit', habitObj)
+    api.post('/api/habit/new-habit', habitObj)
       .then(res => {
         const saved = res.data;
         setHabits(prev => [
@@ -158,7 +161,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
     
       const todayStr = new Date().toISOString().split('T')[0];
-      axios.post('http://localhost:8081/api/habit/tracker/bulk-habits', {
+      api.post('/api/habit/tracker/bulk-habits', {
         userId: user.id,
         date: todayStr,
         habit: { id: habit.id, name: habit.name },
@@ -209,7 +212,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
          
 
-          axios.delete(`http://localhost:8081/api/habit/delete/${id}`)
+          api.delete(`/api/habit/delete/${id}`)
           .then(() => {
             setHabits(prev => prev.filter(h => h.id !==id));
           })
@@ -257,7 +260,7 @@ export default function PersonalPanel({ profilePhoto }) {
     <div style={{ maxWidth: 600, margin: "auto" }}>
       {user?.profilePhoto && (
         <img
-          src={`http://localhost:8081/uploads/${user.profilePhoto}`}
+          src={`${UPLOADS_URL}/${user.profilePhoto}`}
           alt="Foto de perfil"
           style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", margin: "1rem auto", display: "block" }}
         />

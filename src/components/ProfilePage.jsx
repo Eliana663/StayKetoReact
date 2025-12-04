@@ -3,6 +3,8 @@ import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 import { useUser } from "./AuthContext";
 import Quote from "./Quote";
+import { api } from "../api";
+
 
 function ProfilePage() {
   const { user, setUser } = useUser();
@@ -46,8 +48,8 @@ const handleSave = async () => {
     };
 
      
-    const res = await axios.put(
-      `http://localhost:8081/api/users/${user.id}`,
+    const res = await api.put(
+      `/api/users/${user.id}`,
       payload,
       {
         headers: {
