@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChart from './MiniDonutChart';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { api } from "../../../api";
 
 export default function MiniDonutChartGrid() {
   const [data, setData] = useState([]);
@@ -15,41 +16,42 @@ export default function MiniDonutChartGrid() {
   };
 
   useEffect(() => {
-    const hoy = new Date();
+  const hoy = new Date();
 
-    // 📅 Calcular inicio y fin de la semana actual (lunes a domingo)
-    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); // lunes
-    const finSemana = endOfWeek(hoy, { weekStartsOn: 1 }); // domingo
+  const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); 
+  const finSemana = endOfWeek(hoy, { weekStartsOn: 1 }); 
 
-    const formatDate = (date) => format(date, 'yyyy-MM-dd');
+  const formatDate = (date) => format(date, 'yyyy-MM-dd');
 
-    const start = formatDate(inicioSemana);
-    const end = formatDate(finSemana);
+  const start = formatDate(inicioSemana);
+  const end = formatDate(finSemana);
 
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8081/api/daily-food/macros-by-date?start=${start}&end=${end}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Error al cargar datos');
-        return res.json();
-      })
-      .then(json => {
-        // Agregar nombre del día y fecha formateada
-        const dataConLabels = json.map(item => ({
-          ...item,
-          label: getDayName(item.date), // día de la semana
-          dateLabel: format(new Date(item.date), 'dd/MM/yyyy') // fecha
-        }));
+    try {
+      const res = await api.get(`/api/daily-food/macros-by-date?start=${start}&end=${end}`);
+      const json = res.data; // Axios devuelve los datos aquí
 
-        setData(dataConLabels);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+      // Agregar nombre del día y fecha formateada
+      const dataConLabels = json.map(item => ({
+        ...item,
+        label: getDayName(item.date), // día de la semana
+        dateLabel: format(new Date(item.date), 'dd/MM/yyyy') // fecha
+      }));
+
+      setData(dataConLabels);
+      setLoading(false);
+
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
 
   if (loading) return <p>Cargando datos de macros...</p>;
   if (error) return <p className="text-danger">Error: {error}</p>;

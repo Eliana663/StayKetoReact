@@ -1,7 +1,7 @@
 import { useUser } from '../AuthContext';
 import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
-import axios from 'axios';
+import { api } from "../../api";
 
 function WeightChart() {
   const { user } = useUser();
@@ -13,7 +13,7 @@ function WeightChart() {
   useEffect(() => {
     if (!user) return;
 
-    axios.get(`http://localhost:8081/api/weight/users/${user.id}/daily-weight`, config)
+    api.get(`/api/weight/users/${user.id}/daily-weight`, config)
       .then(res => setWeights(res.data || []))
       .catch(err => console.error('Error fetching weights:', err));
   }, [user]);

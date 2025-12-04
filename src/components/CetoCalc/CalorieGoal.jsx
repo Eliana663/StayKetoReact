@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import { useUser } from "../AuthContext"; 
+import { api } from "../../api";
 
 function CalorieChart() {
   const { user } = useUser();
@@ -22,8 +23,8 @@ function CalorieChart() {
   useEffect(() => {
     if (!user) return; 
 
-    axios
-      .get(`http://localhost:8081/api/calories/user/${user.id}`, config)
+    api
+      .get(`/api/calories/user/${user.id}`, config)
       .then((res) => {
         const data = res.data;
         setGoalValues(data);

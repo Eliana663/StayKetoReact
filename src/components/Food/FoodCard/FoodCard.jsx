@@ -2,28 +2,23 @@ import styles from '@/components/Food/FoodCard/FoodCard.module.css';
 import { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { FoodResumeModal } from '@/components/Food';
+import { api, UPLOADS_URL, IMAGES_URL } from "../../../api";
 
 export default function FoodCard({ item, onAdd }) {
   const [amount, setAmount] = useState(100);
   const factor = amount / (item.quantity || 100);
   const [showModal, setShowModal] = useState(false);
 
-  const baseUrl = "http://localhost:8081/images";
-
-  // Construye URL de imagen, usando default.jpg si no existe o es inválida
   const getImageUrl = (rawPath) => {
-    if (!rawPath) return `${baseUrl}/default.jpg`;
+    if (!rawPath) return `${IMAGES_URL}/default.jpg`;
 
-    let imagePath = rawPath.startsWith('/images/')
-      ? rawPath.replace('/images/', '')
-      : rawPath;
-
+    let imagePath = rawPath.startsWith('/images/') ? rawPath.replace('/images/', '') : rawPath;
     imagePath = imagePath.replace(/ /g, '_').toLowerCase();
 
     // Si es un link absoluto, lo usamos tal cual
     if (imagePath.startsWith('http')) return imagePath;
 
-    return `${baseUrl}/${imagePath}`;
+    return `${IMAGES_URL}/${imagePath}`;
   };
 
   const fullImageUrl = getImageUrl(item.image_url);
@@ -43,8 +38,8 @@ export default function FoodCard({ item, onAdd }) {
               alt={item.name}
               className={styles.image}
               onError={e => {
-                e.target.onerror = null; // evita loop infinito
-                e.target.src = `${baseUrl}/default.jpg`;
+                e.target.onerror = null;
+                e.target.src = `${IMAGES_URL}/default.jpg`;
               }}
             />
           </div>

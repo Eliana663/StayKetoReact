@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChartGrid from '@/components/Food/Macros/MiniDonutChartGrid';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { api } from "../../../api";
 
 export default function Mismacros() {
   const [dailyMacros, setDailyMacros] = useState({
@@ -19,42 +20,41 @@ export default function Mismacros() {
 
   const formatDate = (d) => format(new Date(d), 'yyyy-MM-dd');
 
-  useEffect(() => {
-    async function fetchMacros() {
-      try {
-        const res = await fetch(
-          `http://localhost:8081/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
-        );
-        const data = await res.json();
+ useEffect(() => {
+  async function fetchMacros() {
+    try {
+      const res = await api.get(`/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`);
+      const data = res.data; // Axios devuelve los datos aquí
 
-        // 🛡 Filtrar días vacíos (todos en cero)
-        const filteredData = data.filter(d =>
-          (d.proteins > 0 || d.fat > 0 || d.carbohydrates > 0 || d.calories > 0)
-        );
+     
+      const filteredData = data.filter(d =>
+        d.proteins > 0 || d.fat > 0 || d.carbohydrates > 0 || d.calories > 0
+      );
 
-        setWeeklyData(filteredData);
+      setWeeklyData(filteredData);
 
-        // 📅 Macros del día actual
-        const todayString = formatDate(today);
-        const todayMacros = filteredData.find(d => d.date === todayString) || {
-          proteins: 0,
-          fat: 0,
-          carbohydrates: 0,
-          calories: 0,
-        };
+      const todayString = formatDate(today);
+      const todayMacros = filteredData.find(d => d.date === todayString) || {
+        proteins: 0,
+        fat: 0,
+        carbohydrates: 0,
+        calories: 0,
+      };
 
-        setDailyMacros({
-          proteins: todayMacros.proteins || 0,
-          fat: todayMacros.fat || 0,
-          carbs: todayMacros.carbohydrates || 0,
-          calories: todayMacros.calories || 0,
-        });
-      } catch (error) {
-        console.error('❌ Error cargando macros:', error);
-      }
+      setDailyMacros({
+        proteins: todayMacros.proteins || 0,
+        fat: todayMacros.fat || 0,
+        carbs: todayMacros.carbohydrates || 0,
+        calories: todayMacros.calories || 0,
+      });
+
+    } catch (error) {
+      console.error('❌ Error cargando macros:', error);
     }
-    fetchMacros();
-  }, [startDate, endDate]);
+  }
+
+  fetchMacros();
+}, [startDate, endDate]);
 
   const proteinGoal = 75;
   const fatGoal = 130;
