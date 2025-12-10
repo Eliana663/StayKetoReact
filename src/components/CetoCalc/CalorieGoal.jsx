@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
-import { useUser } from "../AuthContext"; 
+import { useAuth } from "../AuthContext"; 
 
 function CalorieChart() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [goalValues, setGoalValues] = useState({
     loseWeight: 0,
     maintain: 0,

@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect, useContext } from "react";
 
-const UserContext = createContext(null);
+// Creamos el contexto
+const AuthContext = createContext(null);
 
+// Componente proveedor que envuelve la app
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,10 +44,11 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, token }}>
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+// Hook personalizado para usar el contexto
+export const useAuth = () => useContext(AuthContext);

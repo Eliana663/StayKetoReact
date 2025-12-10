@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useUser } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 
 export const RequireUser = ({ children }) => {
-  const { user, loading } = useUser();
+  const { user, loading } = useAuth();
 
   if (loading) return <p>Cargando...</p>; // Espera a cargar user
 

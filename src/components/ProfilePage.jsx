@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
-import { useUser } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 import Quote from "./Quote";
 
 function ProfilePage() {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useAuth();
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const formatDateForInput = (dateStr) => {

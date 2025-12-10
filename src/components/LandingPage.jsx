@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useUser();
+  const { setUser } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -5,7 +5,7 @@ import AddWeight from "@/components/PersonalPanel/AddWeight";
 import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
 import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurements";
 import Quote from "../Quote";
-import { useUser } from "../AuthContext";
+import { useAuth } from "../AuthContext";
 
 
 
@@ -18,7 +18,8 @@ const defaultHabits = [
 
 
 export default function PersonalPanel({ profilePhoto }) {
- const { user, setUser } = useUser();
+ const { user, setUser } = useAuth();
+ 
   // --- State ---
   const [habits, setHabits] = useState(defaultHabits); // current habits
   const [newHabit, setNewHabit] = useState("");         
@@ -128,43 +129,46 @@ export default function PersonalPanel({ profilePhoto }) {
   };
 
   // --- Toggle habit ---
-  const toggleHabit = (id) => {
+ const toggleHabit = (id) => {
   const habit = habits.find(h => h.id === id);
   if (!habit) return;
 
   const newDone = !habit.done;
   const today = new Date().getDate();
 
-  
+  // Actualiza estado local
   setHabits(prev => prev.map(h => h.id === id ? { ...h, done: newDone } : h));
 
+  setMonthlyHabits(prev => {
+    const existingDay = prev.find(d => d.dia === today);
+    const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name, color: habit.color };
 
-      setMonthlyHabits(prev => {
-        const existingDay = prev.find(d => d.dia === today);
-        const newDayHabit = { trackerId: habit.id, done: newDone, name: habit.name, color: habit.color };
+    if (existingDay) {
+      const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== habit.id);
+      const updatedDay = { 
+        ...existingDay, 
+        dayHabits: newDone ? [...dayHabitsFiltered, newDayHabit] : dayHabitsFiltered
+      };
+      return [...prev.filter(d => d.dia !== today), updatedDay];
+    } else {
+      return [...prev, { dia: today, dayHabits: [newDayHabit] } ];
+    }
+  });
 
+  // --- Aquí defines todayStr justo antes del post ---
+  const todayStr = new Date().toISOString().split('T')[0];
 
-        if (existingDay) {
-          const dayHabitsFiltered = existingDay.dayHabits.filter(hb => hb.trackerId !== habit.id);
-          const updatedDay = { 
-            ...existingDay, 
-            dayHabits: newDone ? [...dayHabitsFiltered, newDayHabit] : dayHabitsFiltered
-          };
-          return [...prev.filter(d => d.dia !== today), updatedDay];
-        } else {
-          return [...prev, { dia: today, dayHabits: [newDayHabit] }];
-        }
-      });
-
-    
-      const todayStr = new Date().toISOString().split('T')[0];
-      axios.post('http://localhost:8081/api/habit/tracker/bulk-habits', {
-        userId: user.id,
-        date: todayStr,
-        habit: { id: habit.id, name: habit.name },
-        completed: newDone
-      }).catch(err => console.error("Error updating habit:", err));
-    };
+  axios.post(
+    'http://localhost:8081/api/habit/tracker/bulk-habits',
+    {
+      userId: user.id,
+      date: todayStr,
+      habit: { id: habit.id, name: habit.name },
+      completed: newDone
+    },
+    config
+  ).catch(err => console.error("Error updating habit:", err));
+};
       const startEditingHabit = (id) => {
         const habit = habits.find((h) => h.id === id);
         if (habit) {

@@ -4,14 +4,14 @@ import FoodSearch from "../components/Food/FoodSearch";
 import { vi } from "vitest";
 import * as AuthContext from "../components/AuthContext";
 
-// Mock useUser
+// Mock useAuth
 vi.mock("../components/AuthContext", () => ({
-  useUser: vi.fn(),
+  useAuth: vi.fn(),
 }));
 
 beforeEach(() => {
   // Mock the logged-in user
-  AuthContext.useUser.mockReturnValue({ user: { id: 1, name: "Test User" } });
+  AuthContext.useAuth.mockReturnValue({ user: { id: 1, name: "Test User" } });
 
   // Mock all fetch calls used by the component
   global.fetch = vi.fn((url) => {

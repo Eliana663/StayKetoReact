@@ -1,10 +1,10 @@
-import { useUser } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import axios from 'axios';
 
 function WeightChart() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [weights, setWeights] = useState([]);
   const token = localStorage.getItem("token"); 
   const config = { headers: { Authorization: `Bearer ${token}` } };

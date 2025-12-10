@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import illustration from '../../assets/figura.png'; 
-import { useUser } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import axios from "axios";
 
 export default function BodyMeasurementsForm() {
 
-  const { user } = useUser();
+  const { user } = useAuth();
   const [measurements, setMeasurements] = useState({
     brazo: '',
     pecho: '',
