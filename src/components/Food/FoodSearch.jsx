@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
 
 export default function FoodSearch() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);

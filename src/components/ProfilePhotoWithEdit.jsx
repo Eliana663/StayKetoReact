@@ -1,8 +1,14 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 
 export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUploaded }) {
   const fileInputRef = useRef();
+  const [photo, setPhoto] = useState(profilePhoto);
+
+  // Si profilePhoto cambia desde afuera, actualizamos el estado interno
+  useEffect(() => {
+    setPhoto(profilePhoto);
+  }, [profilePhoto]);
 
   const handleClickEdit = () => {
     fileInputRef.current.click();
@@ -15,28 +21,38 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     formData.append("file", file);
 
     try {
-      await axios.post(`http://localhost:8081/api/users/${userId}/upload-photo`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      alert("Foto subida con éxito");
-      onPhotoUploaded(); 
+      const token = localStorage.getItem("token"); // Asegúrate de tener el token guardado
+      const { data } = await axios.post(
+        `http://localhost:8081/api/users/${userId}/upload-photo`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // data.photoUrl viene del backend
+      setPhoto(data.photoUrl);
+      if (onPhotoUploaded) onPhotoUploaded(); 
     } catch (error) {
-      alert("Error al subir la foto");
       console.error(error);
+      alert("Error al subir la foto");
     }
   };
 
   return (
     <div style={{ position: "relative", width: "120px", margin: "0 auto 1rem auto" }}>
-      {profilePhoto ? (
+      {photo ? (
         <img
-          src={`http://localhost:8081/uploads/${profilePhoto}`}
+          src={`http://localhost:8081/uploads/${photo}`}
           alt="Foto de perfil"
           className="rounded-circle img-thumbnail"
           style={{ width: "120px", height: "120px", objectFit: "cover" }}
           onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto"; 
+            e.target.onerror = null;
+            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto";
           }}
         />
       ) : (
@@ -78,3 +94,4 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     </div>
   );
 }
+

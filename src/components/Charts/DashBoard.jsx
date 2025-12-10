@@ -1,9 +1,9 @@
-import { useUser } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import WeightChart from '@/components/Charts/WeightChart';
 import MeasurementsChart from '@/components/Charts/MeasurementsChart';
 
 export default function Dashboard() {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   if (!user) return <p>Cargando datos del usuario...</p>; 
 

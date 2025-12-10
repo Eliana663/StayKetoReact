@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useUser } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 
 export default function AllowedFoods() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);

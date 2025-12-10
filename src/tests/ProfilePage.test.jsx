@@ -17,13 +17,13 @@ vi.mock("../components/ProfilePhotoWithEdit", () => ({
   default: () => <div data-testid="profile-photo" />,
 }));
 
-// Mock useUser with state
+// Mock useAuth with state
 const mockSetUser = vi.fn();
 
 vi.mock("../components/AuthContext", () => {
   const React = require("react");
   return {
-    useUser: () => {
+    useAuth: () => {
       const [user, setUser] = React.useState({
         id: 1,
         name: "Eliana",
