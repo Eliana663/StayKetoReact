@@ -1,13 +1,21 @@
 import React from 'react';
 import avocadoImg from '@/assets/avocado.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from "./AuthContext";
 
 export default function TopNavbar() {
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Borrar token
+    setUser(null); // Limpiar usuario del contexto
+    navigate("/home"); // Redirigir a Home
+  };
+
   return (
     <nav className="navbar navbar-expand-lg bg-success border-bottom mb-1">
       <div className="container-fluid">
-        
-        
         <Link
           to="/home"
           className="navbar-brand d-flex align-items-center fw-bold text-white fs-3"
@@ -21,7 +29,6 @@ export default function TopNavbar() {
           StayKeto
         </Link>
 
-       
         <button
           className="navbar-toggler"
           type="button"
@@ -34,49 +41,38 @@ export default function TopNavbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-     
         <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
-          
-          
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
             <li className="nav-item">
-              <Link className="nav-link text-white" to="/ketoDiet">Dieta Cetogénica
-              </Link>
+              <Link className="nav-link text-white" to="/ketoDiet">Dieta Cetogénica</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-white" to="/allowedFoods">
-              Alimentos permitidos
-              </Link>
+              <Link className="nav-link text-white" to="/allowedFoods">Alimentos permitidos</Link>
             </li>
             <li className="nav-item">
-               <Link className="nav-link text-white" to="/KetoRecipes">
-                  Recetas Keto
-                </Link>
+              <Link className="nav-link text-white" to="/KetoRecipes">Recetas Keto</Link>
             </li>
             <li className="nav-item">
-                <Link className="nav-link text-white" to="/landing">
-                  Iniciar Sesión
-                </Link>
-              </li>
+              <Link className="nav-link text-white" to="/landing">Iniciar Sesión</Link>
+            </li>
           </ul>
 
-          
           <div className="d-flex align-items-center ms-auto position-relative">
-                <div className="dropdown">
-          <button
-            className="btn btn-outline-light dropdown-toggle fs-5 px-4 py-2"
-            type="button"
-            id="userMenuButton"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            🥑 Usuario
-          </button>
-          <ul
-            className="dropdown-menu dropdown-menu-end fs-6"
-            aria-labelledby="userMenuButton"
-            style={{ minWidth: '220px' }}
-          >
+            <div className="dropdown">
+              <button
+                className="btn btn-outline-light dropdown-toggle fs-5 px-4 py-2"
+                type="button"
+                id="userMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                🥑 Usuario
+              </button>
+              <ul
+                className="dropdown-menu dropdown-menu-end fs-6"
+                aria-labelledby="userMenuButton"
+                style={{ minWidth: '220px' }}
+              >
                 <li>
                   <Link
                     className="dropdown-item py-3 d-flex align-items-center gap-3 text-success"
@@ -85,7 +81,6 @@ export default function TopNavbar() {
                     <span style={{ fontSize: '1.5rem' }}>👤</span> Mi cuenta
                   </Link>
                 </li>
-               
                 <li>
                   <Link
                     className="dropdown-item py-3 d-flex align-items-center gap-3 text-success" 
@@ -116,15 +111,20 @@ export default function TopNavbar() {
                   </Link>
                 </li>
                 <li><hr className="dropdown-divider" /></li>
+
+                {/* Cerrar sesión */}
                 <li>
-                  <a className="dropdown-item py-3 d-flex align-items-center gap-3 text-danger fw-semibold" href="#">
+                  <button
+                    onClick={handleLogout}
+                    className="dropdown-item py-3 d-flex align-items-center gap-3 text-danger fw-semibold"
+                    style={{ background: "none", border: "none", width: "100%", textAlign: "left" }}
+                  >
                     <span style={{ fontSize: '1.5rem' }}>🚪</span> Cerrar sesión
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
           </div>
-
         </div>
       </div>
     </nav>
