@@ -15,7 +15,7 @@ export default function LandingPage() {
     e.preventDefault();
     try {
       // Login y guardado del token
-      const res = await axios.post("{ API_BASE_URL }/auth/login", { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
       const jwt = res.data.token;
       localStorage.setItem("token", jwt);
 

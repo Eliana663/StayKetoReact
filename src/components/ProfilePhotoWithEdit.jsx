@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from '../constants';
+import defaultPhoto from "../assets/default-user.jpg"
 
 export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUploaded }) {
   const fileInputRef = useRef();
@@ -47,15 +48,15 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     <div style={{ position: "relative", width: "120px", margin: "0 auto 1rem auto" }}>
       {photo ? (
         <img
-          src={`{ API_BASE_URL }/uploads/${photo}`}
+          src={`${API_BASE_URL}/uploads/${photo}`} 
           alt="Foto de perfil"
           className="rounded-circle img-thumbnail"
           style={{ width: "120px", height: "120px", objectFit: "cover" }}
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto";
+            e.target.src = defaultPhoto; 
           }}
-        />
+/>
       ) : (
         <div
           className="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white"

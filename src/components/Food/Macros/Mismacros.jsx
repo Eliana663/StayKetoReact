@@ -23,9 +23,27 @@ export default function Mismacros() {
   useEffect(() => {
     async function fetchMacros() {
       try {
+        // 1. Obtener el token del localStorage
+        const token = localStorage.getItem("token");
+
+        // 2. Añadir el token a los headers de la petición fetch
         const res = await fetch(
-          `${ API_BASE_URL }/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
+          `${API_BASE_URL}/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`, // <-- Esto es lo que falta
+              'Content-Type': 'application/json'
+            }
+          }
         );
+
+        // 3. Si el servidor responde 401 o 403, es que el token falló
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText || 'Error en la petición');
+        }
+
         const data = await res.json();
 
         // 🛡 Filtrar días vacíos (todos en cero)
