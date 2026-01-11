@@ -2,28 +2,32 @@ import styles from '@/components/Food/FoodCard/FoodCard.module.css';
 import { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { FoodResumeModal } from '@/components/Food';
+import { API_BASE_URL } from '../../../constants';
 
 export default function FoodCard({ item, onAdd }) {
   const [amount, setAmount] = useState(100);
   const factor = amount / (item.quantity || 100);
   const [showModal, setShowModal] = useState(false);
 
-  const baseUrl = "http://localhost:8081/images";
+  const imagesBaseUrl = `${API_BASE_URL}/images`;
 
-  // Construye URL de imagen, usando default.jpg si no existe o es inválida
   const getImageUrl = (rawPath) => {
-    if (!rawPath) return `${baseUrl}/default.jpg`;
+    if (!rawPath) return `${imagesBaseUrl}/default.jpg`;
 
-    let imagePath = rawPath.startsWith('/images/')
-      ? rawPath.replace('/images/', '')
-      : rawPath;
+    let cleanPath = rawPath.replace(/http:\/\/localhost:\d+\/images\//, '');
+    cleanPath = cleanPath.replace(/http:\/\/localhost:\d+\//, '');
 
-    imagePath = imagePath.replace(/ /g, '_').toLowerCase();
+    if (cleanPath.startsWith('http')) return cleanPath;
 
-    // Si es un link absoluto, lo usamos tal cual
-    if (imagePath.startsWith('http')) return imagePath;
+    let fileName = cleanPath;
+    if (cleanPath.startsWith('images/')) {
+      fileName = cleanPath.replace('images/', '');
+    } else if (cleanPath.startsWith('/images/')) {
+      fileName = cleanPath.replace('/images/', '');
+    }
 
-    return `${baseUrl}/${imagePath}`;
+    fileName = fileName.replace(/ /g, '_').toLowerCase();
+    return `${imagesBaseUrl}/${fileName}`;
   };
 
   const fullImageUrl = getImageUrl(item.image_url);
@@ -43,8 +47,8 @@ export default function FoodCard({ item, onAdd }) {
               alt={item.name}
               className={styles.image}
               onError={e => {
-                e.target.onerror = null; // evita loop infinito
-                e.target.src = `${baseUrl}/default.jpg`;
+                e.target.onerror = null;
+                e.target.src = `${imagesBaseUrl}/default.jpg`;
               }}
             />
           </div>
@@ -59,10 +63,10 @@ export default function FoodCard({ item, onAdd }) {
             </div>
 
             <div className={styles.nutrientsRow + " row small"}>
-              <div className="col"><strong>Calorías:</strong> {(item.calories * factor).toFixed(1)} kcal</div>
-              <div className="col"><strong>Carbohidratos netos:</strong> {(item.carbohydrates * factor).toFixed(1)} g</div>
-              <div className="col"><strong>Grasas:</strong> {(item.fat * factor).toFixed(1)} g</div>
-              <div className="col"><strong>Proteínas:</strong> {(item.proteins * factor).toFixed(1)} g</div>
+              <div className="col"><strong>Cal:</strong> {(item.calories * factor).toFixed(1)}</div>
+              <div className="col"><strong>Carbs:</strong> {(item.carbohydrates * factor).toFixed(1)}g</div>
+              <div className="col"><strong>Grasas:</strong> {(item.fat * factor).toFixed(1)}g</div>
+              <div className="col"><strong>Prot:</strong> {(item.proteins * factor).toFixed(1)}g</div>
             </div>
           </div>
 
@@ -70,7 +74,6 @@ export default function FoodCard({ item, onAdd }) {
             <div className={`${styles.buttonContainer} col-md-1 text-center`}>
               <button
                 className="btn btn-outline-success"
-                title="Agregar"
                 onClick={(e) => {
                   e.stopPropagation();
                   onAdd(item, amount);

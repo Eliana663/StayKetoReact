@@ -2,6 +2,7 @@ import { useState } from 'react';
 import illustration from '../../assets/figura.png'; 
 import { useAuth } from '../AuthContext';
 import axios from "axios";
+import { API_BASE_URL } from '../../constants';
 
 export default function BodyMeasurementsForm() {
 
@@ -41,7 +42,7 @@ export default function BodyMeasurementsForm() {
 
   try {
     const res = await axios.post(
-      "http://localhost:8081/api/daily-measurements",
+      `${ API_BASE_URL }/api/daily-measurements`,
       dto
     );
     console.log("Medidas guardadas:", res.data);

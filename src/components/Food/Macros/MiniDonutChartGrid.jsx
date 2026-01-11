@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChart from './MiniDonutChart';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { API_BASE_URL } from '../../../constants';
 
 export default function MiniDonutChartGrid() {
   const [data, setData] = useState([]);
@@ -14,32 +15,40 @@ export default function MiniDonutChartGrid() {
     return date.toLocaleDateString('es-ES', { weekday: 'long' }); // ej: "lunes"
   };
 
-  useEffect(() => {
+ useEffect(() => {
     const hoy = new Date();
-
-    // 📅 Calcular inicio y fin de la semana actual (lunes a domingo)
-    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); // lunes
-    const finSemana = endOfWeek(hoy, { weekStartsOn: 1 }); // domingo
-
+    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 });
+    const finSemana = endOfWeek(hoy, { weekStartsOn: 1 });
     const formatDate = (date) => format(date, 'yyyy-MM-dd');
-
     const start = formatDate(inicioSemana);
     const end = formatDate(finSemana);
 
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8081/api/daily-food/macros-by-date?start=${start}&end=${end}`)
+    // 1. Obtenemos el token
+    const token = localStorage.getItem("token");
+
+    // 2. Agregamos el objeto de configuración con los headers
+    fetch(`${API_BASE_URL}/api/daily-food/macros-by-date?start=${start}&end=${end}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // <-- El pasaporte para entrar
+        'Content-Type': 'application/json'
+      }
+    })
       .then(res => {
-        if (!res.ok) throw new Error('Error al cargar datos');
+        if (!res.ok) {
+           if(res.status === 401) throw new Error('Sesión expirada o no autorizada');
+           throw new Error('Error al cargar datos');
+        }
         return res.json();
       })
       .then(json => {
-        // Agregar nombre del día y fecha formateada
         const dataConLabels = json.map(item => ({
           ...item,
-          label: getDayName(item.date), // día de la semana
-          dateLabel: format(new Date(item.date), 'dd/MM/yyyy') // fecha
+          label: getDayName(item.date),
+          dateLabel: format(new Date(item.date), 'dd/MM/yyyy')
         }));
 
         setData(dataConLabels);

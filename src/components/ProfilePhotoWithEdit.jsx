@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from '../constants';
+// Importamos la imagen local como respaldo
+import defaultPhoto from "../assets/default-user.jpg"; 
 
 export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUploaded }) {
   const fileInputRef = useRef();
   const [photo, setPhoto] = useState(profilePhoto);
 
-  // Si profilePhoto cambia desde afuera, actualizamos el estado interno
+  // Actualiza la miniatura si el usuario cambia en el estado global
   useEffect(() => {
     setPhoto(profilePhoto);
   }, [profilePhoto]);
@@ -21,9 +24,9 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     formData.append("file", file);
 
     try {
-      const token = localStorage.getItem("token"); // Asegúrate de tener el token guardado
+      const token = localStorage.getItem("token");
       const { data } = await axios.post(
-        `http://localhost:8081/api/users/${userId}/upload-photo`,
+        `${API_BASE_URL}/api/users/${userId}/upload-photo`,
         formData,
         {
           headers: {
@@ -33,36 +36,32 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
         }
       );
 
-      // data.photoUrl viene del backend
+      // El backend devuelve el nuevo nombre del archivo guardado
       setPhoto(data.photoUrl);
       if (onPhotoUploaded) onPhotoUploaded(); 
+      alert("Foto actualizada correctamente en el servidor");
     } catch (error) {
-      console.error(error);
-      alert("Error al subir la foto");
+      console.error("Error al subir:", error);
+      alert("Error al subir la foto al backend");
     }
   };
 
+  // --- AQUÍ VA EL RETURN QUE PREGUNTABAS ---
   return (
     <div style={{ position: "relative", width: "120px", margin: "0 auto 1rem auto" }}>
-      {photo ? (
-        <img
-          src={`http://localhost:8081/uploads/${photo}`}
-          alt="Foto de perfil"
-          className="rounded-circle img-thumbnail"
-          style={{ width: "120px", height: "120px", objectFit: "cover" }}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://via.placeholder.com/120?text=Sin+Foto";
-          }}
-        />
-      ) : (
-        <div
-          className="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white"
-          style={{ width: "120px", height: "120px", fontSize: "2rem" }}
-        >
-          ?
-        </div>
-      )}
+      
+      <img
+        // Intentamos cargar la del BACKEND. Si 'photo' es null, usa la de ASSETS.
+        src={photo ? `${API_BASE_URL}/uploads/${photo}` : defaultPhoto} 
+        alt="Foto de perfil"
+        className="rounded-circle img-thumbnail"
+        style={{ width: "120px", height: "120px", objectFit: "cover", border: "3px solid #28a745" }}
+        onError={(e) => {
+          
+          e.target.onerror = null; 
+          e.target.src = defaultPhoto; 
+        }}
+      />
 
       <button
         type="button"
@@ -94,4 +93,3 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     </div>
   );
 }
-
