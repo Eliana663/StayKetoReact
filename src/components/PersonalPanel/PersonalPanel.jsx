@@ -80,20 +80,30 @@ export default function PersonalPanel() {
 
   // --- Add new habit ---
   const addHabit = () => {
-    const trimmed = newHabit.trim();
-    if (!trimmed) return;
-    if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) return alert("Ya existe");
-    if (habits.length >= 6) return alert("Máximo 6 hábitos");
+  const trimmed = newHabit.trim();
+  
+  // Validaciones básicas
+  if (!trimmed) return;
+  if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) {
+    return alert("Este hábito ya existe");
+  }
+  if (habits.length >= 6) {
+    return alert("Por ahora, solo puedes tener 6 hábitos en la demo");
+  }
 
-    const habitObj = { name: trimmed, userId: user.id, color: habitColor };
-
-    axios.post(`${API_BASE_URL}/api/habit/new-habit`, habitObj)
-      .then(res => {
-        setHabits(prev => [...prev, { ...res.data, done: false }]);
-        setNewHabit("");
-      })
-      .catch(err => console.error(err));
+  // Creamos el objeto localmente sin llamar al servidor
+  const newLocalHabit = {
+    id: Date.now(), 
+    name: trimmed,
+    done: false,
+    color: habitColor, 
+    userId: user?.id || 999
   };
+
+
+  setHabits(prev => [...prev, newLocalHabit]);
+  setNewHabit("");
+};
 
   // --- Toggle habit ---
   const toggleHabit = (id) => {
