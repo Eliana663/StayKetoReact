@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChartGrid from '@/components/Food/Macros/MiniDonutChartGrid';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { API_BASE_URL } from '../../../constants';
 
 export default function Mismacros() {
   const [dailyMacros, setDailyMacros] = useState({
@@ -23,7 +24,7 @@ export default function Mismacros() {
     async function fetchMacros() {
       try {
         const res = await fetch(
-          `http://localhost:8081/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
+          `${ API_BASE_URL }/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`
         );
         const data = await res.json();
 

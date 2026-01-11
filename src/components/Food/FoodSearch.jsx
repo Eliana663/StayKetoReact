@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
+import { API_BASE_URL } from '../../constants';
 
 export default function FoodSearch() {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export default function FoodSearch() {
   const fetchTodaySelectedItems = async () => {
     try {
       const today = new Date().toISOString().slice(0, 10); // yyyy-MM-dd
-      const res = await fetch(`http://localhost:8081/api/daily-food?date=${today}`, {
+      const res = await fetch(`${API_BASE_URL}/api/daily-food?date=${today}`, {
         headers: configHeaders
       });
       if (!res.ok) throw new Error('Error al cargar alimentos del día');
@@ -48,7 +49,7 @@ export default function FoodSearch() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:8081/food/searchByName?name=${encodeURIComponent(name)}`, {
+      const response = await fetch(`${API_BASE_URL}/food/searchByName?name=${encodeURIComponent(name)}`, {
         headers: configHeaders
       });
       if (!response.ok) throw new Error('Error al obtener los alimentos');
@@ -87,7 +88,7 @@ export default function FoodSearch() {
     };
 
     try {
-      const res = await fetch(`http://localhost:8081/api/daily-food/users/${user.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/daily-food/users/${user.id}`, {
         method: 'POST',
         headers: configHeaders,
         body: JSON.stringify(newItem),

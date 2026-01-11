@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from '../constants';
 
 export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUploaded }) {
   const fileInputRef = useRef();
@@ -23,7 +24,7 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     try {
       const token = localStorage.getItem("token"); // Asegúrate de tener el token guardado
       const { data } = await axios.post(
-        `http://localhost:8081/api/users/${userId}/upload-photo`,
+        `${ API_BASE_URL }/api/users/${userId}/upload-photo`,
         formData,
         {
           headers: {
@@ -46,7 +47,7 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     <div style={{ position: "relative", width: "120px", margin: "0 auto 1rem auto" }}>
       {photo ? (
         <img
-          src={`http://localhost:8081/uploads/${photo}`}
+          src={`{ API_BASE_URL }/uploads/${photo}`}
           alt="Foto de perfil"
           className="rounded-circle img-thumbnail"
           style={{ width: "120px", height: "120px", objectFit: "cover" }}

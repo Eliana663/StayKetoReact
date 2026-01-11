@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import MiniDonutChart from './MiniDonutChart';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { API_BASE_URL } from '../../../constants';
 
 export default function MiniDonutChartGrid() {
   const [data, setData] = useState([]);
@@ -29,7 +30,7 @@ export default function MiniDonutChartGrid() {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8081/api/daily-food/macros-by-date?start=${start}&end=${end}`)
+    fetch(`${ API_BASE_URL }/api/daily-food/macros-by-date?start=${start}&end=${end}`)
       .then(res => {
         if (!res.ok) throw new Error('Error al cargar datos');
         return res.json();

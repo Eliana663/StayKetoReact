@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../constants';
 
 const colors = ['#5470C6', '#91CC75', '#EE6666', '#FAC858', '#73C0DE', '#3BA272'];
 
@@ -13,7 +14,7 @@ export default function MeasurementsChart({ userId }) {
   useEffect(() => {
     if (!userId) return;
 
-    axios.get(`http://localhost:8081/api/daily-measurements/user/${userId}`,config)
+    axios.get(`${ API_BASE_URL }/api/daily-measurements/user/${userId}`,config)
       .then(res => setMeasurements(res.data))
       .catch(err => console.error(err));
   }, [userId]);

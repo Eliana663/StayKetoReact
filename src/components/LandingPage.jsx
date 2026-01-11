@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { API_BASE_URL } from '../constants';
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,12 +15,12 @@ export default function LandingPage() {
     e.preventDefault();
     try {
       // Login y guardado del token
-      const res = await axios.post("http://localhost:8081/auth/login", { email, password });
+      const res = await axios.post("{ API_BASE_URL }/auth/login", { email, password });
       const jwt = res.data.token;
       localStorage.setItem("token", jwt);
 
       // Obtener usuario con token
-      const userRes = await axios.get("http://localhost:8081/api/users/me", {
+      const userRes = await axios.get(`${ API_BASE_URL }/api/users/me`, {
         headers: { Authorization: `Bearer ${jwt}` },
       });
 

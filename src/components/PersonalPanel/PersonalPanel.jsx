@@ -6,6 +6,7 @@ import CheckKetosis from "@/components/PersonalPanel/CheckKetosis"
 import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurements";
 import Quote from "../Quote";
 import { useAuth } from "../AuthContext";
+import { API_BASE_URL } from '../../constants';
 
 
 
@@ -76,9 +77,9 @@ export default function PersonalPanel({ profilePhoto }) {
   const month = today.getMonth() + 1;
 
   Promise.all([
-  axios.get(`http://localhost:8081/api/users/${user.id}`, config),
-  axios.get(`http://localhost:8081/api/habit/user/${user.id}`, config),
-  axios.get(`http://localhost:8081/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`, config)
+  axios.get(`${ API_BASE_URL }/api/users/${user.id}`, config),
+  axios.get(`${ API_BASE_URL }/api/habit/user/${user.id}`, config),
+  axios.get(`${ API_BASE_URL }/api/habit/tracker/month?userId=${user.id}&year=${year}&month=${month}`, config)
 ])
   .then(([userRes, habitsRes, monthlyRes]) => {
     setUser(userRes.data);
@@ -118,7 +119,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const habitObj = {name: newHabit, userId: user.id, color: habitColor};
 
   
-    axios.post('http://localhost:8081/api/habit/new-habit', habitObj)
+    axios.post(`${ API_BASE_URL }/api/habit/new-habit`, habitObj)
       .then(res => {
         const saved = res.data;
         setHabits(prev => [
@@ -159,7 +160,7 @@ export default function PersonalPanel({ profilePhoto }) {
   const todayStr = new Date().toISOString().split('T')[0];
 
   axios.post(
-    'http://localhost:8081/api/habit/tracker/bulk-habits',
+    `${ API_BASE_URL }/api/habit/tracker/bulk-habits`,
     {
       userId: user.id,
       date: todayStr,
@@ -213,7 +214,7 @@ export default function PersonalPanel({ profilePhoto }) {
 
          
 
-          axios.delete(`http://localhost:8081/api/habit/delete/${id}`)
+          axios.delete(`${ API_BASE_URL }/api/habit/delete/${id}`)
           .then(() => {
             setHabits(prev => prev.filter(h => h.id !==id));
           })
@@ -261,7 +262,7 @@ export default function PersonalPanel({ profilePhoto }) {
     <div style={{ maxWidth: 600, margin: "auto" }}>
       {user?.profilePhoto && (
         <img
-          src={`http://localhost:8081/uploads/${user.profilePhoto}`}
+          src={`${ API_BASE_URL }/uploads/${user.profilePhoto}`}
           alt="Foto de perfil"
           style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", margin: "1rem auto", display: "block" }}
         />

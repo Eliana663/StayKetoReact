@@ -1,0 +1,1 @@
+export const API_BASE_URL = "https://stay-keto-470404854796.europe-southwest1.run.app";

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditWeights from "@/components/PersonalPanel/EditWeights";
+import { API_BASE_URL } from '../../constants';
 
 export default function AddWeigh({ onClose }) { 
   const userId = 1;
@@ -13,7 +14,7 @@ export default function AddWeigh({ onClose }) {
 
   
   useEffect(() => {
-    axios.get(`http://localhost:8081/api/users/${userId}`)
+    axios.get(`${ API_BASE_URL }/api/users/${userId}`)
       .then((res) => setUser(res.data))
       .catch((err) => console.error(err));
   }, [userId]);
@@ -33,13 +34,13 @@ export default function AddWeigh({ onClose }) {
           try {
             // Guardar peso actual en historial
             await axios.post(
-              `http://localhost:8081/api/charts/users/${user.id}/daily-weight`,
+              `${ API_BASE_URL }/api/charts/users/${user.id}/daily-weight`,
               { weight: newCurrent }
             );
 
             // Guardar peso meta
             await axios.put(
-              `http://localhost:8081/api/charts/users/${user.id}/goal-weight`,
+              `${ API_BASE_URL }/api/charts/users/${user.id}/goal-weight`,
               { targetWeight: newTarget }
             );
 
@@ -70,7 +71,7 @@ export default function AddWeigh({ onClose }) {
     }
 
     try {
-      await axios.post(`http://localhost:8081/api/charts/users/${user.id}/daily-weight`, {
+      await axios.post(`${ API_BASE_URL }/api/charts/users/${user.id}/daily-weight`, {
         weight: parseFloat(weight)
       });
 
