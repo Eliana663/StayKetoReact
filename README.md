@@ -7,7 +7,7 @@ Este es el cliente web de **StayKeto**, una aplicación dedicada a la gestión d
 - **React** (v18+)
 - **Vite** - Entorno de desarrollo y empaquetador rápido
 - **Gestión de Estado:** Context API / Redux
-- **Estilos:** Tailwind CSS
+- **Estilos:** Bootstrap
 
 ### 🚀 Instalación y Configuración Local
 
