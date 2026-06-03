@@ -3,13 +3,16 @@ import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
 import { API_BASE_URL } from '../../constants';
+import { useTranslation } from 'react-i18next'; // Importamos el hook
 
 export default function FoodSearch() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Inicializamos t
+
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // Guardará la clave de traducción directamente
   const [selectedItems, setSelectedItems] = useState([]);
   const [showMacros, setShowMacros] = useState(false);
 
@@ -19,11 +22,11 @@ export default function FoodSearch() {
     'Authorization': `Bearer ${token}`
   };
 
+  // Se ejecuta antes de los hooks si no hay usuario, lo ideal es retornar la traducción limpia
   if (!user) {
     console.error("No user logged in");
-    return <p>No hay usuario logueado.</p>;
+    return <p>{t("food_search.no_user")}</p>;
   }
-
 
   const fetchTodaySelectedItems = async () => {
     try {
@@ -31,18 +34,18 @@ export default function FoodSearch() {
       const res = await fetch(`${API_BASE_URL}/api/daily-food?date=${today}`, {
         headers: configHeaders
       });
-      if (!res.ok) throw new Error('Error al cargar alimentos del día');
+      if (!res.ok) throw new Error('load_failed');
       const data = await res.json();
       setSelectedItems(data);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      // Aquí se podría setear un error global si es necesario
     }
   };
 
   useEffect(() => {
     fetchTodaySelectedItems();
   }, []);
-
 
   const fetchFoodByName = async (name) => {
     try {
@@ -52,26 +55,30 @@ export default function FoodSearch() {
       const response = await fetch(`${API_BASE_URL}/food/searchByName?name=${encodeURIComponent(name)}`, {
         headers: configHeaders
       });
-      if (!response.ok) throw new Error('Error al obtener los alimentos');
+      if (!response.ok) throw new Error('fetch_failed');
 
       const data = await response.json(); 
 
       if (!data || data.length === 0) {
         setFoodItems([]);
-        setError('No se encontraron alimentos con ese término');
+        setError('food_search.errors.not_found');
         return;
       }
 
       setFoodItems(data);
     } catch (err) {
-      setError(err.message);
+      // Si el error corresponde a un código controlado, usamos su clave, si no, una genérica
+      if (err.message === 'fetch_failed') {
+        setError('food_search.errors.fetch_failed');
+      } else {
+        setError('food_search.errors.generic');
+      }
       setFoodItems([]);
     } finally {
       setLoading(false);
     }
   };
 
-  
   const handleAddItem = async (item, amount) => {
     const quantity = Number(amount) || 100;
     const factor = quantity / (item.quantity || 100);
@@ -93,7 +100,7 @@ export default function FoodSearch() {
         headers: configHeaders,
         body: JSON.stringify(newItem),
       });
-      if (!res.ok) throw new Error('Error guardando alimento');
+      if (!res.ok) throw new Error('save_failed');
 
       await fetchTodaySelectedItems();
     } catch (error) {
@@ -101,11 +108,9 @@ export default function FoodSearch() {
     }
   };
 
-
   const handleRemoveItem = (index) => {
     setSelectedItems(prev => prev.filter((_, i) => i !== index));
   };
-
 
   const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
   const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
@@ -116,7 +121,7 @@ export default function FoodSearch() {
     return (
       <div className="container my-4">
         <button className="btn btn-secondary mb-3" onClick={() => setShowMacros(false)}>
-          Volver a búsqueda
+          {t("food_search.btn_back")}
         </button>
         <Mismacros
           proteins={totalProteins}
@@ -131,28 +136,30 @@ export default function FoodSearch() {
   return (
     <div>
       <div className="container my-1">
-        <h2>Buscar alimento</h2>
+        <h2>{t("food_search.title")}</h2>
 
         <div className="input-group mb-3">
           <input
             type="text"
             className="form-control"
-            placeholder="Ej: manzana"
+            placeholder={t("food_search.placeholder_search")}
             value={searchItem}
             onChange={e => setSearchItem(e.target.value)}
           />
-          <button className="btn btn-success" onClick={() => fetchFoodByName(searchItem)}>Buscar</button>
+          <button className="btn btn-success" onClick={() => fetchFoodByName(searchItem)}>
+            {t("food_search.btn_search")}
+          </button>
         </div>
 
         <button
           className="btn btn-success mt-3 mb-3"
           onClick={() => setShowMacros(true)}
         >
-          Ver mis macros
+          {t("food_search.btn_view_macros")}
         </button>
 
-        {loading && <p>Cargando...</p>}
-        {error && <p className="text-danger">{error}</p>}
+        {loading && <p>{t("food_search.loading")}</p>}
+        {error && <p className="text-danger">{t(error)}</p>}
 
         <div className="d-flex flex-column gap-3">
           {foodItems.map(item => (
@@ -165,7 +172,7 @@ export default function FoodSearch() {
             className="position-fixed bottom-0 start-0 w-100 bg-white border-top shadow"
             style={{ zIndex: 1050, padding: '1rem', maxHeight: '50vh', overflowY: 'auto' }}
           >
-            <h4 className="mb-3">Resumen de alimentos añadidos</h4>
+            <h4 className="mb-3">{t("food_search.summary_title")}</h4>
 
             <div className="d-flex flex-wrap gap-3 mb-4">
               {selectedItems.map((item, idx) => (
@@ -176,6 +183,7 @@ export default function FoodSearch() {
                     aria-label="Eliminar"
                     style={{ fontSize: '0.7rem' }}
                   />
+                  {/* item.name viene de la base de datos de alimentos, se renderiza tal cual */}
                   <strong>{item.name}</strong><br />
                   <span>{item.calories.toFixed(0)} kcal</span>
                 </div>
@@ -184,16 +192,16 @@ export default function FoodSearch() {
 
             <div className="d-flex justify-content-around border-top pt-3">
               <div style={{ color: 'blue' }}>
-                <strong>Proteínas:</strong> {totalProteins.toFixed(1)} g
+                <strong>{t("food_search.label_proteins")}:</strong> {totalProteins.toFixed(1)} g
               </div>
               <div style={{ color: 'green' }}>
-                <strong>Grasas:</strong> {totalFat.toFixed(1)} g
+                <strong>{t("food_search.label_fat")}:</strong> {totalFat.toFixed(1)} g
               </div>
               <div style={{ color: 'red' }}>
-                <strong>Carbohidratos:</strong> {totalCarbs.toFixed(1)} g
+                <strong>{t("food_search.label_carbs")}:</strong> {totalCarbs.toFixed(1)} g
               </div>
               <div style={{ color: 'gray' }}>
-                <strong>Calorías:</strong> {totalCalories.toFixed(0)} kcal
+                <strong>{t("food_search.label_calories")}:</strong> {totalCalories.toFixed(0)} kcal
               </div>
             </div>
           </div>

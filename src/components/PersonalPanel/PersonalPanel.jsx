@@ -8,18 +8,24 @@ import Quote from "../Quote";
 import { useAuth } from "../AuthContext";
 import { API_BASE_URL } from '../../constants';
 import ProfilePhotoWithEdit from "../ProfilePhotoWithEdit";
-
-const defaultHabits = [
-  { id: 1, name: "Ejercicio", done: true, color: "#e63946" },
-  { id: 2, name: "Tomar agua", done: true, color: "#3498db" },
-  { id: 3, name: "Dormir 8 horas", done: false, color: "#2ecc71" },
-  { id: 4, name: "Ayuno", done: false, color: "#f1c40f" },
-];
+import { useTranslation } from 'react-i18next'; // Importamos hook
 
 export default function PersonalPanel() {
   const { user, setUser } = useAuth();
+  const { t } = useTranslation(); // Inicializamos t
+
+  // Definimos la base de los hábitos usando claves de traducción
+  const defaultHabits = [
+    { id: 1, key: "exercise", done: true, color: "#e63946" },
+    { id: 2, key: "water", done: true, color: "#3498db" },
+    { id: 3, key: "sleep", done: false, color: "#2ecc71" },
+    { id: 4, key: "fasting", done: false, color: "#f1c40f" },
+  ];
   
-  const [habits, setHabits] = useState(defaultHabits); 
+  // Mapeamos los hábitos iniciales con su correspondiente traducción dinámica
+  const [habits, setHabits] = useState(() => 
+    defaultHabits.map(h => ({ ...h, name: t(`personal_panel.habits.${h.key}`) }))
+  ); 
   const [newHabit, setNewHabit] = useState("");         
   const [monthlyHabits, setMonthlyHabits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +41,15 @@ export default function PersonalPanel() {
   const config = { headers: { Authorization: `Bearer ${token}` } };
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
 
+  // Sincroniza los nombres de los hábitos por defecto cuando cambia el idioma
+  useEffect(() => {
+    setHabits(prev => prev.map(h => {
+      if (h.key) {
+        return { ...h, name: t(`personal_panel.habits.${h.key}`) };
+      }
+      return h;
+    }));
+  }, [t]);
 
   function getRandomHexColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
@@ -62,43 +77,41 @@ export default function PersonalPanel() {
       const today = new Date().getDate();
       const demoMonthly = [{
         dia: today,
-        dayHabits: [
-          { trackerId: 1, name: "Ejercicio", color: "#e63946" },
-          { trackerId: 2, name: "Tomar agua", color: "#3498db" },
-          { trackerId: 3, name: "Dormir 8 horas", color: "#2ecc71" },
-          { trackerId: 4, name: "Ayuno", color: "#f1c40f" }
-        ]
+        dayHabits: defaultHabits.map(h => ({
+          trackerId: h.id,
+          name: t(`personal_panel.habits.${h.key}`),
+          color: h.color
+        }))
       }];
       setMonthlyHabits(demoMonthly);
       setLoading(false);
       setError(null);
     }, 500);
-  }, [user?.id]);
+  }, [user?.id, t]);
 
 
   const addHabit = () => {
-  const trimmed = newHabit.trim();
-  
-  if (!trimmed) return;
-  if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) {
-    return alert("Este hábito ya existe");
-  }
-  if (habits.length >= 6) {
-    return alert("Por ahora, solo puedes tener 6 hábitos en la demo");
-  }
+    const trimmed = newHabit.trim();
+    
+    if (!trimmed) return;
+    if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) {
+      return alert(t("personal_panel.alert_exists"));
+    }
+    if (habits.length >= 6) {
+      return alert(t("personal_panel.alert_max_habits"));
+    }
 
-   const newLocalHabit = {
-    id: Date.now(), 
-    name: trimmed,
-    done: false,
-    color: habitColor, 
-    userId: user?.id || 999
+    const newLocalHabit = {
+      id: Date.now(), 
+      name: trimmed,
+      done: false,
+      color: habitColor, 
+      userId: user?.id || 999
+    };
+
+    setHabits(prev => [...prev, newLocalHabit]);
+    setNewHabit("");
   };
-
-
-  setHabits(prev => [...prev, newLocalHabit]);
-  setNewHabit("");
-};
 
   const toggleHabit = (id) => {
     const habit = habits.find(h => h.id === id);
@@ -141,12 +154,12 @@ export default function PersonalPanel() {
 
   const saveEditedHabit = () => {
     if (!editingHabitName.trim()) return;
-    setHabits(prev => prev.map(h => h.id === editingHabitId ? { ...h, name: editingHabitName.trim() } : h));
+    setHabits(prev => prev.map(h => h.id === editingHabitId ? { ...h, name: editingHabitName.trim(), key: null } : h)); // Limpiamos la key si se edita para evitar sobreescritura de traducción posterior
     setEditingHabitId(null);
   };
 
   const deleteHabit = (id) => {
-    if (window.confirm("¿Eliminar hábito?")) {
+    if (window.confirm(t("personal_panel.confirm_delete"))) {
       setHabits(prev => prev.filter(h => h.id !== id));
       axios.delete(`${API_BASE_URL}/api/habit/delete/${id}`).catch(err => console.error(err));
     }
@@ -164,7 +177,7 @@ export default function PersonalPanel() {
     };
   });
 
-  if (loading) return <p>Cargando datos...</p>;
+  if (loading) return <p>{t("personal_panel.loading")}</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
@@ -174,14 +187,15 @@ export default function PersonalPanel() {
       <ProfilePhotoWithEdit 
           profilePhoto={user?.profilePhoto} 
           userId={user?.id} 
-          onPhotoUploaded={() => {
-          }} 
+          onPhotoUploaded={() => {}} 
       />
 
-      <h2 style={{ textAlign: "center" }}>Bienvenido{user?.name ? `, ${user.name}` : ""} 👋</h2>
+      <h2 style={{ textAlign: "center" }}>
+        {user?.name ? t("personal_panel.welcome", { name: user.name }) : t("personal_panel.welcome_default")} 👋
+      </h2>
       <Quote />
 
-      <h4 style={{ margin: "40px 10px 20px", textAlign: "center" }}>Mis hábitos cumplidos hoy:</h4>
+      <h4 style={{ margin: "40px 10px 20px", textAlign: "center" }}>{t("personal_panel.habits_today")}</h4>
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
         {habits.map((habit) => (
           <button
@@ -200,19 +214,20 @@ export default function PersonalPanel() {
         ))}
       </div>
 
-      {/* --- EL RESTO DE TU LÓGICA DE INTERFAZ SE MANTIENE IGUAL --- */}
       <div style={{ marginTop: "2rem", textAlign: "center" }}>
         <input
-          type="text" placeholder="Nuevo hábito" value={newHabit}
+          type="text" 
+          placeholder={t("personal_panel.placeholder_new_habit")} 
+          value={newHabit}
           onChange={e => setNewHabit(e.target.value)}
           style={{ padding: "0.5rem", borderRadius: "5px", border: "1px solid #ccc" }}
         />
-        <button onClick={addHabit} style={{ padding: "0.5rem 1rem", marginLeft: "5px" }}>Añadir</button>
+        <button onClick={addHabit} style={{ padding: "0.5rem 1rem", marginLeft: "5px" }}>{t("personal_panel.btn_add")}</button>
       </div>
 
       <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
         <button onClick={() => setShowEditPanel(!showEditPanel)} style={{ padding: "0.6rem 1.5rem", borderRadius: "20px", cursor: "pointer" }}>
-          {showEditPanel ? "Cerrar edición" : "Editar / Eliminar hábitos"}
+          {showEditPanel ? t("personal_panel.btn_close_edit") : t("personal_panel.btn_open_edit")}
         </button>
       </div>
 
@@ -235,16 +250,16 @@ export default function PersonalPanel() {
       )}
 
       <div style={{ marginTop: "2rem", display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        <button onClick={() => setShowAddWeight(true)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>Registrar peso</button>
-        <button onClick={() => setShowCheckKetosis(true)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>Check Cetosis</button>
-        <button onClick={() => setShowBodyMeasurements(!showBodyMeasurements)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>Medidas</button>
+        <button onClick={() => setShowAddWeight(true)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>{t("personal_panel.btn_register_weight")}</button>
+        <button onClick={() => setShowCheckKetosis(true)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>{t("personal_panel.btn_check_ketosis")}</button>
+        <button onClick={() => setShowBodyMeasurements(!showBodyMeasurements)} style={{ flex: 1, padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "10px" }}>{t("personal_panel.btn_measurements")}</button>
       </div>
 
       {showAddWeight && <AddWeight onClose={() => setShowAddWeight(false)} />}
       {showBodyMeasurements && <BodyMeasurementsForm onClose={() => setShowBodyMeasurements(false)} />}
       {showCheckKetosis && <CheckKetosis onClose={() => setShowCheckKetosis(false)} />}
 
-     <div style={{ 
+      <div style={{ 
         display: "flex", 
         flexDirection: "column", 
         alignItems: "center", 
@@ -254,7 +269,7 @@ export default function PersonalPanel() {
         overflow: "hidden" 
       }}>
         <h2 style={{ marginBottom: "20px", textAlign: "center" }}>
-          Registro de hábitos mensual
+          {t("personal_panel.monthly_record")}
         </h2>
         
         <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>

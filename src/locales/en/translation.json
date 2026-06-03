@@ -59,7 +59,6 @@
     "error_not_found": "No food items found with that term"
   },
 
-  
   "recipes_page": {
     "recipe_1": {
       "title": "Keto Cheese and Spinach Omelette",
@@ -82,6 +81,7 @@
       "ingredients": ["1 (110 g) yellow onion", "1 garlic clove", "85 g (200 ml) celery stalks", "700 g minced (ground) beef", "85 g butter or olive oil", "2 tbsp tomato paste", "400 g (400 ml) chopped tomatoes", "1 tsp salt", "¼ tsp pepper", "1 tbsp dried oregano or dried basil", "1 tbsp Worcestershire sauce", "water (optional)"]
     }
   },
+
   "landing": {
     "subtitle": "Your website to stay in ketosis",
     "demo_title": "Login Demo!",
@@ -96,5 +96,131 @@
     "placeholder_password": "Password",
     "no_account": "Don't have an account?",
     "alert_error": "Incorrect email or password"
+  },
+
+  "profile": {
+    "loading": "Loading profile...",
+    "welcome_male": "Welcome, {{name}}",
+    "welcome_female": "Welcome, {{name}}",
+    "welcome_generic": "Welcome, {{name}}",
+    "welcome_default": "Welcome",
+    "title_data": "Profile Data",
+    "btn_edit": "Edit",
+    "label_name": "Name",
+    "label_lastname": "Last Name",
+    "label_birthday": "Birthday 🎂",
+    "label_age": "Age",
+    "label_gender": "Gender",
+    "label_email": "Email",
+    "label_current_weight": "Current weight",
+    "label_target_weight": "Target weight",
+    "label_height": "Height",
+    "label_activity": "Activity Level 🏃",
+    "label_goal": "Goal 🎯",
+    "modal_title": "Edit profile",
+    "btn_close": "Close",
+    "btn_cancel": "Cancel",
+    "btn_save": "Save changes",
+    "select_choose": "Select",
+    "gender_female": "Female",
+    "gender_male": "Male",
+    "activity_sedentary": "Sedentary",
+    "activity_light": "Light",
+    "activity_moderate": "Moderate",
+    "activity_active": "Active",
+    "goal_lose": "Lose weight",
+    "goal_maintain": "Maintain",
+    "goal_gain": "Gain muscle",
+    "label_pregnant": "Pregnant",
+    "alert_no_token": "No token available. Please log in again.",
+    "alert_success": "Data saved successfully",
+    "alert_error": "Error saving changes: check the console for details"
+  },
+
+  "personal_panel": {
+    "loading": "Loading data...",
+    "welcome": "Welcome, {{name}}",
+    "welcome_default": "Welcome",
+    "habits_today": "My completed habits today:",
+    "placeholder_new_habit": "New habit",
+    "btn_add": "Add",
+    "btn_close_edit": "Close editing",
+    "btn_open_edit": "Edit / Delete habits",
+    "btn_register_weight": "Log weight",
+    "btn_check_ketosis": "Check Ketosis",
+    "btn_measurements": "Measurements",
+    "monthly_record": "Monthly habit log",
+    "alert_exists": "This habit already exists",
+    "alert_max_habits": "For now, you can only have 6 habits in the demo",
+    "confirm_delete": "Delete habit?",
+    "habits": {
+      "exercise": "Exercise",
+      "water": "Drink water",
+      "sleep": "Sleep 8 hours",
+      "fasting": "Fasting"
+    }
+  },
+
+  "calorie_chart": {
+    "title": "My Calorie Goals",
+    "daily_goal": "Daily goal",
+    "goals": {
+      "lose_weight": "Lose weight",
+      "maintain": "Maintain",
+      "gain_muscle": "Gain muscle"
+    }
+  },
+  
+  "food_search": {
+    "no_user": "No user logged in.",
+    "title": "Search Food",
+    "placeholder_search": "E.g., apple",
+    "btn_search": "Search",
+    "btn_view_macros": "View my macros",
+    "btn_back": "Back to search",
+    "loading": "Loading...",
+    "summary_title": "Summary of added foods",
+    "label_proteins": "Proteins",
+    "label_fat": "Fats",
+    "label_carbs": "Carbohydrates",
+    "label_calories": "Calories",
+    "errors": {
+      "load_failed": "Error loading daily foods",
+      "fetch_failed": "Error fetching foods",
+      "not_found": "No foods found matching that term",
+      "save_failed": "Error saving food item",
+      "generic": "An unexpected error occurred"
+    }
+  },
+
+  "dashboard": {
+    "loading_user": "Loading user data...",
+    "title": "Charts & Progress"
+  },
+
+  "charts": {
+    "weight": {
+      "title": "Weight Log",
+      "registered": "Recorded Weight",
+      "trend_fast": "Fast Trend",
+      "trend_gradual": "Gradual Trend",
+      "target": "Target Weight"
+    }
+  },
+  
+  "measurements": {
+    "alt_img": "Figura femenina",
+    "btn_save": "Guardar Medidas",
+    "alert_no_user": "Usuario no disponible",
+    "alert_success": "Medidas guardadas correctamente",
+    "alert_error": "Error guardando medidas",
+    "labels": {
+      "brazo": "Brazo",
+      "pecho": "Pecho",
+      "bajoPecho": "Bajo Pecho",
+      "cintura": "Cintura",
+      "cadera": "Cadera",
+      "pierna": "Pierna"
+    }
   }
 }
