@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route } from "react-router-dom";
 import FoodSearch from "./components/Food/FoodSearch";
 import ProfilePage from "./components/ProfilePage";
@@ -13,12 +14,31 @@ import { AuthProvider } from "./components/AuthContext";
 import { RequireUser } from "./components/RequireUser";
 
 function App() {
+
+  useEffect(() => {
+    const procedencia = document.referrer;
+    
+    // Inicializamos el dataLayer si no existe por seguridad
+    window.dataLayer = window.dataLayer || [];
+
+    if (procedencia.includes('linkedin.com')) {
+      window.dataLayer.push({
+        event: 'ingreso_reclutador',
+        origen: 'linkedin_about'
+      });
+    } else if (procedencia === '') {
+      window.dataLayer.push({
+        event: 'ingreso_directo_o_cv',
+        origen: 'directo_cv'
+      });
+    }
+  }, []);
+
   return (
     <AuthProvider>
       <TopNavbar />
       <AvocadoBackground>
         <Routes>
-          {/* Rutas públicas */}
           <Route path="/" element={<KetoDietIntro />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/home" element={<KetoDietIntro />} />
@@ -26,7 +46,6 @@ function App() {
           <Route path="/ketoDiet" element={<KetoDiet />} />
           <Route path="/ketoRecipes" element={<KetoRecipesPage />} />
 
-          {/* Rutas privadas */}
           <Route path="/foodDiary" element={<RequireUser><FoodSearch /></RequireUser>} />
           <Route path="/profile" element={<RequireUser><ProfilePage /></RequireUser>} />
           <Route path="/panelPersonal" element={<RequireUser><PersonalPanel /></RequireUser>} />
