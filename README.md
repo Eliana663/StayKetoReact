@@ -29,6 +29,13 @@ npm run dev
 
    La aplicación local se abrirá en `http://localhost:5173`.
 
+###   📈 Analítica y Escalabilidad
+Google Tag Manager (GTM): Configurado en la raíz del proyecto (index.html) para desacoplar los scripts de seguimiento del código fuente de React, manteniendo el proyecto limpio y modular.
+
+Google Analytics 4 (GA4): Integrado a través de GTM con una etiqueta de configuración global para medir el tráfico, sesiones y el comportamiento de los usuarios en tiempo real.
+
+Internacionalización (i18n): Implementado react-i18next para dar soporte multiidioma nativo (Español/Inglés) con carga dinámica de datos estáticos (como el catálogo de recetas) mediante returnObjects.
+
 ---
 
 ## 🇬🇧 English Version
@@ -59,3 +66,9 @@ npm install
 npm run dev
 
    The application will be running locally at `http://localhost:5173`.
+   
+### 📈 Analytics & Scalability
+
+* **Google Tag Manager (GTM):** Configured at the project's root (`index.html`) to decouple tracking scripts from the React source code, keeping the project clean and modular.
+* **Google Analytics 4 (GA4):** Integrated through GTM using a global configuration tag to measure traffic, sessions, and user behavior in real time.
+* **Internationalization (i18n):** Implemented `react-i18next` to provide native multi-language support (Spanish/English), featuring dynamic loading of static data (such as the recipe catalog) via `returnObjects`.
