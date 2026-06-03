@@ -5,10 +5,12 @@
     "recipes": "Keto Recipes",
     "login": "Sign In"
   },
+
   "lang": {
     "es": "Spanish",
     "en": "English"
   },
+
   "user_menu": {
     "user": "User",
     "account": "My Account",
@@ -17,5 +19,82 @@
     "diary": "Food Diary",
     "progress": "Progress & Charts",
     "logout": "Logout"
+  },
+
+  "intro": {
+    "welcome": "Welcome to",
+    "description_1": "The ketogenic diet is a low-carb, high-fat eating style that helps your body enter ketosis and use fat as its primary energy source.",
+    "description_2": "StayKeto guides you through this process: log your meals, track your macros, and monitor your progress with clear and easy-to-understand charts.",
+    "card_macros_title": "Daily Macros",
+    "card_macros_text": "Automatically calculate your daily macros.",
+    "card_cetosis_title": "Ketosis",
+    "card_cetosis_text": "Track your ketosis level easily.",
+    "card_progress_title": "Progress",
+    "card_progress_text": "Visualize your progress with clear charts.",
+    "btn_start": "Get Started"
+  },
+
+  "keto_diet_info": {
+    "title": "🥓 Discover the Keto Diet",
+    "paragraph_1": "The ketogenic (Keto) diet is a low-carb, high-fat eating plan that helps your body enter ketosis, a metabolic state where it burns fat as its primary source of energy.",
+    "paragraph_2": "It has many proven benefits for weight loss, health, and performance, backed by over 50 studies. That is why an increasing number of doctors and health professionals recommend it.",
+    "paragraph_3": "A ketogenic diet can help you burn excess body fat without going hungry, as well as improve type 2 diabetes and metabolic syndrome.",
+    "app_help_lead": "Our app {{appName}} helps you to:",
+    "benefit_list_1": "📋 Log your meals and maintain a correct keto balance.",
+    "benefit_list_2": "📊 Track your progress with ketosis and weight charts.",
+    "benefit_list_3": "💡 Receive personalized tips based on your goals.",
+    "box_fat": "🔥 Burn body fat without going hungry",
+    "box_diabetes": "💉 Improve type 2 diabetes and metabolic syndrome",
+    "box_energy": "🧠 Increase energy and focus",
+    "btn_start": "Start now 🚀"
+  },
+
+  "allowed_foods": {
+    "title": "Explore Foods",
+    "info_alert": "Search for a food item and check if it fits the ketogenic diet. (Keto or No Keto)",
+    "placeholder": "E.g., avocado, egg, chicken...",
+    "btn_search": "Search",
+    "loading": "Loading...",
+    "error_fetch": "Error fetching food data",
+    "error_not_found": "No food items found with that term"
+  },
+
+  
+  "recipes_page": {
+    "recipe_1": {
+      "title": "Keto Cheese and Spinach Omelette",
+      "description": "A fluffy omelette, high in protein and low in carbs.",
+      "ingredients": ["2 eggs", "1 cup of spinach", "50g shredded cheese", "1 tbsp butter", "Salt and pepper to taste"]
+    },
+    "recipe_2": {
+      "title": "Keto Avocado Salad",
+      "description": "Fresh and delicious, perfect for a light lunch.",
+      "ingredients": ["1 avocado", "1 tomato", "Olive oil", "Salt and pepper", "Lemon juice to taste"]
+    },
+    "recipe_3": {
+      "title": "Mashed Cauliflower with Brown Butter",
+      "description": "With the perfect combination of creamy cauliflower, golden onions, mouth-watering cheddar cheese, and delicious brown butter, this low-carb cauliflower mash recipe cannot go wrong. And it's exquisite!",
+      "ingredients": ["2 (220 g) yellow onions, finely chopped", "3 tbsp butter for frying", "1.4 kg cauliflower", "360 ml heavy whipping cream", "300 g (650 ml) shredded cheddar cheese", "1 tsp sea salt", "½ tsp ground black pepper", "180 g butter", "Lemon juice to taste"]
+    },
+    "recipe_4": {
+      "title": "Low-Carb Zucchini Spaghetti Bolognese",
+      "description": "Missing pasta? Tonight you can enjoy a pasta dish without the carbs, featuring a hint of umami and a touch of garlic. You will never miss a good plate of spaghetti Bolognese again!",
+      "ingredients": ["1 (110 g) yellow onion", "1 garlic clove", "85 g (200 ml) celery stalks", "700 g minced (ground) beef", "85 g butter or olive oil", "2 tbsp tomato paste", "400 g (400 ml) chopped tomatoes", "1 tsp salt", "¼ tsp pepper", "1 tbsp dried oregano or dried basil", "1 tbsp Worcestershire sauce", "water (optional)"]
+    }
+  },
+  "landing": {
+    "subtitle": "Your website to stay in ketosis",
+    "demo_title": "Login Demo!",
+    "demo_lead": "Use these credentials to try the app:",
+    "demo_email": "Email:",
+    "demo_password": "Password:",
+    "demo_btn": "Use demo credentials",
+    "demo_footer": "The login is fully functional, try it now!",
+    "login_title": "Sign In",
+    "register_title": "Create account",
+    "placeholder_email": "Email address",
+    "placeholder_password": "Password",
+    "no_account": "Don't have an account?",
+    "alert_error": "Incorrect email or password"
   }
 }
