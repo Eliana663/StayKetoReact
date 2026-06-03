@@ -28,7 +28,7 @@ export default function LandingPage() {
       navigate("/profile");   
     } catch (err) {
       console.error(err);
-      alert(t("landing.alert_error")); // Alerta traducida
+      alert(t("landing.alert_error")); 
     }
   };
 

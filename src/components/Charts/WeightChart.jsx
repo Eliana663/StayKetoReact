@@ -10,7 +10,7 @@ function WeightChart() {
   const token = localStorage.getItem("token"); 
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
-  // Traer datos del backend
+ 
   useEffect(() => {
     if (!user) return;
 
@@ -19,7 +19,6 @@ function WeightChart() {
       .catch(err => console.error('Error fetching weights:', err));
   }, [user]);
 
-  // Generar gráfico
   useEffect(() => {
     if (!user || !weights.length || user.targetWeight === undefined) return;
 
@@ -36,7 +35,7 @@ function WeightChart() {
     });
 
     const weightValues = sortedWeights.map(w => w.weight);
-    if (!weightValues.length) return; // protección extra
+    if (!weightValues.length) return; 
 
     
     const minWeight = Math.floor(Math.min(...weightValues) - 1);

@@ -32,19 +32,16 @@ export default function AddWeigh({ onClose }) {
         initialCurrentWeight={user.currentWeight}
         onSave={async ({ targetWeight: newTarget, currentWeight: newCurrent }) => {
           try {
-            // Guardar peso actual en historial
             await axios.post(
               `${ API_BASE_URL }/api/charts/users/${user.id}/daily-weight`,
               { weight: newCurrent }
             );
 
-            // Guardar peso meta
             await axios.put(
               `${ API_BASE_URL }/api/charts/users/${user.id}/goal-weight`,
               { targetWeight: newTarget }
             );
 
-            // Actualizar estados locales
             setUser({
               ...user,
               targetWeight: newTarget,
@@ -52,7 +49,6 @@ export default function AddWeigh({ onClose }) {
             });
             setWeight(newCurrent);
 
-            // Cerrar ventana
             nuevaVentana.close();
           } catch (err) {
             console.error(err);
@@ -75,7 +71,6 @@ export default function AddWeigh({ onClose }) {
         weight: parseFloat(weight)
       });
 
-      // Actualizar estado local
       setUser(prev => ({
         ...prev,
         currentWeight: parseFloat(weight)

@@ -1,14 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from '../constants';
-// Importamos la imagen local como respaldo
+
 import defaultPhoto from "../assets/default-user.jpg"; 
 
 export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUploaded }) {
   const fileInputRef = useRef();
   const [photo, setPhoto] = useState(profilePhoto);
 
-  // Actualiza la miniatura si el usuario cambia en el estado global
   useEffect(() => {
     setPhoto(profilePhoto);
   }, [profilePhoto]);
@@ -36,7 +35,7 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
         }
       );
 
-      // El backend devuelve el nuevo nombre del archivo guardado
+   
       setPhoto(data.photoUrl);
       if (onPhotoUploaded) onPhotoUploaded(); 
       alert("Foto actualizada correctamente en el servidor");
@@ -46,12 +45,12 @@ export default function ProfilePhotoWithEdit({ profilePhoto, userId, onPhotoUplo
     }
   };
 
-  // --- AQUÍ VA EL RETURN QUE PREGUNTABAS ---
+
   return (
     <div style={{ position: "relative", width: "120px", margin: "0 auto 1rem auto" }}>
       
       <img
-        // Intentamos cargar la del BACKEND. Si 'photo' es null, usa la de ASSETS.
+        
         src={photo ? `${API_BASE_URL}/uploads/${photo}` : defaultPhoto} 
         alt="Foto de perfil"
         className="rounded-circle img-thumbnail"

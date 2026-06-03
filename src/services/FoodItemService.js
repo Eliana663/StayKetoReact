@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from '../constants'; // O '@/constants' si usas el alias
+import { API_BASE_URL } from '../constants';
 
 const baseUrl = `${API_BASE_URL}/listar`;
 

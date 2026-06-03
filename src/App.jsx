@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     const procedencia = document.referrer;
     
-    // Inicializamos el dataLayer si no existe por seguridad
+   
     window.dataLayer = window.dataLayer || [];
 
     if (procedencia.includes('linkedin.com')) {

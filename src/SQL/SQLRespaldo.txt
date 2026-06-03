@@ -11024,7 +11024,6 @@ WHERE habit = 'Ejercicio';
 
 SELECT * FROM habit_tracker WHERE user_id = 1 AND YEAR(date) = 2025 AND MONTH(date) = 8;
 
-// FOOD food_item
 
 
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import { API_BASE_URL } from '../../constants';
-import { useTranslation } from 'react-i18next'; // 1. Importamos
+import { useTranslation } from 'react-i18next'; 
 
 export default function AllowedFoods() {
   const { user } = useAuth();
@@ -10,7 +10,7 @@ export default function AllowedFoods() {
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { t } = useTranslation(); // 2. Extraemos t
+  const { t } = useTranslation(); 
 
   const fetchFoodByName = async (name) => {
     try {

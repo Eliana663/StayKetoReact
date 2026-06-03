@@ -1,10 +1,8 @@
-// src/tests/ProfilePage.test.jsx
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import ProfilePage from "../components/ProfilePage";
 
-// Mock axios
 vi.mock("axios", () => ({
   default: {
     get: vi.fn().mockResolvedValue({ data: { content: "Sample quote" } }),
@@ -12,12 +10,10 @@ vi.mock("axios", () => ({
   },
 }));
 
-// Mock ProfilePhotoWithEdit
 vi.mock("../components/ProfilePhotoWithEdit", () => ({
   default: () => <div data-testid="profile-photo" />,
 }));
 
-// Mock useAuth with state
 const mockSetUser = vi.fn();
 
 vi.mock("../components/AuthContext", () => {
@@ -43,40 +39,32 @@ vi.mock("../components/AuthContext", () => {
       return {
         user,
         setUser: (...args) => {
-          mockSetUser(...args); // track calls to setUser
-          setUser(...args); // update local state
+          mockSetUser(...args); 
+          setUser(...args); 
         },
       };
     },
   };
 });
 
-// Mock alert to avoid JSDOM errors
 beforeAll(() => {
   vi.stubGlobal("alert", vi.fn());
 });
 
 describe("ProfilePage - User Interaction", () => {
   it("should allow editing user name, email and current weight", async () => {
-    // Render the ProfilePage component
     render(<ProfilePage />);
 
-    // Open the edit modal
     fireEvent.click(screen.getByTestId("edit-profile-btn"));
 
-    // Change the name
     fireEvent.change(screen.getByLabelText(/Nombre/i), { target: { value: "María" } });
 
-    // Change the email
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: "maria@example.com" } });
 
-    // Change the current weight
     fireEvent.change(screen.getByLabelText(/Peso actual/i), { target: { value: 58 } });
 
-    // Click the save button
     fireEvent.click(screen.getByText(/Guardar cambios/i));
 
-    // Wait for axios.put and setUser to be called with updated data
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith(
         `http://localhost:8081/api/users/1`,

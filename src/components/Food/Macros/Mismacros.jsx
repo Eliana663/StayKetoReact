@@ -13,7 +13,6 @@ export default function Mismacros() {
   });
   const [weeklyData, setWeeklyData] = useState([]);
 
-  // 📅 Calcular inicio y fin de semana actual (lunes a domingo)
   const today = new Date();
   const startDate = format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
   const endDate = format(endOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
@@ -23,22 +22,19 @@ export default function Mismacros() {
   useEffect(() => {
     async function fetchMacros() {
       try {
-        // 1. Obtener el token del localStorage
         const token = localStorage.getItem("token");
 
-        // 2. Añadir el token a los headers de la petición fetch
         const res = await fetch(
           `${API_BASE_URL}/api/daily-food/macros-by-date?start=${startDate}&end=${endDate}`,
           {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${token}`, // <-- Esto es lo que falta
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           }
         );
 
-        // 3. Si el servidor responde 401 o 403, es que el token falló
         if (!res.ok) {
           const errorText = await res.text();
           throw new Error(errorText || 'Error en la petición');
@@ -46,14 +42,12 @@ export default function Mismacros() {
 
         const data = await res.json();
 
-        // 🛡 Filtrar días vacíos (todos en cero)
         const filteredData = data.filter(d =>
           (d.proteins > 0 || d.fat > 0 || d.carbohydrates > 0 || d.calories > 0)
         );
 
         setWeeklyData(filteredData);
 
-        // 📅 Macros del día actual
         const todayString = formatDate(today);
         const todayMacros = filteredData.find(d => d.date === todayString) || {
           proteins: 0,

@@ -4,9 +4,9 @@ import { useAuth } from "./AuthContext";
 export const RequireUser = ({ children }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <p>Cargando...</p>; // Espera a cargar user
+  if (loading) return <p>Cargando...</p>; 
 
-  if (!user) return <Navigate to="/landing" replace />; // Si no hay user, redirige
+  if (!user) return <Navigate to="/landing" replace />;
 
   return children;
 };
