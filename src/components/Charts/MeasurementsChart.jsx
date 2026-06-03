@@ -26,7 +26,7 @@ export default function MeasurementsChart({ userId }) {
       (a, b) => new Date(a.date) - new Date(b.date)
     );
 
-    // Fechas para eje X
+    
     const dias = sortedMeasurements.map(m => {
       const date = new Date(m.date);
       const day = String(date.getDate()).padStart(2, '0');
@@ -35,7 +35,6 @@ export default function MeasurementsChart({ userId }) {
       return `${day}/${month}/${year}`;
     });
 
-    // Detectar todas las medidas presentes en cualquier fecha
     const measurementKeys = Array.from(
       new Set(
         sortedMeasurements.flatMap(m =>
@@ -51,7 +50,7 @@ export default function MeasurementsChart({ userId }) {
     measurementKeys.forEach((key, index) => {
       const color = colors[index % colors.length];
 
-      // Tomamos los valores por fecha, null si falta
+    
       const values = sortedMeasurements.map(m =>
         m[key] != null ? Number(m[key]) : null
       );
@@ -59,13 +58,13 @@ export default function MeasurementsChart({ userId }) {
       const validValues = values.filter(v => v != null);
       if (validValues.length === 0) return;
 
-      // Actualizar min/max global
+     
       const min = Math.min(...validValues);
       const max = Math.max(...validValues);
       if (min < globalMin) globalMin = min;
       if (max > globalMax) globalMax = max;
 
-      // Pequeño offset visual para diferenciar líneas idénticas
+   
       const offsetValues = values.map(v => (v != null ? v + index * 0.01 : null));
 
       series.push({

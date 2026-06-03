@@ -9,10 +9,10 @@ export default function MiniDonutChartGrid() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Función para obtener nombre del día en español
+ 
   const getDayName = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { weekday: 'long' }); // ej: "lunes"
+    return date.toLocaleDateString('es-ES', { weekday: 'long' }); 
   };
 
  useEffect(() => {
@@ -26,14 +26,14 @@ export default function MiniDonutChartGrid() {
     setLoading(true);
     setError(null);
 
-    // 1. Obtenemos el token
+   
     const token = localStorage.getItem("token");
 
-    // 2. Agregamos el objeto de configuración con los headers
+    
     fetch(`${API_BASE_URL}/api/daily-food/macros-by-date?start=${start}&end=${end}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // <-- El pasaporte para entrar
+        'Authorization': `Bearer ${token}`, 
         'Content-Type': 'application/json'
       }
     })
@@ -70,8 +70,8 @@ export default function MiniDonutChartGrid() {
         <div key={index} style={{ textAlign: 'center' }}>
           <MiniDonutChart
             item={day}
-            label={`${day.label}`} // Día
-            dateLabel={day.dateLabel} // Fecha
+            label={`${day.label}`} 
+            dateLabel={day.dateLabel} 
           />
         </div>
       ))}

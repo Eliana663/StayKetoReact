@@ -7,7 +7,6 @@ import BodyMeasurementsForm from "@/components/PersonalPanel/RegisterMeasurement
 import Quote from "../Quote";
 import { useAuth } from "../AuthContext";
 import { API_BASE_URL } from '../../constants';
-// IMPORT CORREGIDO PARA NETLIFY:
 import ProfilePhotoWithEdit from "../ProfilePhotoWithEdit";
 
 const defaultHabits = [
@@ -20,7 +19,6 @@ const defaultHabits = [
 export default function PersonalPanel() {
   const { user, setUser } = useAuth();
   
-  // --- State ---
   const [habits, setHabits] = useState(defaultHabits); 
   const [newHabit, setNewHabit] = useState("");         
   const [monthlyHabits, setMonthlyHabits] = useState([]);
@@ -37,7 +35,7 @@ export default function PersonalPanel() {
   const config = { headers: { Authorization: `Bearer ${token}` } };
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
 
-  // Helper functions
+
   function getRandomHexColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
   }
@@ -56,7 +54,6 @@ export default function PersonalPanel() {
 
   const habitColor = getRandomColor(habits);
 
-  // --- Load Demo Data ---
   useEffect(() => {
     if (!user) return;
     setLoading(true);
@@ -78,11 +75,10 @@ export default function PersonalPanel() {
     }, 500);
   }, [user?.id]);
 
-  // --- Add new habit ---
+
   const addHabit = () => {
   const trimmed = newHabit.trim();
   
-  // Validaciones básicas
   if (!trimmed) return;
   if (habits.some(h => h.name.toLowerCase() === trimmed.toLowerCase())) {
     return alert("Este hábito ya existe");
@@ -91,8 +87,7 @@ export default function PersonalPanel() {
     return alert("Por ahora, solo puedes tener 6 hábitos en la demo");
   }
 
-  // Creamos el objeto localmente sin llamar al servidor
-  const newLocalHabit = {
+   const newLocalHabit = {
     id: Date.now(), 
     name: trimmed,
     done: false,
@@ -105,7 +100,6 @@ export default function PersonalPanel() {
   setNewHabit("");
 };
 
-  // --- Toggle habit ---
   const toggleHabit = (id) => {
     const habit = habits.find(h => h.id === id);
     if (!habit) return;
@@ -158,7 +152,6 @@ export default function PersonalPanel() {
     }
   };
 
-  // --- LOGICA DE FILTRADO PARA EL CIRCULO ---
   const filteredMonthlyHabits = monthlyHabits.map(day => {
     const synchedDayHabits = (day.dayHabits || []).map(h => {
       const master = habits.find(m => m.id === h.trackerId || m.id === h.id);
@@ -182,7 +175,6 @@ export default function PersonalPanel() {
           profilePhoto={user?.profilePhoto} 
           userId={user?.id} 
           onPhotoUploaded={() => {
-            // Aquí podrías añadir una recarga si fuera necesario
           }} 
       />
 

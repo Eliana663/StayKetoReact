@@ -4,19 +4,15 @@ import FoodSearch from "../components/Food/FoodSearch";
 import { vi } from "vitest";
 import * as AuthContext from "../components/AuthContext";
 
-// Mock useAuth
 vi.mock("../components/AuthContext", () => ({
   useAuth: vi.fn(),
 }));
 
 beforeEach(() => {
-  // Mock the logged-in user
   AuthContext.useAuth.mockReturnValue({ user: { id: 1, name: "Test User" } });
 
-  // Mock all fetch calls used by the component
   global.fetch = vi.fn((url) => {
     if (url.includes("/api/daily-food")) {
-      // For fetchTodaySelectedItems
       return Promise.resolve({
         ok: true,
         json: async () => [],
@@ -24,14 +20,12 @@ beforeEach(() => {
     }
 
     if (url.includes("/food/searchByName")) {
-      // For search
       return Promise.resolve({
         ok: true,
-        json: async () => [], // <-- empty array triggers error
+        json: async () => [], 
       });
     }
 
-    // default fallback
     return Promise.resolve({
       ok: true,
       json: async () => [],
@@ -47,15 +41,12 @@ describe("FoodSearch - Invalid input", () => {
   it("shows an error when no foods are found", async () => {
     render(<FoodSearch />);
 
-    // Type an invalid food name
     fireEvent.change(screen.getByPlaceholderText(/Ej: manzana/i), {
       target: { value: "ifiififi" },
     });
 
-    // Click the search button
     fireEvent.click(screen.getByRole("button", { name: /Buscar/i }));
 
-    // Wait for the error message to appear
     const errorMessage = await screen.findByText(
       (content) => content.includes("No se encontraron alimentos con ese término")
     );

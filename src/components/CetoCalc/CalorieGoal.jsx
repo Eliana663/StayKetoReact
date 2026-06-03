@@ -37,7 +37,7 @@ function CalorieChart() {
       .catch((err) => console.error(err));
   }, [user]);
 
-  // Manejar click en los botones
+ 
   const handleGoalClick = (goal) => {
     setSelectedGoal(goal);
     if (goal === "Perder peso") setCurrentCalories(goalValues.loseWeightCalories);

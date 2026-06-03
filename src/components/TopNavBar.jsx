@@ -8,7 +8,7 @@ import '../i18n';
 export default function TopNavbar() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); // Extraemos t e i18n correctamente
+  const { t, i18n } = useTranslation(); 
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -17,5 +17,84 @@
     "diary": "Diario de Alimentos",
     "progress": "Gráficos y Progreso",
     "logout": "Cerrar sesión"
+  },
+
+  "intro": {
+    "welcome": "Bienvenido a",
+    "description_1": "La dieta cetogénica es un estilo de alimentación bajo en carbohidratos y alto en grasas saludables, que ayuda a tu cuerpo a entrar en cetosis y usar la grasa como fuente de energía.",
+    "description_2": "StayKeto te acompaña en este proceso: registra tus comidas, controla tus macros y sigue tu progreso con gráficos claros y fáciles de entender.",
+    "card_macros_title": "Macros diarios",
+    "card_macros_text": "Calcula automáticamente tus macros diarios.",
+    "card_cetosis_title": "Cetosis",
+    "card_cetosis_text": "Mide tu nivel de cetosis fácilmente.",
+    "card_progress_title": "Progreso",
+    "card_progress_text": "Visualiza tu progreso con gráficos claros.",
+    "btn_start": "Comenzar"
+  },
+
+  "keto_diet_info": {
+    "title": "🥓 Descubre la Dieta Keto",
+    "paragraph_1": "La dieta cetogénica (Keto) es un plan de alimentación bajo en carbohidratos y alto en grasas saludables que ayuda a tu cuerpo a entrar en cetosis, un estado en el que quema grasa como fuente principal de energía.",
+    "paragraph_2": "Tiene muchos beneficios comprobados para la pérdida de peso, la salud y el rendimiento, respaldados por más de 50 estudios. Por eso, cada vez más médicos y profesionales de la salud la recomiendan.",
+    "paragraph_3": "Una dieta cetogénica puede ayudarte a quemar el exceso de grasa corporal sin pasar hambre, como así también a mejorar la diabetes tipo 2 y el síndrome metabólico.",
+    "app_help_lead": "Nuestra app {{appName}} te ayuda a:",
+    "benefit_list_1": "📋 Registrar tus comidas y mantener un balance keto correcto.",
+    "benefit_list_2": "📊 Seguir tu progreso con gráficos de cetosis y peso.",
+    "benefit_list_3": "💡 Recibir consejos personalizados según tus objetivos.",
+    "box_fat": "🔥 Quemar grasa corporal sin pasar hambre",
+    "box_diabetes": "💉 Mejorar la diabetes tipo 2 y el síndrome metabólico",
+    "box_energy": "🧠 Aumentar energía y concentración",
+    "btn_start": "Empezar ahora 🚀"
+  },
+
+  "allowed_foods": {
+    "title": "Explorar alimentos",
+    "info_alert": "Busca tu alimento y verifica si es apto para la dieta cetogénica. (Keto o No Keto)",
+    "placeholder": "Ej: aguacate, huevo, pollo...",
+    "btn_search": "Buscar",
+    "loading": "Cargando...",
+    "error_fetch": "Error al obtener los alimentos",
+    "error_not_found": "No se encontraron alimentos con ese término"
+  },
+  
+  "recipes_page": {
+    "recipe_1": {
+      "title": "Tortilla Keto de Queso y Espinaca",
+      "description": "Una tortilla esponjosa, rica en proteínas y baja en carbohidratos.",
+      "ingredients": ["2 huevos", "1 taza de espinacas", "50g de queso rallado", "1 cda de mantequilla", "Sal y pimienta al gusto"]
+    },
+    "recipe_2": {
+      "title": "Ensalada de Aguacate Keto",
+      "description": "Fresca y deliciosa, perfecta para un almuerzo ligero.",
+      "ingredients": ["1 aguacate", "1 tomate", "Aceite de oliva", "Sal y pimienta", "Limón al gusto"]
+    },
+    "recipe_3": {
+      "title": "Puré de Coliflor con Mantequilla Dorada",
+      "description": "Con la combinación perfecta de coliflor cremoso, cebollas doradas, queso cheddar que se derrite en la boca y deliciosa mantequilla dorada, esta receta de puré de coliflor bajo en carbohidratos es imposible que salga mal. ¡Y además es exquisita!",
+      "ingredients": ["2 (220 g) cebollas amarillas finamente picadas", "3 cda. mantequilla para freír", "1,4 kg coliflor", "360 ml crema (o nata) para montar", "300 g (650 ml) queso cheddar rallado", "1 cdta. sal marina", "½ cdta. pimienta negra molida", "180 g mantequilla", "Limón al gusto"]
+    },
+    "recipe_4": {
+      "title": "Espaguetis de calabacín bajos en carbos a la boloñesa",
+      "description": "¿Echas de menos la pasta? Esta misma noche puedes disfrutar de un plato de pasta sin los carbohidratos, con una pizca de umami y un toque de ajo. ¡No volverás a echar de menos un buen plato de espaguetis con boloñesa!",
+      "ingredients": ["1 (110 g) cebolla amarilla", "1 diente de ajo", "85 g (200 ml) ramas de apio", "700 g carne picada (molida)", "85 g mantequilla o aceite de oliva", "2 cda. concentrado de tomate", "400 g (400 ml) tomates picados", "1 cdta. sal", "¼ cdta. pimienta", "1 cda. orégano seco o albahaca seca", "1 cda. salsa Worcester", "agua (opcional)"]
+    }
+  },
+  "landing": {
+    "subtitle": "Tu web para mantenerte en cetosis",
+    "demo_title": "¡Prueba de login!",
+    "demo_lead": "Usa estas credenciales para probar la app:",
+    "demo_email": "Email:",
+    "demo_password": "Contraseña:",
+    "demo_btn": "Usar credenciales de prueba",
+    "demo_footer": "El login es totalmente funcional, ¡pruébalo ahora!",
+    "login_title": "Iniciar sesión",
+    "register_title": "Crear cuenta",
+    "placeholder_email": "Correo electrónico",
+    "placeholder_password": "Contraseña",
+    "no_account": "¿No tienes cuenta?",
+    "alert_error": "Email o contraseña incorrectos"
   }
+
+  
+
 }

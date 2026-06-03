@@ -36,19 +36,15 @@ const HabitTrackerCircular = ({ monthlyHabits = [] }) => {
         const day = dayIndex + 1;
         const dayAngle = dayIndex * anglePerDay - 90;
 
-        // 1. Buscamos el objeto del día
         const dayData = (monthlyHabits || []).find(d => d.dia === day);
         const rawDayHabits = dayData?.dayHabits || [];
 
-        // 2. FILTRO MEJORADO: Usamos Map para asegurar UN SOLO círculo por cada nombre de hábito
-        // Esto evita duplicados pero permite que se pinten diferentes tipos (Agua, Deporte, etc.)
         const uniqueHabitsMap = new Map();
         rawDayHabits.forEach(h => {
-          // Usamos el nombre del hábito como clave única
           if (h.nombreHábito) {
             uniqueHabitsMap.set(h.nombreHábito, h);
           } else if (h.color) {
-            uniqueHabitsMap.set(h.color, h); // Fallback al color si no hay nombre
+            uniqueHabitsMap.set(h.color, h); 
           }
         });
         
@@ -64,7 +60,7 @@ const HabitTrackerCircular = ({ monthlyHabits = [] }) => {
             <g transform={`translate(${center},${center}) rotate(${dayAngle})`}>
               {dayHabits.map((habitObj, index) => {
                 const circleColor = habitObj.color || "#ccc";
-                // La posición se calcula según cuántos hábitos únicos hay en ese día
+               
                 const cx = radius - index * habitSpacing - habitCircleRadius;
                 
                 return (

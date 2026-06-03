@@ -52,7 +52,7 @@ const handleSave = async () => {
       payload,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // 🔑 aquí está el header
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
@@ -363,8 +363,8 @@ const handleSave = async () => {
                   type="button"
                   className="btn btn-success"
                   onClick={() => {
-                  document.activeElement.blur(); // quita el foco del botón
-                  handleSave();                  // guarda los cambios
+                  document.activeElement.blur(); 
+                  handleSave();                 
                 }}
                 data-bs-dismiss="modal"
                 >

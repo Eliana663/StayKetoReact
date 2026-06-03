@@ -24,10 +24,10 @@ export default function FoodSearch() {
     return <p>No hay usuario logueado.</p>;
   }
 
-  // --- Traer alimentos del día ---
+
   const fetchTodaySelectedItems = async () => {
     try {
-      const today = new Date().toISOString().slice(0, 10); // yyyy-MM-dd
+      const today = new Date().toISOString().slice(0, 10); 
       const res = await fetch(`${API_BASE_URL}/api/daily-food?date=${today}`, {
         headers: configHeaders
       });
@@ -43,7 +43,7 @@ export default function FoodSearch() {
     fetchTodaySelectedItems();
   }, []);
 
-  // --- Buscar alimentos por nombre ---
+
   const fetchFoodByName = async (name) => {
     try {
       setLoading(true);
@@ -71,7 +71,7 @@ export default function FoodSearch() {
     }
   };
 
-  // --- Añadir alimento al día ---
+  
   const handleAddItem = async (item, amount) => {
     const quantity = Number(amount) || 100;
     const factor = quantity / (item.quantity || 100);
@@ -101,12 +101,12 @@ export default function FoodSearch() {
     }
   };
 
-  // --- Remover alimento ---
+
   const handleRemoveItem = (index) => {
     setSelectedItems(prev => prev.filter((_, i) => i !== index));
   };
 
-  // --- Totales ---
+
   const totalProteins = selectedItems.reduce((sum, f) => sum + f.proteins, 0);
   const totalFat = selectedItems.reduce((sum, f) => sum + f.fat, 0);
   const totalCarbs = selectedItems.reduce((sum, f) => sum + f.carbohydrates, 0);
