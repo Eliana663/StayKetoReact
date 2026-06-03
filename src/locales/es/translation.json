@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "keto_diet": "Dieta Cetogénica",
+    "allowed_foods": "Alimentos Permitidos",
+    "recipes": "Recetas Keto",
+    "login": "Iniciar Sesión"
+  },
+  "lang": {
+    "es": "Español",
+    "en": "English"
+  },
+  "user_menu": {
+    "user": "Usuario",
+    "account": "Mi cuenta",
+    "panel": "Panel Personal",
+    "calculator": "Calculadora Keto",
+    "diary": "Diario de Alimentos",
+    "progress": "Gráficos y Progreso",
+    "logout": "Cerrar sesión"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "keto_diet": "Keto Diet",
+    "allowed_foods": "Allowed Foods",
+    "recipes": "Keto Recipes",
+    "login": "Sign In"
+  },
+  "lang": {
+    "es": "Spanish",
+    "en": "English"
+  },
+  "user_menu": {
+    "user": "User",
+    "account": "My Account",
+    "panel": "Personal Panel",
+    "calculator": "Keto Calculator",
+    "diary": "Food Diary",
+    "progress": "Progress & Charts",
+    "logout": "Logout"
+  }
+}
