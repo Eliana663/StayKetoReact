@@ -79,6 +79,7 @@
       "ingredients": ["1 (110 g) cebolla amarilla", "1 diente de ajo", "85 g (200 ml) ramas de apio", "700 g carne picada (molida)", "85 g mantequilla o aceite de oliva", "2 cda. concentrado de tomate", "400 g (400 ml) tomates picados", "1 cdta. sal", "¼ cdta. pimienta", "1 cda. orégano seco o albahaca seca", "1 cda. salsa Worcester", "agua (opcional)"]
     }
   },
+
   "landing": {
     "subtitle": "Tu web para mantenerte en cetosis",
     "demo_title": "¡Prueba de login!",
@@ -93,8 +94,133 @@
     "placeholder_password": "Contraseña",
     "no_account": "¿No tienes cuenta?",
     "alert_error": "Email o contraseña incorrectos"
-  }
+  },
 
+  "profile": {
+    "loading": "Cargando perfil...",
+    "welcome_male": "Bienvenido, {{name}}",
+    "welcome_female": "Bienvenida, {{name}}",
+    "welcome_generic": "Bienvenido/a, {{name}}",
+    "welcome_default": "Bienvenido/a",
+    "title_data": "Datos del perfil",
+    "btn_edit": "Editar",
+    "label_name": "Nombre",
+    "label_lastname": "Apellidos",
+    "label_birthday": "Cumpleaños 🎂",
+    "label_age": "Edad",
+    "label_gender": "Género",
+    "label_email": "Email",
+    "label_current_weight": "Peso actual",
+    "label_target_weight": "Peso meta",
+    "label_height": "Altura",
+    "label_activity": "Nivel de actividad 🏃",
+    "label_goal": "Objetivo 🎯",
+    "modal_title": "Editar perfil",
+    "btn_close": "Cerrar",
+    "btn_cancel": "Cancelar",
+    "btn_save": "Guardar cambios",
+    "select_choose": "Selecciona",
+    "gender_female": "Femenino",
+    "gender_male": "Masculino",
+    "activity_sedentary": "Sedentario",
+    "activity_light": "Ligero",
+    "activity_moderate": "Moderado",
+    "activity_active": "Activo",
+    "goal_lose": "Perder peso",
+    "goal_maintain": "Mantener",
+    "goal_gain": "Ganar músculo",
+    "label_pregnant": "Embarazada",
+    "alert_no_token": "No hay token disponible. Inicia sesión de nuevo.",
+    "alert_success": "Datos guardados correctamente",
+    "alert_error": "Error al guardar los cambios: revisa la consola para más detalles"
+  },
+
+  "personal_panel": {
+    "loading": "Cargando datos...",
+    "welcome": "Bienvenido, {{name}}",
+    "welcome_default": "Bienvenido",
+    "habits_today": "Mis hábitos cumplidos hoy:",
+    "placeholder_new_habit": "Nuevo hábito",
+    "btn_add": "Añadir",
+    "btn_close_edit": "Cerrar edición",
+    "btn_open_edit": "Editar / Eliminar hábitos",
+    "btn_register_weight": "Registrar peso",
+    "btn_check_ketosis": "Check Cetosis",
+    "btn_measurements": "Medidas",
+    "monthly_record": "Registro de hábitos mensual",
+    "alert_exists": "Este hábito ya existe",
+    "alert_max_habits": "Por ahora, solo puedes tener 6 hábitos en la demo",
+    "confirm_delete": "¿Eliminar hábito?",
+    "habits": {
+      "exercise": "Ejercicio",
+      "water": "Tomar agua",
+      "sleep": "Dormir 8 horas",
+      "fasting": "Ayuno"
+    }
+  },
+
+  "calorie_chart": {
+    "title": "Mis Objetivos de Calorías",
+    "daily_goal": "Objetivo diario",
+    "goals": {
+      "lose_weight": "Perder peso",
+      "maintain": "Mantener",
+      "gain_muscle": "Ganar músculo"
+    }
+  },
+
+  "food_search": {
+    "no_user": "No hay usuario logueado.",
+    "title": "Buscar Alimento",
+    "placeholder_search": "Ej: manzana",
+    "btn_search": "Buscar",
+    "btn_view_macros": "Ver mis macros",
+    "btn_back": "Volver a búsqueda",
+    "loading": "Cargando...",
+    "summary_title": "Resumen de alimentos añadidos",
+    "label_proteins": "Proteínas",
+    "label_fat": "Grasas",
+    "label_carbs": "Carbohidratos",
+    "label_calories": "Calorías",
+    "errors": {
+      "load_failed": "Error al cargar alimentos del día",
+      "fetch_failed": "Error al obtener los alimentos",
+      "not_found": "No se encontraron alimentos con ese término",
+      "save_failed": "Error guardando alimento",
+      "generic": "Ha ocurrido un error inesperado"
+    }
+  },
   
+  "dashboard": {
+    "loading_user": "Cargando datos del usuario...",
+    "title": "Gráficos y Progreso"
+  },
+
+  "charts": {
+    "weight": {
+      "title": "Registro de Peso",
+      "registered": "Peso Registrado",
+      "trend_fast": "Tendencia Rápida",
+      "trend_gradual": "Tendencia Gradual",
+      "target": "Peso meta"
+    }
+  },
+
+  "measurements": {
+    "alt_img": "Female figure",
+    "btn_save": "Save Measurements",
+    "alert_no_user": "User not available",
+    "alert_success": "Measurements saved successfully",
+    "alert_error": "Error saving measurements",
+    "labels": {
+      "brazo": "Arm",
+      "pecho": "Chest",
+      "bajoPecho": "Under Bust",
+      "cintura": "Waist",
+      "cadera": "Belly",
+      "pierna": "Leg"
+    }
+  }
+ 
 
 }

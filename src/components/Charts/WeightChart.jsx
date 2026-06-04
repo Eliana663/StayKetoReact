@@ -3,14 +3,15 @@ import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import axios from 'axios';
 import { API_BASE_URL } from '../../constants';
+import { useTranslation } from 'react-i18next'; 
 
 function WeightChart() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [weights, setWeights] = useState([]);
   const token = localStorage.getItem("token"); 
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
- 
   useEffect(() => {
     if (!user) return;
 
@@ -37,7 +38,6 @@ function WeightChart() {
     const weightValues = sortedWeights.map(w => w.weight);
     if (!weightValues.length) return; 
 
-    
     const minWeight = Math.floor(Math.min(...weightValues) - 1);
     const maxWeight = Math.ceil(Math.max(...weightValues) + 1);
 
@@ -51,7 +51,7 @@ function WeightChart() {
     const myChart = echarts.init(chartDom);
 
     const option = {
-      title: { text: 'Registro de Peso' },
+      title: { text: t("charts.weight.title") }, 
       tooltip: { trigger: 'axis' },
       xAxis: { type: 'category', data: dias },
       yAxis: {
@@ -59,20 +59,20 @@ function WeightChart() {
         min: minWeight,
         max: maxWeight,
         interval: 2,
-        axisLabel: { formatter: '{value} kg' }
+        axisLabel: { formatter: '{value} kg' } 
       },
       series: [
-        { name: 'Peso Registrado', type: 'line', data: weightValues, smooth: true, lineStyle: { width: 3 } },
-        { name: 'Tendencia Rápida', type: 'line', data: expCurve, smooth: true, lineStyle: { type: 'dashed' } },
-        { name: 'Tendencia Gradual', type: 'line', data: logCurve, smooth: true, lineStyle: { type: 'dotted' } },
-        { name: 'Peso meta', type: 'line', data: targetLine, smooth: true, lineStyle: { width: 3, color: 'red' } }
+        { name: t("charts.weight.registered"), type: 'line', data: weightValues, smooth: true, lineStyle: { width: 3 } },
+        { name: t("charts.weight.trend_fast"), type: 'line', data: expCurve, smooth: true, lineStyle: { type: 'dashed' } },
+        { name: t("charts.weight.trend_gradual"), type: 'line', data: logCurve, smooth: true, lineStyle: { type: 'dotted' } },
+        { name: t("charts.weight.target"), type: 'line', data: targetLine, smooth: true, lineStyle: { width: 3, color: 'red' } }
       ]
     };
 
     myChart.setOption(option);
 
     return () => myChart.dispose();
-  }, [weights, user]);
+  }, [weights, user, t]);
 
   return <div id="weightChart" style={{ width: '100%', height: '400px' }} />;
 }

@@ -4,94 +4,91 @@ import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 import { useAuth } from "./AuthContext";
 import Quote from "./Quote";
 import { API_BASE_URL } from '../constants';
+import { useTranslation } from 'react-i18next'; 
 
 function ProfilePage() {
   const { user, setUser } = useAuth();
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const { t } = useTranslation(); 
 
   const formatDateForInput = (dateStr) => {
-  if (!dateStr) return "";
-
-  if (dateStr.includes("-")) return dateStr;
-
-  const [day, month, year] = dateStr.split("/");
-  return `${year}-${month}-${day}`;
-};
-
+    if (!dateStr) return "";
+    if (dateStr.includes("-")) return dateStr;
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month}-${day}`;
+  };
 
   const handlePhotoUploaded = () => {
     setReloadTrigger((prev) => prev + 1);
   };
 
-const handleSave = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("No hay token disponible. Inicia sesión de nuevo.");
-      return;
-    }
-
-     const payload = {
-      name: user.name,
-      lastName: user.lastName,
-      birthDate: user.birthDate,
-      age: user.age,
-      gender: user.gender,
-      currentWeight: user.currentWeight,
-      targetWeight: user.targetWeight,
-      height: user.height,
-      activityLevel: user.activityLevel,
-      goal: user.goal,
-      pregnant: user.pregnant,
-      email: user.email,
-    };
-
-     
-    const res = await axios.put(
-      `${ API_BASE_URL }/api/users/${user.id}`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(t("profile.alert_no_token"));
+        return;
       }
-    );
 
-    console.log("Respuesta del servidor:", res.data);
-    alert("Datos guardados correctamente");
+      const payload = {
+        name: user.name,
+        lastName: user.lastName,
+        birthDate: user.birthDate,
+        age: user.age,
+        gender: user.gender,
+        currentWeight: user.currentWeight,
+        targetWeight: user.targetWeight,
+        height: user.height,
+        activityLevel: user.activityLevel,
+        goal: user.goal,
+        pregnant: user.pregnant,
+        email: user.email,
+      };
 
-   
-    if (setReloadTrigger) {
-      setReloadTrigger((prev) => prev + 1);
+      const res = await axios.put(
+        `${ API_BASE_URL }/api/users/${user.id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          },
+        }
+      );
+
+      console.log("Respuesta del servidor:", res.data);
+      alert(t("profile.alert_success"));
+
+      if (setReloadTrigger) {
+        setReloadTrigger((prev) => prev + 1);
+      }
+
+    } catch (err) {
+      console.error("Error al guardar los cambios:", err.response?.data || err.message);
+      alert(t("profile.alert_error"));
     }
-
-  } catch (err) {
-    console.error("Error al guardar los cambios:", err.response?.data || err.message);
-    alert("Error al guardar los cambios: revisa la consola para más detalles");
-  }
-};
+  };
 
   if (!user)
     return (
       <p className="text-center mt-5" style={{ fontSize: "1.2rem" }}>
-        Cargando perfil...
+        {t("profile.loading")}
       </p>
     );
+
+  const getWelcomeMessage = () => {
+    if (!user?.name) return t("profile.welcome_default");
+    if (user.gender === "male") return t("profile.welcome_male", { name: user.name });
+    if (user.gender === "female") return t("profile.welcome_female", { name: user.name });
+    return t("profile.welcome_generic", { name: user.name });
+  };
 
   return (
     <>
       <div className="card shadow p-4 mx-auto" style={{ maxWidth: "600px" }}>
         <div className="text-center">
-        <h3 className="mb-1">
-        {user?.name
-          ? user.gender === "male"
-            ? `Bienvenido, ${user.name}`
-            : user.gender === "female"
-            ? `Bienvenida, ${user.name}`
-            : `${user.name}`
-          : "Bienvenido/a"}{" "}
-        <span>👋</span>
-      </h3>
+          <h3 className="mb-1">
+            {getWelcomeMessage()} <span>👋</span>
+          </h3>
           <Quote />
           <div className="text-center mb-3">
             <ProfilePhotoWithEdit
@@ -103,52 +100,52 @@ const handleSave = async () => {
         </div>
 
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0">Datos del perfil</h5>
+          <h5 className="mb-0">{t("profile.title_data")}</h5>
           <button
             data-testid="edit-profile-btn"
             className="btn btn-sm btn-outline-primary"
             data-bs-toggle="modal"
             data-bs-target="#editProfileModal"
           >
-            <i className="bi bi-pencil-fill me-1"></i> Editar
+            <i className="bi bi-pencil-fill me-1"></i> {t("profile.btn_edit")}
           </button>
         </div>
 
         <ul className="list-group mb-3">
           <li className="list-group-item">
-            <strong>Nombre:</strong> {user.name}
+            <strong>{t("profile.label_name")}:</strong> {user.name}
           </li>
           <li className="list-group-item">
-            <strong>Apellidos:</strong> {user.lastName}
+            <strong>{t("profile.label_lastname")}:</strong> {user.lastName}
           </li>
           <li className="list-group-item">
-            <strong>Cumpleaños 🎂:</strong> {user.birthDate}
+            <strong>{t("profile.label_birthday")}:</strong> {user.birthDate}
           </li>
           <li className="list-group-item">
-            <strong>Edad:</strong> {user.age}
+            <strong>{t("profile.label_age")}:</strong> {user.age}
           </li>
           <li className="list-group-item">
-            <strong>Género:</strong> {user.gender}
+            <strong>{t("profile.label_gender")}:</strong> {user.gender}
           </li>
           <li className="list-group-item">
-            <strong>Email:</strong> {user.email}
+            <strong>{t("profile.label_email")}:</strong> {user.email}
           </li>
           <li className="list-group-item">
-            <strong>Peso actual:</strong> {user.currentWeight} kg
+            <strong>{t("profile.label_current_weight")}:</strong> {user.currentWeight} kg
           </li>
           <li className="list-group-item">
-            <strong>Peso meta:</strong> {user.targetWeight} kg
+            <strong>{t("profile.label_target_weight")}:</strong> {user.targetWeight} kg
           </li>
           <li className="list-group-item">
-            <strong>Altura:</strong> {user.height} cm
+            <strong>{t("profile.label_height")}:</strong> {user.height} cm
           </li>
           <li className="list-group-item">
-            <strong>Nivel de actividad 🏃:</strong> {user.activityLevel}
+            <strong>{t("profile.label_activity")}:</strong> {user.activityLevel}
           </li>
           <li className="list-group-item">
-            <strong>Objetivo 🎯:</strong> {user.goal}
+            <strong>{t("profile.label_goal")}:</strong> {user.goal}
           </li>
-          </ul>
+        </ul>
       </div>
 
       {/* Modal para editar perfil */}
@@ -163,19 +160,19 @@ const handleSave = async () => {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="editProfileModalLabel">
-                Editar perfil
+                {t("profile.modal_title")}
               </h5>
               <button
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
-                aria-label="Cerrar"
+                aria-label={t("profile.btn_close")}
               ></button>
             </div>
             <div className="modal-body">
               {/* Nombre */}
               <div className="mb-3">
-                <label htmlFor="nameInput">Nombre</label>
+                <label htmlFor="nameInput">{t("profile.label_name")}</label>
                 <input
                   id="nameInput"
                   type="text"
@@ -187,36 +184,31 @@ const handleSave = async () => {
 
               {/* Apellidos */}
               <div className="mb-3">
-                <label htmlFor="lastNameInput">Apellidos</label>
+                <label htmlFor="lastNameInput">{t("profile.label_lastname")}</label>
                 <input
                   id="lastNameInput"
                   type="text"
                   className="form-control"
                   value={user.lastName || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, lastName: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, lastName: e.target.value })}
                 />
               </div>
 
               {/* Fecha de nacimiento */}
               <div className="mb-3">
-                <label htmlFor="birthDateInput">Fecha de nacimiento</label>
+                <label htmlFor="birthDateInput">{t("profile.label_birthday")}</label>
                 <input
                   id="birthDateInput"
                   type="date"
                   className="form-control"
                   value={formatDateForInput(user.birthDate)}
-                  onChange={(e) =>
-                    setUser({ ...user, birthDate: e.target.value })
-                    
-                  }
+                  onChange={(e) => setUser({ ...user, birthDate: e.target.value })}
                 />
               </div>
 
               {/* Edad */}
               <div className="mb-3">
-                <label htmlFor="ageInput">Edad</label>
+                <label htmlFor="ageInput">{t("profile.label_age")}</label>
                 <input
                   id="ageInput"
                   type="number"
@@ -228,109 +220,97 @@ const handleSave = async () => {
 
               {/* Género */}
               <div className="mb-3">
-                <label htmlFor="genderInput">Género</label>
+                <label htmlFor="genderInput">{t("profile.label_gender")}</label>
                 <select
                   id="genderInput"
                   className="form-control"
                   value={user.gender || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, gender: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, gender: e.target.value })}
                 >
-                  <option value="">Selecciona</option>
-                  <option value="female">Femenino</option>
-                  <option value="male">Masculino</option>
+                  <option value="">{t("profile.select_choose")}</option>
+                  <option value="female">{t("profile.gender_female")}</option>
+                  <option value="male">{t("profile.gender_male")}</option>
                 </select>
               </div>
 
               {/* Email */}
               <div className="mb-3">
-                <label htmlFor="emailInput">Email</label>
+                <label htmlFor="emailInput">{t("profile.label_email")}</label>
                 <input
                   id="emailInput"
                   type="email"
                   className="form-control"
                   value={user.email || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, email: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
                 />
               </div>
 
               {/* Peso actual */}
               <div className="mb-3">
-                <label htmlFor="currentWeightInput">Peso actual (kg)</label>
+                <label htmlFor="currentWeightInput">{t("profile.label_current_weight")} (kg)</label>
                 <input
                   id="currentWeightInput"
                   type="number"
                   className="form-control"
                   value={user.currentWeight || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, currentWeight: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, currentWeight: e.target.value })}
                 />
               </div>
 
               {/* Peso meta */}
               <div className="mb-3">
-                <label htmlFor="targetWeightInput">Peso meta (kg)</label>
+                <label htmlFor="targetWeightInput">{t("profile.label_target_weight")} (kg)</label>
                 <input
                   id="targetWeightInput"
                   type="number"
                   className="form-control"
                   value={user.targetWeight || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, targetWeight: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, targetWeight: e.target.value })}
                 />
               </div>
 
               {/* Altura */}
               <div className="mb-3">
-                <label htmlFor="heightInput">Altura (cm)</label>
+                <label htmlFor="heightInput">{t("profile.label_height")} (cm)</label>
                 <input
                   id="heightInput"
                   type="number"
                   className="form-control"
                   value={user.height || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, height: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, height: e.target.value })}
                 />
               </div>
 
               {/* Nivel de actividad */}
               <div className="mb-3">
-                <label htmlFor="activityLevelInput">Nivel de actividad</label>
+                <label htmlFor="activityLevelInput">{t("profile.label_activity")}</label>
                 <select
                   id="activityLevelInput"
                   className="form-control"
                   value={user.activityLevel || ""}
-                  onChange={(e) =>
-                    setUser({ ...user, activityLevel: e.target.value })
-                  }
+                  onChange={(e) => setUser({ ...user, activityLevel: e.target.value })}
                 >
-                  <option value="">Selecciona</option>
-                  <option value="Sedentario">Sedentario</option>
-                  <option value="Ligero">Ligero</option>
-                  <option value="Moderado">Moderado</option>
-                  <option value="Activo">Activo</option>
+                  <option value="">{t("profile.select_choose")}</option>
+                  <option value="Sedentario">{t("profile.activity_sedentary")}</option>
+                  <option value="Ligero">{t("profile.activity_light")}</option>
+                  <option value="Moderado">{t("profile.activity_moderate")}</option>
+                  <option value="Activo">{t("profile.activity_active")}</option>
                 </select>
               </div>
 
               {/* Objetivo */}
               <div className="mb-3">
-                <label htmlFor="goalInput">Objetivo</label>
+                <label htmlFor="goalInput">{t("profile.label_goal")}</label>
                 <select
                   id="goalInput"
                   className="form-control"
                   value={user.goal || ""}
                   onChange={(e) => setUser({ ...user, goal: e.target.value })}
                 >
-                  <option value="">Selecciona</option>
-                  <option value="Perder Peso">Perder peso</option>
-                  <option value="Mantener">Mantener</option>
-                  <option value="Ganar Músculo">Ganar músculo</option>
+                  <option value="">{t("profile.select_choose")}</option>
+                  <option value="Perder Peso">{t("profile.goal_lose")}</option>
+                  <option value="Mantener">{t("profile.goal_maintain")}</option>
+                  <option value="Ganar Músculo">{t("profile.goal_gain")}</option>
                 </select>
               </div>
 
@@ -341,12 +321,10 @@ const handleSave = async () => {
                   type="checkbox"
                   className="form-check-input"
                   checked={user.pregnant || false}
-                  onChange={(e) =>
-                    setUser({ ...user, pregnant: e.target.checked })
-                  }
+                  onChange={(e) => setUser({ ...user, pregnant: e.target.checked })}
                 />
                 <label htmlFor="pregnantInput" className="form-check-label">
-                  Embarazada
+                  {t("profile.label_pregnant")}
                 </label>
               </div>
             </div>
@@ -357,20 +335,20 @@ const handleSave = async () => {
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Cancelar
+                {t("profile.btn_cancel")}
               </button>
               <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={() => {
+                type="button"
+                className="btn btn-success"
+                onClick={() => {
                   document.activeElement.blur(); 
                   handleSave();                 
                 }}
                 data-bs-dismiss="modal"
-                >
-                Guardar cambios
+              >
+                {t("profile.btn_save")}
               </button>
-             </div>
+            </div>
           </div>
         </div>
       </div>

@@ -3,19 +3,27 @@ import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import { useAuth } from "../AuthContext"; 
 import { API_BASE_URL } from '../../constants';
+import { useTranslation } from "react-i18next"; 
 
 function CalorieChart() {
   const { user } = useAuth();
+  const { t } = useTranslation(); 
+
   const [goalValues, setGoalValues] = useState({
-    loseWeight: 0,
-    maintain: 0,
-    gainMuscle: 0,
+    loseWeightCalories: 0,
+    maintenanceCalories: 0,
+    gainMuscleCalories: 0,
     goal: "",
   });
   const [selectedGoal, setSelectedGoal] = useState("");
   const [currentCalories, setCurrentCalories] = useState(0);
 
-  const goalOptions = ["Perder peso", "Mantener", "Ganar musculo"];
+  const goalOptions = [
+    { id: "Perder peso", labelKey: "calorie_chart.goals.lose_weight" },
+    { id: "Mantener", labelKey: "calorie_chart.goals.maintain" },
+    { id: "Ganar musculo", labelKey: "calorie_chart.goals.gain_muscle" },
+  ];
+
   const maxCalories = 3000; 
   const token = localStorage.getItem("token"); 
   const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -30,6 +38,7 @@ function CalorieChart() {
         setGoalValues(data);
         setSelectedGoal(data.goal); 
         
+       
         if (data.goal === "Perder peso") setCurrentCalories(data.loseWeightCalories);
         else if (data.goal === "Mantener") setCurrentCalories(data.maintenanceCalories);
         else setCurrentCalories(data.gainMuscleCalories);
@@ -37,11 +46,10 @@ function CalorieChart() {
       .catch((err) => console.error(err));
   }, [user]);
 
- 
-  const handleGoalClick = (goal) => {
-    setSelectedGoal(goal);
-    if (goal === "Perder peso") setCurrentCalories(goalValues.loseWeightCalories);
-    else if (goal === "Mantener") setCurrentCalories(goalValues.maintenanceCalories);
+  const handleGoalClick = (goalId) => {
+    setSelectedGoal(goalId);
+    if (goalId === "Perder peso") setCurrentCalories(goalValues.loseWeightCalories);
+    else if (goalId === "Mantener") setCurrentCalories(goalValues.maintenanceCalories);
     else setCurrentCalories(goalValues.gainMuscleCalories);
   };
 
@@ -71,7 +79,7 @@ function CalorieChart() {
         detail: {
           valueAnimation: true,
           formatter: function () {
-            return `${currentCalories.toFixed(0)} kcal\nObjetivo diario`;
+            return `${currentCalories.toFixed(0)} kcal\n${t("calorie_chart.daily_goal")}`;
           },
           fontSize: 20,
           lineHeight: 30,
@@ -86,17 +94,17 @@ function CalorieChart() {
   return (
     <div style={{ width: "100%", maxWidth: "500px", margin: "0 auto", textAlign: "center" }}>
       <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "70px" }}>
-        Mis Objetivos de Calorías
+        {t("calorie_chart.title")}
       </h2>
 
       {/* Select goal buttons */}
       <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginBottom: "24px" }}>
-        {goalOptions.map((goal) => {
-          const isActive = selectedGoal === goal;
+        {goalOptions.map((optionItem) => {
+          const isActive = selectedGoal === optionItem.id;
           return (
             <button
-              key={goal}
-              onClick={() => handleGoalClick(goal)}
+              key={optionItem.id}
+              onClick={() => handleGoalClick(optionItem.id)}
               style={{
                 padding: "12px 24px",
                 borderRadius: "9999px",
@@ -111,7 +119,7 @@ function CalorieChart() {
                 cursor: "pointer",
               }}
             >
-              {goal}
+              {t(optionItem.labelKey)}
             </button>
           );
         })}
