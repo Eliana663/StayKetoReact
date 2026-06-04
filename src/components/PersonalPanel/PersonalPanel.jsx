@@ -8,13 +8,12 @@ import Quote from "../Quote";
 import { useAuth } from "../AuthContext";
 import { API_BASE_URL } from '../../constants';
 import ProfilePhotoWithEdit from "../ProfilePhotoWithEdit";
-import { useTranslation } from 'react-i18next'; // Importamos hook
+import { useTranslation } from 'react-i18next'; 
 
 export default function PersonalPanel() {
   const { user, setUser } = useAuth();
-  const { t } = useTranslation(); // Inicializamos t
+  const { t } = useTranslation(); 
 
-  // Definimos la base de los hábitos usando claves de traducción
   const defaultHabits = [
     { id: 1, key: "exercise", done: true, color: "#e63946" },
     { id: 2, key: "water", done: true, color: "#3498db" },
@@ -22,7 +21,6 @@ export default function PersonalPanel() {
     { id: 4, key: "fasting", done: false, color: "#f1c40f" },
   ];
   
-  // Mapeamos los hábitos iniciales con su correspondiente traducción dinámica
   const [habits, setHabits] = useState(() => 
     defaultHabits.map(h => ({ ...h, name: t(`personal_panel.habits.${h.key}`) }))
   ); 
@@ -41,7 +39,6 @@ export default function PersonalPanel() {
   const config = { headers: { Authorization: `Bearer ${token}` } };
   const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#fd7e14"];
 
-  // Sincroniza los nombres de los hábitos por defecto cuando cambia el idioma
   useEffect(() => {
     setHabits(prev => prev.map(h => {
       if (h.key) {
@@ -154,7 +151,7 @@ export default function PersonalPanel() {
 
   const saveEditedHabit = () => {
     if (!editingHabitName.trim()) return;
-    setHabits(prev => prev.map(h => h.id === editingHabitId ? { ...h, name: editingHabitName.trim(), key: null } : h)); // Limpiamos la key si se edita para evitar sobreescritura de traducción posterior
+    setHabits(prev => prev.map(h => h.id === editingHabitId ? { ...h, name: editingHabitName.trim(), key: null } : h)); 
     setEditingHabitId(null);
   };
 

@@ -4,12 +4,12 @@ import ProfilePhotoWithEdit from "../components/ProfilePhotoWithEdit";
 import { useAuth } from "./AuthContext";
 import Quote from "./Quote";
 import { API_BASE_URL } from '../constants';
-import { useTranslation } from 'react-i18next'; // Importamos hook
+import { useTranslation } from 'react-i18next'; 
 
 function ProfilePage() {
   const { user, setUser } = useAuth();
   const [reloadTrigger, setReloadTrigger] = useState(0);
-  const { t } = useTranslation(); // Inicializamos t
+  const { t } = useTranslation(); 
 
   const formatDateForInput = (dateStr) => {
     if (!dateStr) return "";

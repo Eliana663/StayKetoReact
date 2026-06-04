@@ -3,7 +3,7 @@ import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import { useAuth } from "../AuthContext"; 
 import { API_BASE_URL } from '../../constants';
-import { useTranslation } from "react-i18next"; // Importamos el hook
+import { useTranslation } from "react-i18next"; 
 
 function CalorieChart() {
   const { user } = useAuth();
@@ -79,7 +79,6 @@ function CalorieChart() {
         detail: {
           valueAnimation: true,
           formatter: function () {
-            // Traducimos dinámicamente "Objetivo diario" dentro del gráfico
             return `${currentCalories.toFixed(0)} kcal\n${t("calorie_chart.daily_goal")}`;
           },
           fontSize: 20,

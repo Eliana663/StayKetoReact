@@ -3,16 +3,16 @@ import { useAuth } from '../AuthContext';
 import FoodCard from '@/components/Food/FoodCard/FoodCard';
 import Mismacros from '@/components/Food/Macros/Mismacros';
 import { API_BASE_URL } from '../../constants';
-import { useTranslation } from 'react-i18next'; // Importamos el hook
+import { useTranslation } from 'react-i18next'; 
 
 export default function FoodSearch() {
   const { user } = useAuth();
-  const { t } = useTranslation(); // Inicializamos t
+  const { t } = useTranslation(); 
 
   const [searchItem, setSearchItem] = useState('');
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // Guardará la clave de traducción directamente
+  const [error, setError] = useState(null); 
   const [selectedItems, setSelectedItems] = useState([]);
   const [showMacros, setShowMacros] = useState(false);
 
@@ -22,7 +22,7 @@ export default function FoodSearch() {
     'Authorization': `Bearer ${token}`
   };
 
-  // Se ejecuta antes de los hooks si no hay usuario, lo ideal es retornar la traducción limpia
+  
   if (!user) {
     console.error("No user logged in");
     return <p>{t("food_search.no_user")}</p>;
@@ -39,7 +39,7 @@ export default function FoodSearch() {
       setSelectedItems(data);
     } catch (err) {
       console.error(err);
-      // Aquí se podría setear un error global si es necesario
+      
     }
   };
 
@@ -67,8 +67,7 @@ export default function FoodSearch() {
 
       setFoodItems(data);
     } catch (err) {
-      // Si el error corresponde a un código controlado, usamos su clave, si no, una genérica
-      if (err.message === 'fetch_failed') {
+        if (err.message === 'fetch_failed') {
         setError('food_search.errors.fetch_failed');
       } else {
         setError('food_search.errors.generic');

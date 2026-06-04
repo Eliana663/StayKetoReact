@@ -1,11 +1,11 @@
 import { useAuth } from '../AuthContext';
 import WeightChart from '@/components/Charts/WeightChart';
 import MeasurementsChart from '@/components/Charts/MeasurementsChart';
-import { useTranslation } from 'react-i18next'; // Importamos el hook
+import { useTranslation } from 'react-i18next'; 
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { t } = useTranslation(); // Inicializamos t
+  const { t } = useTranslation(); 
 
   if (!user) return <p>{t("dashboard.loading_user")}</p>; 
 
